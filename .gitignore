@@ -1,0 +1,9 @@
+# ローカルの開発設定・一時ファイル（公開しない）
+.claude/
+__pycache__/
+*.log
+.DS_Store
+Thumbs.db
+# 実データのバックアップを誤って公開しないように
+PMO_*.json
+*.backup.json
