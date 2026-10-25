@@ -1,7 +1,18 @@
-# Kizashi（兆し）
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/brand/kizashi-logo-dark.svg">
+    <img src="assets/brand/kizashi-logo.svg" alt="Kizashi" width="260">
+  </picture>
+</p>
 
-**遅れの「兆し」を先に見つけ、報告ではなく対応に時間を使うための、1ファイルで動くPMOツール。**
-A single-file PMO tool for early warning, automated status reporting and meetings that actually decide things. (English below)
+<p align="center"><b>遅れの「兆し」を先に見つけ、報告ではなく対応に時間を使うための、1ファイルで動くPMOツール。</b><br>
+A free, zero-install PMO tool that spots the early signs of delay. (English below)</p>
+
+<p align="center">
+  <a href="https://matassy0813.github.io/kizashi/Kizashi.html"><b>▶ 今すぐ試す（ダウンロード不要） / Try it now</b></a> ·
+  <a href="https://github.com/matassy0813/kizashi/raw/main/Kizashi.html">ダウンロード / Download</a> ·
+  <a href="#ライセンス">AGPL-3.0</a>
+</p>
 
 ---
 
@@ -31,7 +42,8 @@ A single-file PMO tool for early warning, automated status reporting and meeting
 
 ## 使い方
 
-1. このリポジトリの `Kizashi.html` をダウンロードして開く
+1. **ブラウザで開く**：[今すぐ試す](https://matassy0813.github.io/kizashi/Kizashi.html)（データはそのブラウザの中だけに保存されます）
+   - または、このリポジトリの `Kizashi.html` をダウンロードしてダブルクリックで開く（オフラインでも動きます）
 2. 最初はサンプルデータが入っています。パスコードなしで、どの立場（PM・メンバーなど）でも試せます
 3. 自分のプロジェクトは、左上のプロジェクト名 →「新しいプロジェクト」から3ステップで作れます
 
@@ -55,6 +67,10 @@ LICENSE           AGPL-3.0 本文 / COMMERCIAL.md 商用ライセンス / CONTRI
 - 1ファイル版の作成：`python build.py`
 - 機能チェック：ツールを開いてブラウザのコンソールに `tests/smoke.js` の内容を貼り付け、`runSmoke()` を実行（全項目OKを確認してから変更を取り込む）
 - 設計の心得：機能は独立させる／既存機能は消さずに追加して切り替える／やむを得ず変えるときは理由を記録する
+
+## ロゴ
+
+ロゴは `assets/brand/` にあります（通常版・ダークモード版・小さいサイズ用）。名称「Kizashi」とロゴは著作者の商標で、AGPL の許諾には含まれません。
 
 ## ライセンス
 
@@ -80,7 +96,7 @@ Copyright (C) 2026 0kaka
 
 ### Quick start
 
-1. Download and open `Kizashi.html`
+1. Open it in your browser: [Try it now](https://matassy0813.github.io/kizashi/Kizashi.html) — or download `Kizashi.html` and open it locally (works offline)
 2. Sample data is loaded — sign in as any role without a passcode to explore
 3. Create your own project from the project menu (top left) → "New project" (3 steps)
 

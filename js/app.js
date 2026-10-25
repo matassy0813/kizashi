@@ -177,6 +177,8 @@ const NAV_KEY = 'kizashi-nav-collapsed';
 const applyNav = c => { document.body.classList.toggle('nav-collapsed', c); $('#navToggle').setAttribute('aria-pressed', c ? 'true' : 'false'); $('#navToggle').title = c ? t('nav.open') : t('nav.close'); };
 try { applyNav(localStorage.getItem(NAV_KEY) === '1'); } catch(e) {}
 $('#navToggle').addEventListener('click', () => { const c = !document.body.classList.contains('nav-collapsed'); applyNav(c); try { localStorage.setItem(NAV_KEY, c ? '1' : '0'); } catch(e) {} });
+$('#brandHome').innerHTML = brandMark(); // 画面左上のロゴ（押すとダッシュボードへ）
+$('#brandHome').addEventListener('click', () => { if (me()) go({tab: ROLE_HOME[myRole()] || 'dash'}); });
 $('#pjSwitch').addEventListener('click', e => openProjectSwitcher(e.currentTarget));
 $('#helpBtn').addEventListener('click', () => { const el = $('#helpPanel'); if (el && el.classList.contains('open')) closeHelp(); else openHelp(); });
 $('#scopeSel').addEventListener('change', e => { ui.meetingId = ''; go({scope: e.target.value}); });

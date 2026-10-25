@@ -84,8 +84,13 @@ function runSmoke(){
     check('F32', '表の選択欄が細くならず、中身が見える（WYSIWYG）', () => { ui.tab = 'raid'; render(); const sels = [...q('table [data-col="raid"][data-f="status"]')]; const narrow = sels.filter(x => x.getBoundingClientRect().width < 60).length; const wrap = q('textarea.cellwrap').length > 0; return (sels.length && !narrow && wrap) || {narrow, wrap}; });
     check('F33', 'ヘルプの目次がスクロールでき、はみ出さない', () => { openHelp(); const toc = document.querySelector('.help-toc'), panel = document.querySelector('#helpPanel'); const ok = getComputedStyle(toc).overflowY === 'auto' && toc.getBoundingClientRect().bottom <= panel.getBoundingClientRect().bottom + 1; closeHelp(); return ok; });
     check('F34', '詳細パネルの「閉じる」ボタンは 1 つ（削除はゴミ箱アイコン）', () => { ui.tab = 'org'; ui.orgView = 'all'; ui.orgSel = 'O10'; render(); const n = [...q('#orgDrawer button')].filter(b => b.textContent.trim() === '✕').length; ui.orgSel = ''; return n === 1 || {closeButtons: n}; });
-    check('F35', '入力中も自動で保存される（確定前でもデータに反映）', () => { ui.tab = 'raid'; render(); const el = document.querySelector('textarea.cellwrap[data-col="raid"]'); const k = +el.dataset.key, old = state.raid[k][el.dataset.f]; el.value = old + '★'; el.dispatchEvent(new Event('input', {bubbles: true})); const ok = state.raid[k][el.dataset.f] === old + '★'; state.raid[k][el.dataset.f] = old; return ok; });
+    check('F35', '入力中も自動で保存される（確定前でもデータに反映）', () => { ui.tab = 'raid'; render(); const el = document.querySelector('textarea.cellwrap[data-col="raid"]'); const k = +el.dataset.key, old = state.raid[k][el.dataset.f]; el.value = old + '★'; el.dispatchEvent(new Event('input', {bubbles: true})); const ok = state.raid[k][el.dataset.f] === old + '★'; state.raid[k][el.dataset.f] = old; clearTimeout(typeTimer); /* 確認後に自動保存が走らないように */ return ok; });
     check('F36', 'SPI の説明（ⓘ）からヘルプの SPI の章が開く', () => { ui.tab = 'dash'; render(); document.querySelector('[data-help-open="spi"]').click(); const ok = document.querySelector('#helpPanel .help-toc .on').dataset.help === 'spi'; closeHelp(); return ok; });
+    check('F37', 'ロゴ：ログイン画面・画面左上・タブのアイコンに表示される', () => {
+      const keepMe = ui.me; ui.me = ''; render(); const loginLogo = !!document.querySelector('.login-logo svg.brand-svg'); ui.me = keepMe || 'O03'; render();
+      const home = !!document.querySelector('#brandHome svg.brand-svg'), fav = !!document.querySelector('link[rel="icon"][href^="data:image/svg+xml"]');
+      return (loginLogo && home && fav) || {loginLogo, home, fav};
+    });
     check('F26', '翻訳漏れがない', () => MISSING.size === 0 || [...MISSING]);
   } finally {
     state = keep.state; Object.keys(ui).forEach(k => delete ui[k]); Object.assign(ui, keep.ui); save = keep.save; render(true);

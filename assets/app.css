@@ -284,7 +284,7 @@ table.matrix td.c,table.matrix th.c{text-align:center} table.matrix .me{backgrou
 body.locked{grid-template-columns:1fr} body.locked nav{display:none} body.locked header .right label,body.locked #saveInd{display:none}
 .login-wrap{min-height:calc(100vh - 140px);display:grid;place-items:center;padding:24px 0}
 .card.login{width:min(460px,100%);padding:28px 28px 18px}
-.login-logo{width:56px;height:56px;margin:0 auto 10px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--violet));color:#fff;font-weight:800;display:grid;place-items:center;letter-spacing:.02em}
+.login-logo{width:180px;margin:0 auto 6px;color:var(--text)} .login-logo .brand-svg{width:100%;height:auto;display:block}
 .people{display:grid;gap:6px;max-height:380px;overflow:auto}
 .person{font:inherit;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;border:0;background:var(--soft);color:var(--text);cursor:pointer;text-align:left;transition:transform .15s var(--ease),background .2s}
 .person:hover{background:var(--accent-soft);transform:translateY(-1px)}
@@ -430,6 +430,9 @@ body.nav-collapsed nav button{justify-content:center;padding:10px 0;position:rel
 body.nav-collapsed nav .lbl{display:none}
 body.nav-collapsed nav .cnt{position:absolute;top:2px;right:6px;min-width:16px;line-height:16px;font-size:10px;padding:0 4px}
 @media (max-width:900px){ body.nav-collapsed{grid-template-columns:1fr} body.nav-collapsed nav{display:none} }
+/* ロゴ */
+.brand-home{width:34px;height:34px;flex:none;display:grid;place-items:center;color:var(--text);cursor:pointer;border-radius:10px;transition:background .2s}
+.brand-home:hover{background:var(--line)} .brand-home .brand-svg{width:30px;height:30px;display:block}
 /* 狭い画面：サイドバーを横スクロールのタブに */
 @media (max-width:900px){
   body{grid-template-columns:1fr}

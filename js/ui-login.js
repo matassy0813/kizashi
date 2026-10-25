@@ -51,7 +51,7 @@ function renderLoginScreen(){
   $('#tabs').innerHTML = ''; $('#pageHead').innerHTML = ''; $('#hdrRag').innerHTML = ''; $('#meBox').innerHTML = '';
   $('#view').classList.add('animate');
   $('#view').innerHTML = `<div class="login-wrap"><div class="card login">
-    <div class="login-logo">兆</div><div class="login-brand">Kizashi</div>
+    <div class="login-logo">${brandLogo()}</div>
     <h1 class="large-title" style="text-align:center">${esc(state.project.name || 'PMO')}</h1>
     <p class="lead" style="text-align:center;margin-bottom:18px">${t('login.title')}</p>
     ${state.isSample ? `<div class="ro-note">${t('login.sampleNote')}</div>` : ''}
