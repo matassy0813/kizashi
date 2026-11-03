@@ -129,43 +129,4 @@ function importCsv(file){
 }
 
 // ============ RAID ============
-function renderRaid(v, {b}){
-  const rows = state.raid.map((r, i) => ({r, i})).filter(({r}) => inScope(r) && (!ui.raidType || r.type === ui.raidType) && (!ui.raidCat || r.category === ui.raidCat))
-    .sort((a, c) => phaseIdx(a.r.phaseId) - phaseIdx(c.r.phaseId) || a.i - c.i);
-  const f = (i, k, o) => fld('raid', i, k, state.raid[i][k], o);
-  v.innerHTML = `<div class="card">
-    <div class="bar">
-      <select id="fRaid"><option value="">${t('flt.allTypes')}</option>${enumOpts('raidType').map(([k, l]) => `<option value="${k}" ${k === ui.raidType ? 'selected' : ''}>${l}</option>`).join('')}</select>
-      <select id="fCat"><option value="">${t('flt.allCats')}</option>${enumOpts('raidCat').map(([k, l]) => `<option value="${k}" ${k === ui.raidCat ? 'selected' : ''}>${l}</option>`).join('')}</select>
-      <span class="muted" style="font-size:12px">${t('raid.hint')}</span>
-      <span class="sp"></span>
-      <button class="btn primary" id="addRaid">＋ ${t('btn.add')}</button>
-    </div>
-    <div class="scroll-x"><table>
-      <tr><th>ID</th><th>${t('col.type')}</th><th>${t('col.phase')}</th><th>${t('col.category')}</th><th>${t('col.title')}</th><th>${t('col.owner')}</th><th>${t('col.impact')}</th><th>${t('col.prob')}</th><th>${t('col.status')}</th><th>${t('col.raised')}</th><th>${t('col.due')}</th><th>${t('col.mitigation')}</th><th></th></tr>
-      ${rows.map(({r, i}) => { const late = r.status !== 'closed' && r.due && d2n(r.due) < b; return `<tr class="${r.category === 'contract' && r.status !== 'closed' ? 'row-contract' : ''}">
-        <td>${f(i, 'id', {cls:'w-s'})}</td>
-        <td>${f(i, 'type', {type:'select', opts: enumOpts('raidType')})}</td>
-        <td>${f(i, 'phaseId', {type:'select', opts: phaseOpts(), blank: t('common.common')})}</td>
-        <td>${f(i, 'category', {type:'select', opts: enumOpts('raidCat')})}</td>
-        <td>${f(i, 'title', {cls:'w-name'})}</td>
-        <td>${f(i, 'owner', {cls:'w-s'})}</td>
-        <td>${f(i, 'impact', {type:'select', opts: enumOpts('level'), blank: true})}</td>
-        <td>${r.type === 'risk' ? f(i, 'prob', {type:'select', opts: enumOpts('level'), blank: true}) : '<span class="muted">—</span>'}</td>
-        <td>${f(i, 'status', {type:'select', opts: enumOpts('raidStatus')})}</td>
-        <td>${f(i, 'raised', {type:'date'})}</td>
-        <td class="${late ? 'cell-late' : ''}">${f(i, 'due', {type:'date'})}</td>
-        <td>${f(i, 'mitigation', {cls:'w-name'})}</td>
-        <td>${delBtn('raid', i, r.title || r.id)}</td>
-      </tr>`; }).join('')}
-    </table></div>
-    ${rows.length ? '' : `<div class="empty">${t('empty.raidAll')}</div>`}
-  </div>`;
-  $('#fRaid').onchange = e => { ui.raidType = e.target.value; render(); };
-  $('#fCat').onchange = e => { ui.raidCat = e.target.value; render(); };
-  $('#addRaid').onclick = () => {
-    const type = ui.raidType || 'risk', pre = {risk:'R', issue:'I', assumption:'A', decision:'D'}[type];
-    state.raid.push({id: nextId(pre, state.raid.filter(r => r.type === type)), type, phaseId: ui.scope, category: ui.raidCat || 'other', title: '', owner: '', impact: 'M', prob: type === 'risk' ? 'M' : '', status: 'open', raised: todayStr(), due: '', mitigation: ''});
-    save(); render();
-  };
-}
+// リスク・課題（RAID）の画面は ui-raid.js（一覧・構造図・傾向・詳細）

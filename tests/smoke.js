@@ -91,6 +91,42 @@ function runSmoke(){
       const home = !!document.querySelector('#brandHome svg.brand-svg'), fav = !!document.querySelector('link[rel="icon"][href^="data:image/svg+xml"]');
       return (loginLogo && home && fav) || {loginLogo, home, fav};
     });
+    check('F38', '承認：タスク・課題・CRをまとめて承認し、「元に戻す」で戻せる。差し戻しは理由が担当者に見える', () => {
+      state = sample('ja'); normalize(); login('O03');
+      const ts = state.tasks.filter(x => !x.milestone && x.owner && x.owner !== myName()).slice(0, 2);
+      ts.forEach(x => { x.kind = 'dev'; x.status = 'approval'; x.disp = ''; });
+      const rk = state.raid.find(x => x.type === 'issue'); rk.status = 'review';
+      const q0 = approvalQueue(), kinds = new Set(q0.map(x => x.col));
+      ui.tab = 'approvals'; ui.apKind = ''; ui.apSel = []; render();
+      const all = document.querySelector('#apAll'); all.checked = true; all.dispatchEvent(new Event('change'));
+      const selN = ui.apSel.length;
+      document.querySelector('#apApprove').click();
+      const closed = ts.every(x => x.status === 'closed' && x.approvedBy) && rk.status === 'closed' && state.crs.find(c => c.id === 'CR01').status === 'approved' && approvalQueue().length === 0;
+      document.querySelector('#toast.act button').click();
+      const undone = state.tasks.filter(x => ts.some(y => y.id === x.id)).every(x => x.status === 'approval') && state.raid.find(x => x.id === rk.id).status === 'review' && approvalQueue().length === q0.length;
+      const keepP = window.prompt; window.prompt = () => '根拠資料を添付してください';
+      const t0 = state.tasks.find(x => x.id === ts[0].id); ui.apSel = ['tasks:' + t0.id]; render(); document.querySelector('#apReturn').click(); window.prompt = keepP;
+      const returned = t0.status === 'test' && t0.returnNote === '根拠資料を添付してください';
+      const ownerId = (state.org.find(p => p.name === t0.owner) || {}).id; let seen = !ownerId;
+      if (ownerId) { login(ownerId); seen = myTodos(d2n(baseDate()), []).some(x => x.text.includes('根拠資料')); login('O03'); }
+      const noTabForMember = !ROLE_TABS.member.includes('approvals') && !ROLE_TABS.viewer.includes('approvals');
+      document.querySelector('#toast').classList.remove('on', 'act');
+      return (kinds.size === 3 && selN === q0.length && closed && undone && returned && seen && noTabForMember) || {kinds: [...kinds], selN, q: q0.length, closed, undone, returned, seen, noTabForMember};
+    });
+    check('F39', 'タスク一覧：状態の選択欄を変えると保存される', () => {
+      state = sample('ja'); normalize(); login('O03'); ui.tab = 'tasks'; ui.taskView = 'list'; ui.scope = ''; ui.owner = ''; ui.alertOnly = false; render();
+      const el = [...q('select[data-col="tasks"][data-f="status"]')].find(s => !s.disabled && s.value === 'todo'); const k = +el.dataset.key, to = el.options[1].value;
+      el.value = to; el.dispatchEvent(new Event('change', {bubbles: true}));
+      return state.tasks[k].status === to || {status: state.tasks[k].status, to};
+    });
+    state = sample('ja'); normalize(); login('O03');
+    check('F40', '課題：詳細画面（課題カード・関係者・判断の依頼・親子・関連タスク・経緯とコメント）', () => { ui.tab = 'raid'; ui.raidSel = 'I01'; render(); const ok = !!document.querySelector('#rdComment') && !!document.querySelector('#rdAddOwner') && !!document.querySelector('[data-col="raid"][data-f="parentId"]') && !!document.querySelector('#rdAddTask') && q('.timeline li').length > 1; ui.raidSel = ''; return ok; });
+    check('F41', '課題：構造図（親→子の木）と傾向（影響×発生確率・推移）', () => { ui.tab = 'raid'; ui.raidSel = ''; ui.raidView = 'tree'; render(); const tree = q('#raidDiagram .dg-node').length > 3 && q('#raidDiagram .dg-edge').length >= 2; ui.raidView = 'trend'; render(); const trend = q('table.heatmap td.heat').length === 9 && !!document.querySelector('.tr-open'); ui.raidView = 'list'; return (tree && trend) || {tree, trend}; });
+    check('F42', '課題：一覧に詳細を開くボタン、担当者は複数、閲覧者も見られる', () => { ui.tab = 'raid'; render(); const open = q('[data-open-raid]').length > 5, multi = state.raid.some(r => r.owners.length > 1); login('O02'); ui.tab = 'raid'; render(); const viewer = ui.tab === 'raid'; login('O03'); return (open && multi && viewer) || {open, multi, viewer}; });
+    check('F43', '全体検索：「/」で開き、結果を押すとその場所が開く', () => { ui.tab = 'dash'; render(); document.dispatchEvent(new KeyboardEvent('keydown', {key: '/', bubbles: true})); const pop = document.querySelector('.gs-pop'); const inp = pop && pop.querySelector('input'); inp.value = 'サーバー'; inp.dispatchEvent(new Event('input')); const hits = pop.querySelectorAll('.gs-item').length; pop.querySelector('.gs-item').click(); return (hits > 0 && !document.querySelector('.gs-pop') && ui.tab === 'raid') || {hits, tab: ui.tab}; });
+    check('F44', 'ダッシュボード：今決めること', () => { ui.tab = 'dash'; ui.raidSel = ''; render(); return !!document.querySelector('.dec-card [data-open-raid]'); });
+    check('F45', 'カンバン：課題と紐づいたタスクに⚑印', () => { ui.tab = 'tasks'; ui.taskView = 'kanban'; render(); return q('.kcard .iss-badge').length > 0; });
+    check('F46', '翻訳キーの重複がない（後から同じキーで上書きしていない）', () => DUP_KEYS.size === 0 || [...DUP_KEYS]);
     check('F26', '翻訳漏れがない', () => MISSING.size === 0 || [...MISSING]);
   } finally {
     state = keep.state; Object.keys(ui).forEach(k => delete ui[k]); Object.assign(ui, keep.ui); save = keep.save; render(true);

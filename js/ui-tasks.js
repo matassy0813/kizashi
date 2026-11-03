@@ -79,6 +79,9 @@ function dispMenu(tk, i){
   return `${tk.disp ? `<span class="disp ${tk.disp}" title="${esc(tk.dispNote || '')}${tk.holdUntil ? ' ～' + md(tk.holdUntil) : ''}">${t('disp.' + tk.disp)}</span>` : ''}
     ${opts.length ? `<select class="disp-sel" data-disp="${i}"><option value="">${t('disp.menu')}</option>${opts.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>` : ''}`;
 }
+// このタスクに関係する未解決の課題・リスク（課題の詳細で「影響するタスク」に入れたもの）
+const issuesOfTask = tk => state.raid.filter(r => (r.taskIds || []).includes(tk.id) && r.status !== 'closed');
+const issueBadges = tk => { const rs = issuesOfTask(tk); return rs.length ? `<div class="kc-issues">${rs.map(r => `<button class="iss-badge imp-${r.impact || 'M'}" data-open-raid="${esc(r.id)}" title="${esc(r.title)}">⚑ ${esc(r.id)}</button>`).join('')}</div>` : ''; };
 const carryBadge = tk => tk.carryCount ? `<span class="carry" title="${t('tk.carriedFrom', (tk.carriedFrom || []).map(id => phaseName(id)).join(' → '))}">↻${tk.carryCount}</span>` : '';
 
 function renderTasks(v, ctx){
@@ -129,7 +132,7 @@ function renderTaskList(el, {b, alerts}){
         <td><div class="tname">${prioDot(tk.priority)}${f(i, 'priority', {type: 'select', opts: prioOpts()})}</div></td>
         <td>${f(i, 'owner', {cls: 'w-s'})}</td>
         <td>${f(i, 'start', {type: 'date'})}</td><td>${f(i, 'end', {type: 'date'})}</td><td>${f(i, 'baselineEnd', {type: 'date'})}</td>
-        <td><div class="tname">${f(i, 'status', {type: 'select', opts: flowOpts(tk), cls: 'st-sel st-' + LANE_OF[tk.status]})}${tk.status === 'approval' && canApprove(tk) ? `<button class="btn primary sm" data-approve="${i}">${t('tk.approve')}</button>` : ''}</div>${tk.approvedBy && tk.status === 'closed' ? `<div class="muted small">${t('tk.approvedBy', esc(tk.approvedBy), md(tk.approvedAt))}</div>` : ''}</td>
+        <td><div class="tname">${f(i, 'status', {type: 'select', opts: flowOpts(tk), cls: 'st-sel st-' + LANE_OF[tk.status]})}${tk.status === 'approval' && canApprove(tk) ? `<button class="btn primary sm" data-approve="${i}">${t('tk.approve')}</button>` : ''}</div>${tk.approvedBy && tk.status === 'closed' ? `<div class="muted small">${t('tk.approvedBy', esc(tk.approvedBy), md(tk.approvedAt))}</div>` : isDone(tk) ? '' : returnedNote(tk)}</td>
         <td>${f(i, 'progress', {type: 'number', cls: 'w-xs'})}</td>
         <td class="num muted">${plannedPct(tk, b)}</td>
         <td>${dispMenu(tk, i)}</td>
@@ -151,6 +154,7 @@ function renderKanban(el, {b, alerts}){
   const closed = byLane.closed.sort((x, y) => (y.tk.updated || '') < (x.tk.updated || '') ? -1 : 1);
   const shownClosed = closed.slice(0, 8);
   const person = name => state.org.find(p => p.name === name);
+  const apN = ROLE_TABS[myRole()].includes('approvals') ? byLane.approval.filter(({tk}) => canApprove(tk)).length : 0;
   const card = ({tk, i}) => {
     const p = person(tk.owner), late = !isDone(tk) && d2n(tk.end) < b, fl = flowOf(tk), next = fl[fl.indexOf(tk.status) + 1];
     const canMove = can('tasks', i, 'status');
@@ -158,13 +162,15 @@ function renderKanban(el, {b, alerts}){
     return `<div class="kcard ${sev[tk.id] ? 'sev-' + sev[tk.id] : ''} ${tk.disp === 'hold' ? 'held' : ''}" draggable="${canMove}" data-kcard="${i}">
       <div class="kc-top">${prioDot(tk.priority)}<span class="tag k-${tk.kind}">${t('kind.' + tk.kind)}</span><span class="kc-st">${lbl('taskStatus', tk.status)}</span>${carryBadge(tk)}</div>
       <div class="kc-name">${esc(tk.name)}</div>
+      ${isDone(tk) ? '' : returnedNote(tk)}
+      ${issueBadges(tk)}
       ${tk.disp === 'hold' ? `<div class="kc-hold">⏸ ${esc(tk.dispNote || t('disp.hold'))}${tk.holdUntil ? ` ～${md(tk.holdUntil)}` : ''}</div>` : ''}
       <div class="kc-foot">${p ? `<span class="avatar xs" style="background:${orgColor(p.org)}">${esc(p.name.slice(0, 1))}</span>` : ''}<span class="small">${esc(tk.owner || '—')}</span><span class="sp"></span><span class="small ${late ? 'red' : 'muted'}">${md(tk.end)}</span></div>
       ${nextBtn ? `<div class="kc-act">${nextBtn}</div>` : ''}
     </div>`;
   };
   el.innerHTML = `<div class="kanban">${KANBAN_LANES.map(l => `<section class="klane" data-lane="${l}">
-      <header><span class="kdot ${l}"></span>${t('lane.' + l)}<span class="kcount">${byLane[l].length}</span></header>
+      <header><span class="kdot ${l}"></span>${t('lane.' + l)}<span class="kcount">${byLane[l].length}</span>${l === 'approval' && apN > 1 ? `<button class="btn primary sm" data-apgo>${t('ap.bulk', apN)}</button>` : ''}</header>
       <div class="klist">
         ${l === 'todo' && canCreate('tasks') ? `<input class="kquick" id="kQuick" placeholder="${t('tk.quickAdd')}">` : ''}
         ${(l === 'closed' ? shownClosed : byLane[l]).map(card).join('') || `<div class="kempty">${t('lane.empty')}</div>`}
@@ -190,6 +196,7 @@ function renderKanban(el, {b, alerts}){
   });
   // カードをクリック → 右のパネルで編集（ボタン以外の場所）
   el.querySelectorAll('[data-kcard]').forEach(c => c.addEventListener('click', e => { if (e.target.closest('button, input, select, textarea')) return; ui.taskSel = c.dataset.kcard; render(); }));
+  const ag = el.querySelector('[data-apgo]'); if (ag) ag.onclick = () => go({tab: 'approvals', apKind: 'tasks', apSel: []});
   el.querySelectorAll('[data-next]').forEach(btn => btn.onclick = () => { const tk = state.tasks[+btn.dataset.next], fl = flowOf(tk); if (moveTask(tk, fl[fl.indexOf(tk.status) + 1])) { save(); render(); } });
   const q = $('#kQuick'); if (q) q.onkeydown = e => { if (e.key === 'Enter' && q.value.trim()) { newTask({name: q.value.trim()}); save(); render(); setTimeout(() => { const n = $('#kQuick'); if (n) n.focus(); }); } };
 }
@@ -234,7 +241,7 @@ function drawTaskDrawer(v){
     <div class="form-grid one">
       <label>${t('col.task')}${f('name', {type: 'textarea', rows: 2})}</label>
       <label>${t('col.status')}<div class="tname">${f('status', {type: 'select', opts: flowOpts(tk), cls: 'st-sel st-' + LANE_OF[tk.status]})}${tk.status === 'approval' && canApprove(tk) ? `<button class="btn primary sm" data-approve="${i}">${t('tk.approve')}</button>` : ''}</div>
-        <small class="muted">${flowOf(tk).map(s => s === tk.status ? `<b>${lbl('taskStatus', s)}</b>` : lbl('taskStatus', s)).join(' → ')}</small></label>
+        ${isDone(tk) ? '' : returnedNote(tk)}<small class="muted">${flowOf(tk).map(s => s === tk.status ? `<b>${lbl('taskStatus', s)}</b>` : lbl('taskStatus', s)).join(' → ')}</small></label>
       <label>${t('tk.kind')}${f('kind', {type: 'select', opts: TASK_KINDS.map(k => [k, t('kind.' + k)])})}</label>
       <label>${t('tk.priority')}${f('priority', {type: 'select', opts: prioOpts()})}</label>
       <label>${t('col.owner')}${f('owner')}</label>
@@ -244,6 +251,7 @@ function drawTaskDrawer(v){
       <label>${t('col.progress')}${f('progress', {type: 'number'})}</label>
       <div class="lbl-block">${t('tk.disp')}<div>${dispMenu(tk, i)}</div>${tk.carryCount ? `<small class="muted">${t('tk.carriedFrom', (tk.carriedFrom || []).map(id => phaseName(id)).join(' → '))}</small>` : ''}</div>
       ${tk.approvedBy && tk.status === 'closed' ? `<div class="muted small">${t('tk.approvedBy', esc(tk.approvedBy), md(tk.approvedAt))}</div>` : ''}
+      ${issuesOfTask(tk).length ? `<div class="lbl-block">${t('rd.linkedIssues')}<ul class="mini-list">${issuesOfTask(tk).map(r => `<li><button class="link-btn" data-open-raid="${esc(r.id)}">${esc(r.id)}</button> ${esc(r.title)} <span class="tag">${esc(lbl('raidStatus', r.status))}</span></li>`).join('')}</ul></div>` : ''}
     </div>
     ${canDelete('tasks', i) ? `<div class="bar" style="margin-top:14px"><span class="sp"></span><button class="btn danger" data-del="tasks" data-key="${i}" data-name="${esc(tk.name)}">${TRASH} ${t('btn.delete')}</button></div>` : ''}
   </div>`;

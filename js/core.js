@@ -19,7 +19,7 @@ const lines = s => String(s || '').split(/\n/).map(x => x.trim()).filter(Boolean
 const ENUM = {
   taskStatus: ['todo','doing','discuss','decided','impl','test','draft','review','approval','closed'],
   raidType:   ['risk','issue','assumption','decision'],
-  raidStatus: ['open','wip','closed'],
+  raidStatus: ['open','wip','review','closed'],
   level:      ['H','M','L'],
   raidCat:    ['contract','scope','schedule','resource','technical','vendor','other'],
   crStatus:   ['draft','analysis','pending','approved','rejected','done'],
@@ -65,6 +65,15 @@ function normalize(){
     if (t.status === 'done') t.status = 'closed';
     if (t.status === 'hold') { t.status = +t.progress > 0 ? 'doing' : 'todo'; t.disp = 'hold'; }
     if (!flowOf(t).includes(t.status)) { const lane = LANE_OF[t.status] || 'todo'; t.status = flowOf(t).find(s => LANE_OF[s] === lane) || (lane === 'todo' ? 'todo' : flowOf(t)[1]); }
+  });
+  // 課題の関係者（作成者・承認者・担当者は複数）、親子、課題カード、判断の依頼、関連タスク、経緯
+  state.raid.forEach(r => {
+    if (!Array.isArray(r.owners)) r.owners = r.owner ? [r.owner] : [];
+    r.owner = r.owners[0] || '';
+    ['reporter','approver','parentId','detail','impactText','ask','decider','decideBy'].forEach(k => { if (r[k] == null) r[k] = ''; });
+    if (!Array.isArray(r.taskIds)) r.taskIds = [];
+    if (!Array.isArray(r.log)) r.log = [];
+    r.needDecision = !!r.needDecision;
   });
   state.meetings.forEach(m => { m.agenda = m.agenda || []; m.decisions = m.decisions || []; m.actions = m.actions || []; });
   if (ui.scope && !state.phases.some(p => p.id === ui.scope)) ui.scope = '';
@@ -119,6 +128,10 @@ function phaseRange(p){
   return {s, e};
 }
 // フェーズスコープ：選択フェーズ＋フェーズ共通（phaseId なし）
+const raidOwners = r => r && Array.isArray(r.owners) && r.owners.length ? r.owners : (r && r.owner ? [r.owner] : []);
+const nowStamp = () => { const d = new Date(); return `${todayStr()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+// 課題の経緯（変更・コメント・承認）を残す
+function raidLog(r, e){ (r.log = r.log || []).push({at: nowStamp(), by: myName(), ...e}); r.updated = todayStr(); }
 const inScope = x => !ui.scope || !x.phaseId || x.phaseId === ui.scope;
 const orderedTasks = list => list.map((t, i) => ({t, i})).sort((a, b) => phaseIdx(a.t.phaseId) - phaseIdx(b.t.phaseId) || a.i - b.i).map(x => x.t);
 const scopedTasks = () => orderedTasks(ui.scope ? state.tasks.filter(t => t.phaseId === ui.scope) : state.tasks);
@@ -228,6 +241,17 @@ function computeAlerts(lang){
     if (r.type === 'risk' && r.impact === 'H' && !String(r.mitigation || '').trim()) add('H','noMitigation',r.title,r.owner,L('ad.noMitigation'),r.id,r.phaseId);
     if (r.due && d2n(r.due) < b) add(r.impact === 'H' ? 'H' : 'M','raidOverdue',r.title,r.owner,L('ad.raidOverdue', lbl('raidType', r.type, lang), md(r.due), b - d2n(r.due)),r.id,r.phaseId);
     if (r.type === 'issue' && r.raised && b - d2n(r.raised) >= S.issueAgeDays) add('M','issueAged',r.title,r.owner,L('ad.issueAged', b - d2n(r.raised)),r.id,r.phaseId);
+    if (r.type !== 'issue' && r.type !== 'risk') return;
+    if (!raidOwners(r).length) add('M','raidNoOwner',r.title || r.id,'',L('ad.raidNoOwner'),r.id,r.phaseId);
+    if (r.type === 'issue' && !r.due) add('L','raidNoDue',r.title || r.id,r.owner,L('ad.raidNoDue'),r.id,r.phaseId);
+    if (r.updated && b - d2n(r.updated) >= S.staleDays * 2) add('L','raidStale',r.title || r.id,r.owner,L('ad.raidStale', b - d2n(r.updated)),r.id,r.phaseId);
+    if (r.needDecision && r.decideBy && d2n(r.decideBy) < b) add('H','decisionOverdue',r.title || r.id,r.decider || r.owner,L('ad.decisionOverdue', r.decider || '—', md(r.decideBy), b - d2n(r.decideBy)),r.id,r.phaseId);
+  });
+  // 親課題がクローズなのに、子課題が残っている
+  state.raid.forEach(r => {
+    if (r.status !== 'closed') return;
+    const open = state.raid.filter(c => c.parentId === r.id && c.status !== 'closed');
+    if (open.length) add('M','childOpen',r.title || r.id,r.owner,L('ad.childOpen', open.length, open.map(c => c.id).join(', ')),r.id,r.phaseId);
   });
   // 会議
   state.meetings.forEach(m => {
@@ -297,11 +321,11 @@ const docTypes = () => lines(state.naming.docTypes).map(l => { const [code, ...r
 // ロールを選ぶだけで「見える画面」「できること」「最初の画面」が決まる（個別設定は不要）
 const ROLES = ['pm','pmo','lead','member','viewer'];
 const ROLE_TABS = {
-  pm:     ['mine','dash','alerts','phases','tasks','raid','meetings','org','governance','report','settings'],
-  pmo:    ['mine','dash','alerts','phases','tasks','raid','meetings','org','governance','report','settings'],
-  lead:   ['mine','dash','alerts','phases','tasks','raid','meetings','org','governance','report','settings'],
+  pm:     ['mine','dash','alerts','approvals','phases','tasks','raid','meetings','org','governance','report','settings'],
+  pmo:    ['mine','dash','alerts','approvals','phases','tasks','raid','meetings','org','governance','report','settings'],
+  lead:   ['mine','dash','alerts','approvals','phases','tasks','raid','meetings','org','governance','report','settings'],
   member: ['mine','dash','tasks','raid','meetings','org','governance','settings'],
-  viewer: ['dash','phases','org','report','settings'],
+  viewer: ['dash','phases','raid','org','report','settings'], // 課題は見るだけ（入力欄は自動で読み取り専用）
 };
 const ROLE_HOME = {pm: 'dash', pmo: 'dash', lead: 'mine', member: 'mine', viewer: 'dash'};
 // 権限の一覧表（y=できる / p=一部 / n=できない）。体制図の「ロールとできること」と案内文に使う
@@ -339,7 +363,14 @@ function can(col, key, f){
   const mtg = ['agenda','decisions','actions'].includes(col) ? state.meetings.find(m => m.id === String(key).split(':')[0]) : null;
   switch (col) {
     case 'tasks': return lead ? mine(obj) || inMyPhase(obj) : mine(obj) && ['progress','status','name','kind','priority'].includes(f);
-    case 'raid': return lead ? mine(obj) || inMyPhase(obj) : mine(obj) && ['status','mitigation'].includes(f);
+    case 'raid': {
+      // 担当者（複数）・作成者・承認者。コメントはメンバー以上なら誰でも書ける
+      const mineR = !!obj && (raidOwners(obj).includes(nm) || obj.reporter === nm);
+      if (f === 'comment') return true;
+      if (lead) return mineR || inMyPhase(obj) || (!!obj && obj.approver === nm);
+      if (!!obj && obj.approver === nm && f === 'status') return true;
+      return (!!obj && raidOwners(obj).includes(nm) && ['status','mitigation','detail','impactText','ask','taskIds'].includes(f)) || (!!obj && obj.reporter === nm && ['title','detail','impactText','ask'].includes(f));
+    }
     case 'meetings': return lead && (mine(obj) || inMyPhase(obj));
     case 'agenda': return lead && (mine(mtg) || inMyPhase(mtg)) || (!!obj && obj.owner === nm && f === 'outcome');
     case 'decisions': return lead && (mine(mtg) || inMyPhase(mtg));
@@ -387,6 +418,12 @@ function canApprove(t){
   if (!t || t.owner === nm) return r === 'pm' && !state.org.some(p => ['pm','pmo','lead'].includes(p.access) && p.name !== nm);
   if (r === 'pm' || r === 'pmo') return true;
   return r === 'lead' && !!t.phaseId && leadPhases().includes(t.phaseId);
+}
+// 課題・リスクの承認：承認者が決まっていればその人（と PM・PMO）、決まっていなければタスクと同じ
+function canApproveRaid(r){
+  const role = myRole(); if (!r || role === 'none' || role === 'viewer') return false;
+  if (r.approver) return r.approver === myName() || role === 'pm' || role === 'pmo';
+  return canApprove(r);
 }
 // 「次のフェーズへ」「Backlog」などの扱いを決められるのは PM・PMO・担当フェーズのリード（スコープの判断になるため）
 function canDispose(t){

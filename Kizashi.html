@@ -272,6 +272,18 @@ svg text{font-family:inherit}
 .toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,12px);background:var(--glass);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);color:var(--text);
   box-shadow:var(--shadow-hi);padding:10px 18px;border-radius:999px;font-size:13px;font-weight:500;opacity:0;transition:opacity .25s,transform .35s var(--ease);pointer-events:none;z-index:50}
 .toast.on{opacity:1;transform:translate(-50%,0)}
+.toast.act{pointer-events:auto;display:flex;gap:14px;align-items:center}
+.toast.act button{font:inherit;font-weight:600;border:0;background:none;color:var(--accent);cursor:pointer;padding:2px 4px}
+/* 承認（まとめて承認） */
+.ap-bar{position:sticky;top:57px;z-index:3;background:var(--panel);padding:6px 0;flex-wrap:wrap}
+.ap-table td:first-child,.ap-table th:first-child{width:28px}
+.ap-table input[type=checkbox]{width:18px;height:18px;cursor:pointer}
+.ap-table tr[data-aprow]{cursor:pointer;transition:background .2s}
+.ap-table tr.ap-on{background:var(--accent-soft)}
+.ap-title{font-weight:500;white-space:normal}
+.tag.ap-raid{background:rgba(255,149,0,.14);color:#c25e00} .tag.ap-crs{background:rgba(175,82,222,.14);color:#8e44ad}
+.returned{font-size:12px;color:#c25e00;background:rgba(255,149,0,.1);border-radius:6px;padding:3px 8px;margin-top:4px;white-space:normal}
+.klane header .btn{margin-left:auto}
 .chk{display:inline-flex;gap:6px;align-items:center;font-size:13px}
 /* ロール・自分の仕事 */
 .me-sw select{font-weight:600}
@@ -466,6 +478,68 @@ body.nav-collapsed nav .cnt{position:absolute;top:2px;right:6px;min-width:16px;l
 }
 .form-grid label.chk,.lbl-block label.chk{flex-direction:row;align-items:center;gap:8px;font-size:13px;color:var(--text);font-weight:400}
 table.tasks select{min-width:96px} table.tasks .st-sel{min-width:110px} table.tasks .disp-sel{min-width:96px}
+.ap-table .nowrap{white-space:nowrap}
+/* 課題：詳細画面・構造図・傾向・検索 */
+.link-btn{font:inherit;border:0;background:none;color:var(--accent);cursor:pointer;padding:0;font-weight:600;text-align:left}
+.link-btn:hover{text-decoration:underline}
+.rd-sub{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
+.dec-flag{display:inline-block;font-size:11px;font-weight:600;color:#fff;background:var(--violet);border-radius:6px;padding:1px 7px;white-space:nowrap}
+.cnt-inline{font-size:11px;background:var(--violet);color:#fff;border-radius:8px;padding:0 6px}
+.rd-head{margin-bottom:14px}
+.rd-chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.rd-id{font-weight:700;font-size:15px;background:var(--soft);border-radius:8px;padding:2px 10px}
+textarea.rd-title{width:100%;font-size:20px;font-weight:600;border:1px solid transparent;background:transparent;resize:vertical;padding:4px 6px;border-radius:8px}
+textarea.rd-title:hover,textarea.rd-title:focus{border-color:var(--line);background:var(--panel)}
+.rd-alerts{display:flex;flex-direction:column;gap:4px;margin-top:6px;font-size:13px}
+.rd-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,1fr);gap:14px}
+.rd-main,.rd-side{display:flex;flex-direction:column;gap:14px;min-width:0}
+@media (max-width:900px){.rd-grid{grid-template-columns:1fr}}
+.dec-card{border:1.5px solid var(--violet)}
+.rd-person{font-weight:600;padding:4px 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0}
+.chip{display:inline-flex;align-items:center;gap:4px;font:inherit;font-size:12px;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:2px 9px;cursor:pointer}
+.chip.on{background:var(--accent-soft);border-color:transparent;color:var(--text);cursor:default}
+.chip button{border:0;background:none;cursor:pointer;color:var(--muted);padding:0 0 0 2px;font-size:11px}
+.mini-list{list-style:none;padding:0;margin:6px 0;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.rd-comment{display:flex;gap:8px;align-items:flex-end;margin-bottom:12px} .rd-comment textarea{flex:1}
+.timeline{list-style:none;padding:0 0 0 14px;margin:0;border-left:2px solid var(--line);display:flex;flex-direction:column;gap:10px}
+.timeline li{position:relative} .timeline li::before{content:'';position:absolute;left:-20px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--line)}
+.timeline li.cm::before{background:var(--accent)}
+.tl-meta{font-size:11px;color:var(--muted)} .tl-text{font-size:13px}
+.cm-bubble{position:relative;background:var(--soft);border-radius:12px;padding:8px 34px 8px 12px;font-size:13px;margin-top:2px;white-space:normal}
+.cm-bubble .btn{position:absolute;top:4px;right:4px}
+.iss-card{fill:var(--panel);stroke:var(--line);stroke-width:1}
+.dg-node:hover .iss-card,.dg-node.on .iss-card{stroke:var(--accent);stroke-width:2}
+.iss-node.sev-H .iss-card{stroke:var(--red);stroke-width:2} .iss-node.st-closed{opacity:.55}
+.iss-bar{fill:var(--muted)} .iss-bar.imp-H{fill:var(--red)} .iss-bar.imp-M{fill:var(--amber)} .iss-bar.imp-L{fill:var(--green)}
+.iss-fo{padding:8px 10px 8px 14px;font-size:12px;line-height:1.4;color:var(--text);height:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:4px}
+.iss-top{display:flex;gap:6px;align-items:center} .iss-top .iss-st{margin-left:auto;color:var(--muted);font-size:11px}
+.iss-title{font-weight:600;font-size:12.5px;word-break:break-word}
+.iss-meta{color:var(--muted);font-size:11px;margin-top:auto}
+.imp-dot{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--red)}
+table.heatmap td.heat{width:30%;height:74px;vertical-align:top;border-radius:8px;text-align:left}
+table.heatmap td.heat b{font-size:18px} table.heatmap td.heat div{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.heat.h0,.heat.h1{background:rgba(52,199,89,.12)} .heat.h2{background:rgba(255,204,0,.18)} .heat.h3{background:rgba(255,149,0,.22)} .heat.h4{background:rgba(255,59,48,.24)}
+.trend-svg{width:100%;height:auto;max-width:560px}
+.tr-open{fill:none;stroke:var(--accent);stroke-width:2.2} .tr-dot{fill:var(--accent)} .tr-added{fill:var(--plan)}
+.tr-n{font-size:11px;font-weight:600;fill:var(--text)} .tr-x{font-size:10px;fill:var(--muted)}
+.cat-bar{display:grid;grid-template-columns:110px 1fr 28px;gap:8px;align-items:center;font-size:13px;margin:6px 0}
+.cat-bar div{background:var(--soft);border-radius:6px;height:10px;overflow:hidden} .cat-bar i{display:block;height:100%;background:var(--accent);border-radius:6px}
+.kc-issues{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0}
+.iss-badge{font:inherit;font-size:11px;font-weight:600;border:0;border-radius:6px;padding:1px 7px;cursor:pointer;background:rgba(255,149,0,.15);color:#c25e00}
+.iss-badge.imp-H{background:rgba(255,59,48,.14);color:var(--red)}
+.gs-btn{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:12.5px;color:var(--muted);background:var(--soft);border:0;border-radius:9px;padding:5px 10px;cursor:pointer}
+.gs-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.gs-btn kbd{font:inherit;font-size:11px;border:1px solid var(--line);border-radius:5px;padding:0 5px}
+body.locked .gs-btn{display:none}
+.gs-pop{position:fixed;top:72px;left:50%;transform:translateX(-50%);width:min(640px,calc(100vw - 32px));max-height:70vh;display:flex;flex-direction:column;background:var(--panel);border-radius:16px;box-shadow:var(--shadow-hi);z-index:70;animation:pop .2s var(--ease);overflow:hidden}
+.gs-input{font:inherit;font-size:16px;border:0;border-bottom:1px solid var(--line);padding:14px 18px;background:transparent;color:var(--text);outline:none}
+.gs-list{overflow:auto;padding:6px}
+.gs-item{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;font:inherit;border:0;background:none;border-radius:10px;padding:8px 10px;cursor:pointer;color:var(--text)}
+.gs-item.on,.gs-item:hover{background:var(--accent-soft)}
+.gs-main{display:flex;flex-direction:column;min-width:0} .gs-main small{color:var(--muted);font-size:12px;white-space:normal}
+.gs-foot{padding:8px 14px;border-top:1px solid var(--line)}
+.rd-side select,.rd-side label,.rd-main label{max-width:100%;min-width:0} .rd-side .card{min-width:0;overflow-wrap:anywhere}
 
 </style>
 </head>
@@ -478,6 +552,7 @@ table.tasks select{min-width:96px} table.tasks .st-sel{min-width:110px} table.ta
     <div class="sub" id="pjSub"></div>
   </button>
   <div class="right">
+    <button class="gs-btn" id="gsBtn" title="Search (/)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 4a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM15.5 15.5L20 20"/></svg><span id="gsLbl"></span><kbd>/</kbd></button>
     <div id="meBox" class="me-box"></div>
     <label class="sub"><span id="scopeLbl"></span><select id="scopeSel"></select></label>
     <label class="sub"><span id="baseLbl"></span><input type="date" id="baseDate"></label>
@@ -502,6 +577,7 @@ table.tasks select{min-width:96px} table.tasks .st-sel{min-width:110px} table.ta
 // {0} {1} … は引数で置換。キーが無い場合は日本語→キー名の順にフォールバック
 const I18N = { ja: {}, en: {} };
 const MISSING = new Set();
+const DUP_KEYS = new Set(); // 同じキーを2回定義すると後の方で上書きされてしまうため、機能チェックで見つける
 function tl(lang, k, ...a){
   let s = I18N[lang] && I18N[lang][k];
   if (s == null) { MISSING.add(`${lang}:${k}`); s = I18N.ja[k] ?? k; }
@@ -624,6 +700,64 @@ function lbl(group, v, lang){ return v ? tl(lang || LANG(), `${group}.${v}`) : '
   ['role.assigned','{0}さんのロールを「{1}」にしました','{0} is now "{1}"'],
   ['perm.denied','このロールでは変更できません','Your role cannot change this'],
   ['perm.note','「{0}」として表示中です。編集できない項目は灰色で表示しています。','Viewing as "{0}". Items you cannot edit are greyed out.'],
+  ['common.yes','はい','Yes'], ['common.no','いいえ','No'],
+  ['rd.view.list','一覧','List'], ['rd.view.tree','構造図（親子）','Structure'], ['rd.view.trend','傾向','Trends'],
+  ['rd.openOnly','未解決だけ','Open only'], ['rd.decOnly','判断が必要なもの','Needs a decision'],
+  ['rd.listHint','IDか「開く」を押すと、課題ごとの詳細画面（課題カード・関係者・親子・コメント）が開きます。','Click an ID or "Open" for the full page: issue card, people, parent/child and comments.'],
+  ['rd.open','開く','Open'], ['rd.childOf','親：','Parent:'], ['rd.kidsN','子課題 {0}件','{0} child item(s)'], ['rd.personSuffix','人','more'],
+  ['rd.needDecision','判断が必要','Decision needed'], ['rd.back','課題の一覧へ戻る','Back to the list'],
+  ['rd.titlePh','何が問題か、ひとことで（例：テスト環境の調達が遅れている）','The problem in one line (e.g. test environment procurement is late)'],
+  ['rd.cardTitle','課題カード','Issue card'], ['rd.cardHint','この3つが書いてあれば、背景を知らない人にも伝わります','With these three, anyone can understand it'],
+  ['rd.detail','何が起きているか','What is happening'], ['rd.detailPh','事実を具体的に（いつから・どこで・何が）','Facts: since when, where, what'],
+  ['rd.impactText','影響（何が、いつ困るか）','Impact (what is affected, and when)'], ['rd.impactPh','例：3週間後の結合テストが始められない','e.g. system test in 3 weeks cannot start'],
+  ['rd.mitigationLbl','対応策・次の一手','Response / next step'], ['rd.mitigationPh','誰が・何を・いつまでに','Who does what by when'],
+  ['rd.decisionTitle','判断の依頼','Decision request'], ['rd.decisionHint','決めてもらう必要があるときは、ダッシュボードと週次レポートに「今決めること」として出ます','Shown as "Decisions needed" on the dashboard and in the weekly report'],
+  ['rd.needDecisionQ','判断が必要（誰かに決めてもらう）','Needs a decision from someone'], ['rd.decider','決める人','Decision maker'], ['rd.decideBy','決定期限','Decide by'],
+  ['rd.ask','決めてほしいこと','What needs to be decided'], ['rd.askPh','例：稟議を前倒しで承認するか、クラウドを暫定で使うか','e.g. approve the purchase early, or use cloud temporarily'],
+  ['rd.history','経緯とコメント','History and comments'], ['rd.historyHint','誰がいつ何を変えたかは自動で残ります','Changes are recorded automatically'],
+  ['rd.commentPh','コメントを書く（Ctrl+Enterで送信）','Write a comment (Ctrl+Enter to send)'], ['rd.send','送信','Send'], ['rd.commented','コメントを追加しました','Comment added'],
+  ['rd.delComment','このコメントを削除しますか？','Delete this comment?'], ['rd.noHistory','まだ経緯はありません','No history yet'],
+  ['rd.logCreate','{0}が起票','Raised by {0}'], ['rd.logApprove','{0}が承認してクローズ','Approved and closed by {0}'], ['rd.logReturn','{0}が差し戻し：{1}','Sent back by {0}: {1}'],
+  ['rd.logRequest','{0}が承認を依頼（確認待ち）','Approval requested by {0}'], ['rd.logEdit','{0}が「{1}」を更新','{0} updated "{1}"'], ['rd.logChange','{0}が{1}を「{2}」→「{3}」に変更','{0} changed {1}: "{2}" → "{3}"'],
+  ['rd.people','関係者','People'], ['rd.reporter','作成者','Reporter'], ['rd.approver','承認者','Approver'], ['rd.approverAny','（PM・PMO・担当リード）','(PM, PMO or phase lead)'],
+  ['rd.owners','担当者（複数可）','Owners (one or more)'], ['rd.addOwner','担当者を追加','Add owner'], ['rd.ownersHint','★が主担当です。担当者全員の「自分の仕事」に出ます','★ is the main owner. Shown in every owner\'s My work'],
+  ['rd.ownersShort','担当','Owners'], ['rd.approverShort','承認','Approver'],
+  ['rd.attrs','分類と期限','Classification and dates'], ['rd.family','親子（課題のつながり）','Parent and children'], ['rd.parent','親の課題','Parent'], ['rd.noParent','（親なし）','(none)'],
+  ['rd.parentIs','親の課題：','Parent:'], ['rd.kids','子の課題','Children'], ['rd.kidsDone','子 {0}/{1} 完了','{0}/{1} children closed'], ['rd.noKids','子の課題はありません','No children'], ['rd.addKid','子課題を追加','Add child'],
+  ['rd.tasks','影響するタスク','Affected tasks'], ['rd.tasksHint','ここに入れたタスクのカードに⚑印が付きます','Their cards get a ⚑ mark'], ['rd.addTask','タスクを追加','Add task'], ['rd.noTasks','まだありません','None yet'], ['rd.taskLate','期限超過','Overdue'],
+  ['rd.linkedIssues','関係する課題','Related issues'],
+  ['rd.request','確認待ちにする（承認を依頼）','Request sign-off'], ['rd.requested','承認を依頼しました（承認者：{0}）','Sign-off requested (approver: {0})'],
+  ['rd.waiting','承認待ち：{0}','Awaiting sign-off: {0}'], ['rd.approveClose','承認してクローズ','Approve and close'],
+  ['rd.lgParent','親 → 子','Parent → child'], ['rd.lgImpact','左端の色＝影響度','Left edge = impact'], ['rd.lgAlert','警戒あり','Has alerts'],
+  ['rd.treeHint','カードを押すと詳細が開きます。カーソルを合わせると、つながっている親・子が強調されます','Click a card for details. Hover to highlight its parents and children'],
+  ['rd.treeEditHint','カード下の点から別のカードへ線を引くと「親 → 子」になります。線を押すと外せます。ドラッグで位置を動かせます','Drag from a card\'s bottom dot to another card to make it a child. Click a line to remove it. Drag cards to move them'],
+  ['rd.handle','ここから子の課題へ線を引く','Drag to a child issue'], ['rd.unlink','親子のつながりを外す','Remove parent link'], ['rd.loose','親子のない課題','Items without parent or children'],
+  ['rd.cycle','循環してしまうため、その親子にはできません','That would create a loop'], ['rd.parentSet','{0} を {1} の子にしました','{0} is now a child of {1}'], ['rd.parentCleared','{0} の親を外しました','Removed the parent of {0}'],
+  ['rd.heatTitle','リスクの影響×発生確率','Risk heat map'], ['rd.heatHint','右上ほど危険。IDを押すと開きます','Top-right is most severe. Click an ID to open it'],
+  ['rd.trendTitle','未解決の件数の推移','Open items over time'], ['rd.trendHint','直近8週（課題・リスク）','Last 8 weeks (issues and risks)'], ['rd.openN','未解決','Open'], ['rd.added','新規','New'],
+  ['rd.byOwner','担当者ごとの未解決','Open items by owner'], ['rd.highN','影響度：高','High impact'], ['rd.lateN','期限超過','Overdue'], ['rd.byCat','カテゴリごとの未解決','Open items by category'],
+  ['dash.decisions','今決めること','Decisions needed'], ['dash.decisionsHint','判断が必要な課題（決定期限の近い順）','Issues waiting for a decision, soonest first'],
+  ['rp.decisionReq','{0}様：{1}（{2}、{3}まで）','{0}: {1} ({2}, by {3})'],
+  ['mine.todo.raidApprove','承認を依頼されています：{0} {1}','Sign-off requested: {0} {1}'], ['mine.todo.decide','判断を依頼されています：{0}（{1}まで）','Decision requested: {0} (by {1})'],
+  ['at.raidNoOwner','担当者なし','No owner'], ['at.raidNoDue','期限なし','No due date'], ['at.raidStale','課題の更新停滞','Issue not updated'], ['at.decisionOverdue','判断の期限超過','Decision overdue'], ['at.childOpen','子課題が未完了','Open children'],
+  ['ad.raidNoOwner','担当者が決まっていない','Nobody owns it'], ['ad.raidNoDue','対応期限が決まっていない','No due date set'], ['ad.raidStale','{0}日間 更新がない','Not updated for {0} days'],
+  ['ad.decisionOverdue','{0} の判断が {1} から {2}日 遅れている','Decision by {0} overdue since {1} ({2} days)'], ['ad.childOpen','親はクローズ済みだが、子課題 {0}件（{1}）が未完了','Parent closed but {0} child item(s) still open ({1})'],
+  ['rule.raidNoOwner','課題・リスクに担当者がいない','Issue or risk without an owner'], ['rule.raidNoDue','課題に対応期限がない','Issue without a due date'], ['rule.raidStale','課題・リスクが {3}日の2倍以上 更新されていない','Issue or risk not updated for 2× {3} days'],
+  ['rule.decisionOverdue','「判断が必要」の課題が決定期限を過ぎている','A decision request is past its deadline'], ['rule.childOpen','クローズした親課題の下に、未完了の子課題がある','A closed parent still has open children'],
+  ['srch.btn','検索','Search'], ['srch.title','全体検索','Search everything'], ['srch.ph','タスク・課題・会議・CR・ルールを検索','Search tasks, issues, meetings, CRs, rules'],
+  ['srch.hint','↑↓で選ぶ・Enterで開く・Escで閉じる。どの画面でも「/」かCtrl+Kで開けます','↑↓ to choose, Enter to open, Esc to close. Press / or Ctrl+K anywhere'],
+  ['srch.start','言葉を入力すると、すべての画面からまとめて探します','Type to search across every screen'], ['srch.none','見つかりませんでした','No matches'],
+  ['srch.kind.tasks','タスク','Task'], ['srch.kind.raid','課題・リスク','Issue / risk'], ['srch.kind.meetings','会議','Meeting'], ['srch.kind.crs','CR','CR'], ['srch.kind.governance','ルール','Rule'],
+  ['tab.approvals','承認','Approvals'], ['tabd.approvals','あなたが承認できるものを集めています。チェックしてまとめて承認・差し戻しできます','Everything you can approve. Tick items to approve or send back in one go'],
+  ['ap.kind.all','すべて','All'], ['ap.kind.tasks','タスク','Tasks'], ['ap.kind.raid','課題・リスク','Issues / risks'], ['ap.kind.crs','変更要求（CR）','Change requests'],
+  ['ap.selected','{0}件を選択中','{0} selected'], ['ap.selectAll','表示中をすべて選択','Select all shown'], ['ap.approveSel','選択を承認（{0}件）','Approve selected ({0})'],
+  ['ap.return','選択を差し戻し','Send back selected'], ['ap.returnOne','差し戻し','Send back'], ['ap.what','種類','Type'], ['ap.wait','待ち日数','Waiting'], ['ap.days','{0}日','{0} d'],
+  ['ap.crDays','日程 +{0}日','schedule +{0} d'], ['ap.empty','承認待ちはありません。すべて処理済みです','Nothing awaiting your approval'],
+  ['ap.hint','待ち日数が長い順に並んでいます（{0}日以上は赤）。行を押しても選択できます。承認・差し戻しの直後は、画面下の「元に戻す」で取り消せます','Longest-waiting first (red at {0}+ days). Click a row to select it. Right after approving or sending back, use "Undo" at the bottom'],
+  ['ap.returnWhy','差し戻しの理由（担当者の画面に表示されます）','Reason for sending back (shown to the owner)'],
+  ['ap.doneApprove','{0}件を承認しました','Approved {0} item(s)'], ['ap.doneReturn','{0}件を差し戻しました','Sent back {0} item(s)'], ['ap.undo','元に戻す','Undo'], ['ap.undone','元に戻しました','Reverted'],
+  ['ap.returnedBy','{0}が差し戻し（{1}）','Sent back by {0} ({1})'], ['ap.bulk','まとめて承認（{0}件）','Bulk approve ({0})'], ['ap.approvedBy','{0}が承認（{1}）','Approved by {0} ({1})'],
+  ['mine.todo.returned','差し戻されました：{0}（{1}）','Sent back: {0} ({1})'], ['mine.todo.approveN','承認待ちが{0}件あります（まとめて承認できます）','{0} item(s) awaiting your approval (approve in bulk)'],
   ['tab.mine','自分の仕事','My work'], ['tabd.mine','あなたが今やることを自動でまとめています','What you need to do now, gathered automatically'],
   ['mine.hello','{0}さん、こんにちは','Hello, {0}'], ['mine.roleCan','できること：','You can:'], ['mine.todoCount','件のやること','to-dos'],
   ['mine.todo','今やること','To do now'], ['mine.todoHint','期限・更新・会議の準備から自動で抽出','Auto-picked from due dates, updates and meetings'], ['mine.allClear','今やることはありません','Nothing to do right now'],
@@ -700,7 +834,7 @@ function lbl(group, v, lang){ return v ? tl(lang || LANG(), `${group}.${v}`) : '
   // 列挙値
   ['taskStatus.todo','未着手','Not started'], ['taskStatus.doing','進行中','In progress'], ['taskStatus.done','クローズ','Closed'], ['taskStatus.hold','保留','On hold'],
   ['raidType.risk','リスク','Risk'], ['raidType.issue','課題','Issue'], ['raidType.assumption','前提','Assumption'], ['raidType.decision','決定事項','Decision'],
-  ['raidStatus.open','オープン','Open'], ['raidStatus.wip','対応中','In progress'], ['raidStatus.closed','クローズ','Closed'],
+  ['raidStatus.open','オープン','Open'], ['raidStatus.wip','対応中','In progress'], ['raidStatus.review','確認待ち（承認へ）','Awaiting sign-off'], ['raidStatus.closed','クローズ','Closed'],
   ['level.H','高','High'], ['level.M','中','Med'], ['level.L','低','Low'],
   ['raidCat.contract','契約','Contract'], ['raidCat.scope','スコープ・仕様','Scope'], ['raidCat.schedule','スケジュール','Schedule'], ['raidCat.resource','体制・リソース','Resource'],
   ['raidCat.technical','技術','Technical'], ['raidCat.vendor','ベンダー・外部','Vendor / 3rd party'], ['raidCat.other','その他','Other'],
@@ -886,7 +1020,7 @@ function lbl(group, v, lang){ return v ? tl(lang || LANG(), `${group}.${v}`) : '
   ['set.sampleConfirm','現在のデータを破棄してサンプルデータに戻します（表示中の言語で作成）。よろしいですか？','Discard current data and load sample data (in the current language)?'],
   ['set.blankConfirm','現在のデータをすべて消去して、空のプロジェクトを作ります（ガバナンスのテンプレートは入ります）。必要なら先にJSONでバックアップしてください。続けますか？','Erase all data and start a blank project (governance templates included)? Back up first if needed.'],
   ['set.blankDone','空のプロジェクトを作成しました。まずフェーズを登録してください','Blank project created. Start by adding phases'], ['set.newPj','新規プロジェクト','New project'],
-].forEach(([k, ja, en]) => { I18N.ja[k] = ja; I18N.en[k] = en; });
+].forEach(([k, ja, en]) => { if (k in I18N.ja) DUP_KEYS.add(k); I18N.ja[k] = ja; I18N.en[k] = en; });
 
 </script>
 <script>
@@ -911,7 +1045,7 @@ const lines = s => String(s || '').split(/\n/).map(x => x.trim()).filter(Boolean
 const ENUM = {
   taskStatus: ['todo','doing','discuss','decided','impl','test','draft','review','approval','closed'],
   raidType:   ['risk','issue','assumption','decision'],
-  raidStatus: ['open','wip','closed'],
+  raidStatus: ['open','wip','review','closed'],
   level:      ['H','M','L'],
   raidCat:    ['contract','scope','schedule','resource','technical','vendor','other'],
   crStatus:   ['draft','analysis','pending','approved','rejected','done'],
@@ -957,6 +1091,15 @@ function normalize(){
     if (t.status === 'done') t.status = 'closed';
     if (t.status === 'hold') { t.status = +t.progress > 0 ? 'doing' : 'todo'; t.disp = 'hold'; }
     if (!flowOf(t).includes(t.status)) { const lane = LANE_OF[t.status] || 'todo'; t.status = flowOf(t).find(s => LANE_OF[s] === lane) || (lane === 'todo' ? 'todo' : flowOf(t)[1]); }
+  });
+  // 課題の関係者（作成者・承認者・担当者は複数）、親子、課題カード、判断の依頼、関連タスク、経緯
+  state.raid.forEach(r => {
+    if (!Array.isArray(r.owners)) r.owners = r.owner ? [r.owner] : [];
+    r.owner = r.owners[0] || '';
+    ['reporter','approver','parentId','detail','impactText','ask','decider','decideBy'].forEach(k => { if (r[k] == null) r[k] = ''; });
+    if (!Array.isArray(r.taskIds)) r.taskIds = [];
+    if (!Array.isArray(r.log)) r.log = [];
+    r.needDecision = !!r.needDecision;
   });
   state.meetings.forEach(m => { m.agenda = m.agenda || []; m.decisions = m.decisions || []; m.actions = m.actions || []; });
   if (ui.scope && !state.phases.some(p => p.id === ui.scope)) ui.scope = '';
@@ -1011,6 +1154,10 @@ function phaseRange(p){
   return {s, e};
 }
 // フェーズスコープ：選択フェーズ＋フェーズ共通（phaseId なし）
+const raidOwners = r => r && Array.isArray(r.owners) && r.owners.length ? r.owners : (r && r.owner ? [r.owner] : []);
+const nowStamp = () => { const d = new Date(); return `${todayStr()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+// 課題の経緯（変更・コメント・承認）を残す
+function raidLog(r, e){ (r.log = r.log || []).push({at: nowStamp(), by: myName(), ...e}); r.updated = todayStr(); }
 const inScope = x => !ui.scope || !x.phaseId || x.phaseId === ui.scope;
 const orderedTasks = list => list.map((t, i) => ({t, i})).sort((a, b) => phaseIdx(a.t.phaseId) - phaseIdx(b.t.phaseId) || a.i - b.i).map(x => x.t);
 const scopedTasks = () => orderedTasks(ui.scope ? state.tasks.filter(t => t.phaseId === ui.scope) : state.tasks);
@@ -1120,6 +1267,17 @@ function computeAlerts(lang){
     if (r.type === 'risk' && r.impact === 'H' && !String(r.mitigation || '').trim()) add('H','noMitigation',r.title,r.owner,L('ad.noMitigation'),r.id,r.phaseId);
     if (r.due && d2n(r.due) < b) add(r.impact === 'H' ? 'H' : 'M','raidOverdue',r.title,r.owner,L('ad.raidOverdue', lbl('raidType', r.type, lang), md(r.due), b - d2n(r.due)),r.id,r.phaseId);
     if (r.type === 'issue' && r.raised && b - d2n(r.raised) >= S.issueAgeDays) add('M','issueAged',r.title,r.owner,L('ad.issueAged', b - d2n(r.raised)),r.id,r.phaseId);
+    if (r.type !== 'issue' && r.type !== 'risk') return;
+    if (!raidOwners(r).length) add('M','raidNoOwner',r.title || r.id,'',L('ad.raidNoOwner'),r.id,r.phaseId);
+    if (r.type === 'issue' && !r.due) add('L','raidNoDue',r.title || r.id,r.owner,L('ad.raidNoDue'),r.id,r.phaseId);
+    if (r.updated && b - d2n(r.updated) >= S.staleDays * 2) add('L','raidStale',r.title || r.id,r.owner,L('ad.raidStale', b - d2n(r.updated)),r.id,r.phaseId);
+    if (r.needDecision && r.decideBy && d2n(r.decideBy) < b) add('H','decisionOverdue',r.title || r.id,r.decider || r.owner,L('ad.decisionOverdue', r.decider || '—', md(r.decideBy), b - d2n(r.decideBy)),r.id,r.phaseId);
+  });
+  // 親課題がクローズなのに、子課題が残っている
+  state.raid.forEach(r => {
+    if (r.status !== 'closed') return;
+    const open = state.raid.filter(c => c.parentId === r.id && c.status !== 'closed');
+    if (open.length) add('M','childOpen',r.title || r.id,r.owner,L('ad.childOpen', open.length, open.map(c => c.id).join(', ')),r.id,r.phaseId);
   });
   // 会議
   state.meetings.forEach(m => {
@@ -1189,11 +1347,11 @@ const docTypes = () => lines(state.naming.docTypes).map(l => { const [code, ...r
 // ロールを選ぶだけで「見える画面」「できること」「最初の画面」が決まる（個別設定は不要）
 const ROLES = ['pm','pmo','lead','member','viewer'];
 const ROLE_TABS = {
-  pm:     ['mine','dash','alerts','phases','tasks','raid','meetings','org','governance','report','settings'],
-  pmo:    ['mine','dash','alerts','phases','tasks','raid','meetings','org','governance','report','settings'],
-  lead:   ['mine','dash','alerts','phases','tasks','raid','meetings','org','governance','report','settings'],
+  pm:     ['mine','dash','alerts','approvals','phases','tasks','raid','meetings','org','governance','report','settings'],
+  pmo:    ['mine','dash','alerts','approvals','phases','tasks','raid','meetings','org','governance','report','settings'],
+  lead:   ['mine','dash','alerts','approvals','phases','tasks','raid','meetings','org','governance','report','settings'],
   member: ['mine','dash','tasks','raid','meetings','org','governance','settings'],
-  viewer: ['dash','phases','org','report','settings'],
+  viewer: ['dash','phases','raid','org','report','settings'], // 課題は見るだけ（入力欄は自動で読み取り専用）
 };
 const ROLE_HOME = {pm: 'dash', pmo: 'dash', lead: 'mine', member: 'mine', viewer: 'dash'};
 // 権限の一覧表（y=できる / p=一部 / n=できない）。体制図の「ロールとできること」と案内文に使う
@@ -1231,7 +1389,14 @@ function can(col, key, f){
   const mtg = ['agenda','decisions','actions'].includes(col) ? state.meetings.find(m => m.id === String(key).split(':')[0]) : null;
   switch (col) {
     case 'tasks': return lead ? mine(obj) || inMyPhase(obj) : mine(obj) && ['progress','status','name','kind','priority'].includes(f);
-    case 'raid': return lead ? mine(obj) || inMyPhase(obj) : mine(obj) && ['status','mitigation'].includes(f);
+    case 'raid': {
+      // 担当者（複数）・作成者・承認者。コメントはメンバー以上なら誰でも書ける
+      const mineR = !!obj && (raidOwners(obj).includes(nm) || obj.reporter === nm);
+      if (f === 'comment') return true;
+      if (lead) return mineR || inMyPhase(obj) || (!!obj && obj.approver === nm);
+      if (!!obj && obj.approver === nm && f === 'status') return true;
+      return (!!obj && raidOwners(obj).includes(nm) && ['status','mitigation','detail','impactText','ask','taskIds'].includes(f)) || (!!obj && obj.reporter === nm && ['title','detail','impactText','ask'].includes(f));
+    }
     case 'meetings': return lead && (mine(obj) || inMyPhase(obj));
     case 'agenda': return lead && (mine(mtg) || inMyPhase(mtg)) || (!!obj && obj.owner === nm && f === 'outcome');
     case 'decisions': return lead && (mine(mtg) || inMyPhase(mtg));
@@ -1279,6 +1444,12 @@ function canApprove(t){
   if (!t || t.owner === nm) return r === 'pm' && !state.org.some(p => ['pm','pmo','lead'].includes(p.access) && p.name !== nm);
   if (r === 'pm' || r === 'pmo') return true;
   return r === 'lead' && !!t.phaseId && leadPhases().includes(t.phaseId);
+}
+// 課題・リスクの承認：承認者が決まっていればその人（と PM・PMO）、決まっていなければタスクと同じ
+function canApproveRaid(r){
+  const role = myRole(); if (!r || role === 'none' || role === 'viewer') return false;
+  if (r.approver) return r.approver === myName() || role === 'pm' || role === 'pmo';
+  return canApprove(r);
 }
 // 「次のフェーズへ」「Backlog」などの扱いを決められるのは PM・PMO・担当フェーズのリード（スコープの判断になるため）
 function canDispose(t){
@@ -1615,6 +1786,27 @@ function sample(lang){
     mtg('M05','MT03','P3',4,'13:00','planned',s.meetingTypes[2].purpose,[ag(T('CR01 在庫引当ロジック追加の判断','Decide CR01 inventory allocation rules'),suzuki,20,'CR01')]),
     mtg('M06','MT01','',8,'10:00','planned',s.meetingTypes[0].purpose, s.meetingTypes[0].agenda.split('\n').map(x => ag(x, yamamoto, 12))),
   ];
+  // 課題の関係者・親子・課題カード・判断の依頼・経緯（サンプル）
+  const rdx = id => s.raid.find(r => r.id === id), at = (k, hm) => `${o(k)} ${hm}`;
+  s.raid.forEach(r => { r.reporter = r.reporter || r.owner; r.owners = r.owner ? [r.owner] : []; r.log = [{at: at(d2n(r.raised) - b, '09:00'), by: r.owner, kind: 'create'}]; r.updated = r.raised; });
+  Object.assign(rdx('I01'), {reporter: ito, owners: [takahashi, matsumoto], approver: yamamoto, taskIds: ['T16','T18'], needDecision: true, decider: tamura, decideBy: o(4),
+    detail: T('結合テストで使うサーバー2台の発注が、顧客の社内稟議で止まっている。','Two servers for SIT are stuck in the client\'s internal purchase approval.'),
+    impactText: T('3週間後の単体テスト・結合テストの開始に間に合わない。遅れると開発完了マイルストーンが後ろにずれる。','Unit and system tests starting in 3 weeks cannot begin; the build-complete milestone would slip.'),
+    ask: T('稟議を前倒しで承認するか、クラウド環境を暫定で使うかを決めてください','Approve the purchase early, or allow a temporary cloud environment'),
+    mitigation: T('顧客情シスに調達状況を確認中。代替としてクラウド環境の見積もりを取得済み','Checking with client IT; cloud alternative already quoted')});
+  rdx('I01').log.push({at: at(-6, '15:20'), by: takahashi, kind: 'comment', text: T('情シスの松本さんに確認。稟議は部長承認待ちとのこと。','Confirmed with Matsumoto (client IT): waiting for the department head.')},
+    {at: at(-3, '10:05'), by: yamamoto, kind: 'change', f: 'due', from: o(-10), to: o(-3)}, {at: at(-2, '18:40'), by: matsumoto, kind: 'comment', text: T('今週のステコミで判断いただく方向で調整します。','We will ask for a decision at this week\'s steering committee.')});
+  Object.assign(rdx('I03'), {reporter: tanaka, owners: [yamamoto, tanaka], approver: yamamoto, taskIds: ['T11'], needDecision: true, decider: nakamura, decideBy: o(6),
+    detail: T('契約書の成果物一覧に「帳票設計書」がなく、詳細設計の完了条件と食い違っている。','The contract deliverable list lacks the report design document, so it conflicts with the design exit criteria.'),
+    impactText: T('このままでは詳細設計の検収ができず、第3期の請求が遅れる。','Detailed design cannot be accepted and the phase-3 invoice is delayed.'),
+    ask: T('成果物一覧を契約変更で直すか、覚書で補うかを決めてください','Decide whether to amend the contract or add a memorandum')});
+  rdx('I03').log.push({at: at(-3, '11:30'), by: tanaka, kind: 'comment', text: T('差分を洗い出す子課題を作りました（I04）。','Created a child issue to list the differences (I04).')});
+  s.raid.push(
+    {id:'I04',type:'issue',phaseId:'P3',category:'contract',title:T('成果物一覧と詳細設計書の差分を洗い出す','List the gaps between the deliverable list and the design docs'),owner:ito,owners:[ito],reporter:tanaka,approver:tanaka,parentId:'I03',impact:'M',prob:'',status:'wip',raised:o(-3),due:o(2),mitigation:'',detail:'',impactText:'',ask:'',taskIds:[],log:[{at:at(-3,'11:25'),by:tanaka,kind:'create'}],updated:o(-1)},
+    {id:'I05',type:'issue',phaseId:'P3',category:'contract',title:T('契約変更の要否を顧客調達部門と確認する','Confirm with client procurement whether an amendment is needed'),owner:yamamoto,owners:[yamamoto],reporter:tanaka,approver:'',parentId:'I03',impact:'H',prob:'',status:'open',raised:o(-3),due:o(5),mitigation:'',detail:'',impactText:'',ask:'',taskIds:[],log:[{at:at(-3,'11:28'),by:tanaka,kind:'create'}],updated:o(-3)},
+  );
+  Object.assign(rdx('R01'), {owners: [suzuki, kobayashi], taskIds: ['T07','T14']});
+  s.raid.forEach(r => { const last = r.log.map(e => e.at.slice(0, 10)).sort().pop(); if (last && last > r.updated) r.updated = last; });
   return s;
 }
 
@@ -1658,7 +1850,13 @@ const TRASH = '<svg viewBox="0 0 24 24" class="ico-trash" aria-hidden="true"><pa
 const delBtn = (col, key, name) => `<button class="btn ghost del" data-del="${col}" data-key="${esc(key)}" data-name="${esc(name || '')}" title="${t('btn.delete')}" aria-label="${t('btn.delete')}">${TRASH}</button>`;
 const phaseTag = id => id ? `<span class="tag">${esc((phaseOf(id) || {}).code || '')} ${esc(phaseName(id))}</span>` : `<span class="tag common">${t('common.common')}</span>`;
 
-function toast(msg){ const el = $('#toast'); el.textContent = msg; el.classList.add('on'); clearTimeout(el._h); el._h = setTimeout(() => el.classList.remove('on'), 1800); }
+function toast(msg){ const el = $('#toast'); el.textContent = msg; el.classList.remove('act'); el.classList.add('on'); clearTimeout(el._h); el._h = setTimeout(() => el.classList.remove('on'), 1800); }
+// 取り消しボタン付きの通知（まとめて処理した直後など）。少し長めに表示する
+function toastAction(msg, label, fn){
+  const el = $('#toast'); el.innerHTML = `<span>${esc(msg)}</span><button type="button">${esc(label)}</button>`; el.classList.add('on', 'act');
+  el.querySelector('button').onclick = () => { el.classList.remove('on', 'act'); clearTimeout(el._h); fn(); };
+  clearTimeout(el._h); el._h = setTimeout(() => el.classList.remove('on', 'act'), 7000);
+}
 function download(name, content, type){
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([content], {type})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
@@ -1700,7 +1898,7 @@ const cell = s => String(s ?? '').replace(/\|/g, '／').replace(/\n/g, ' ');
 'use strict';
 // ============ ヘルプ（どの画面からでも「？」ですぐ開ける説明書） ============
 // 今いる画面の説明を最初に開く。内容は README と同じ考え方で、画面ごとに短くまとめる。
-const HELP_FOR_TAB = {mine: 'mine', dash: 'dash', alerts: 'alerts', phases: 'phases', tasks: 'tasks', raid: 'raid', meetings: 'meetings', org: 'org', governance: 'governance', report: 'report', settings: 'data'};
+const HELP_FOR_TAB = {mine: 'mine', dash: 'dash', alerts: 'alerts', phases: 'phases', tasks: 'tasks', approvals: 'approvals', raid: 'raid', meetings: 'meetings', org: 'org', governance: 'governance', report: 'report', settings: 'data'};
 const HELP = {
   ja: [
     ['intro', 'このツールでできること', `**Kizashi（兆し）** は、PMO（プロジェクト管理）の「見える化」「早期警戒」「報告の自動化」を、1つのファイルで行うツールです。遅れの「兆し」を先に見つけるのが名前の由来です。\n- インストール不要。Kizashi.html を開くだけで動きます\n- データはこのPCのブラウザの中だけに保存され、外部には送信されません\n- 日本語と英語を画面右上で切り替えられます（週次報告は画面とは別に言語を選べます）`],
@@ -1718,7 +1916,14 @@ const HELP = {
     ['alerts', '早期警戒', `期限超過・進捗遅延・期限延長の常態化・更新停滞・負荷集中・契約期間の超過・会議の結果未記録など、遅れの兆候を自動で判定します。判定ルールと しきい値は同じ画面に表示され、「設定・データ」で変えられます。`],
     ['phases', 'フェーズ', `フェーズごとに契約形態（準委任／請負）、契約終了日、成果物、完了基準、フェーズゲートを管理します。契約終了日を超える計画は警戒します。`],
     ['tasks', 'タスク（ステータス・カンバン・扱い）', `**種類**を選ぶとステータスの流れが決まります。\n- 一般：未着手 → 進行中 → クローズ\n- 検討：未着手 → 議論中 → 方針確定 → クローズ\n- 開発：未着手 → 実装中 → テスト中 → 承認待ち → クローズ\n- 成果物：未着手 → 作成中 → レビュー中 → 承認待ち → クローズ\n\n承認待ちは、PM・PMO・担当リードが「承認」すると自動でクローズします（自分のタスクは承認不可）。\n\n**扱い**：次のフェーズに回す／Backlog（時期未定）／保留／見送り。表示は「一覧」「カンバン」「Backlog」から選べます。`],
-    ['raid', 'リスク・課題（RAID）', `リスク・前提・課題・決定事項を、フェーズとカテゴリ（契約・スコープなど）ごとに管理します。影響度「高」のリスクに対策がないと警戒します。`],
+    ['search', '全体検索', `画面右上の「検索」、またはどの画面でも「/」かCtrl+Kで開きます。タスク・課題（コメントも含む）・会議（議題・決定・宿題）・変更要求・ガバナンスのルールをまとめて探し、押すとその場所を開きます。自分のロールで見られない画面のものは出ません。`],
+    ['approvals', '承認（まとめて承認）', `自分が承認できるものだけを1か所に集めた画面です（PM・PMO・リード）。
+- **タスク**：承認待ちのもの（自分のタスクは出ません）
+- **課題・リスク**：担当者が状態を「確認待ち」にしたもの
+- **変更要求（CR）**：承認待ちのもの（PM・PMO）
+
+チェックを付けて「選択を承認」を押すと、まとめてクローズ（CRは承認）します。見出しのチェックで全部を選べます。「差し戻し」は理由を1つ入力すると、1つ前の段階に戻り、担当者の画面に理由が表示されます。処理した直後は、画面下の「元に戻す」で取り消せます。待ち日数が長いものほど上に並びます。`],
+    ['raid', 'リスク・課題（RAID）', `リスク・前提・課題・決定事項を、フェーズとカテゴリ（契約・スコープなど）ごとに管理します。影響度「高」のリスクに対策がないと警戒します。\n- **一覧／構造図／傾向**：表で編集、親子の木で全体像、影響×発生確率・件数の推移で傾向を確認\n- **詳細画面**：IDを押すと開きます。「何が起きているか／影響／次の一手」の課題カード、関係者、判断の依頼、親子、影響するタスク、経緯とコメント\n- **関係者**：作成者（自動）・承認者・担当者（複数可。★が主担当）\n- **親子**：詳細画面の「親の課題」か、構造図の編集モードで線を引いて設定。子の完了数が親に表示されます\n- **承認**：担当者が「確認待ちにする」→ 承認者（未設定ならPM・PMO・担当リード）が承認すると、クローズします\n- **閲覧者**も見ることができます（編集はできません）`],
     ['meetings', '会議', `「計画 → 結果の記録 → アクション完了」で管理します。目的と担当付きの議題を設定し、会議後に結論・決定事項・アクションを記録します。招集案内と議事録はボタンでコピーできます。`],
     ['org', '体制図とフロー', `図の種類：全体／顧客／自社／ベンダー／CRフロー／承認フロー／エスカレーション／カスタム。\n- 配置は「木構造」と「所属の列」を切り替えられます\n- 人にカーソルを合わせると、上司・部下・連携相手だけが浮かび上がります\n- **編集モード**（PM・PMO）：ドラッグで移動、下の丸から人へドラッグで報告ライン、右の丸から連携線、線をクリックで外す、空き領域のダブルクリックで追加\n- フローは右の丸からドラッグで矢印をつなぎ、分岐（承認／却下）や差し戻しも描けます\n- メンバーの追加・編集は「メンバー一覧」でもできます`],
     ['governance', 'ガバナンス', `フォルダ構成・命名規則・承認ステップ・CRの起票基準・会議体・RACIなど、全フェーズ共通のルールを序盤に決めます。合意目標日を過ぎると警戒します。命名ルールツールで規則どおりのファイル名を作れます。`],
@@ -1742,7 +1947,14 @@ const HELP = {
     ['alerts', 'Early warning', `Detects overdue and slipping tasks, habitual re-planning, stale updates, overload, contract overrun, unrecorded meetings and more. Rules and thresholds are shown on the screen and editable in Settings.`],
     ['phases', 'Phases', `Track contract type, contract end, deliverables, exit criteria and phase gate per phase. Plans beyond the contract end raise an alert.`],
     ['tasks', 'Tasks (status, kanban, disposition)', `The **type** sets the status flow:\n- General: Not started → In progress → Closed\n- Decision: Not started → Discussing → Decided → Closed\n- Build: Not started → Building → Testing → Awaiting approval → Closed\n- Deliverable: Not started → Drafting → In review → Awaiting approval → Closed\n\nA PM, PMO or phase lead closes approval items with "Approve" (not your own).\n\n**Disposition**: move to next phase / backlog / on hold / drop. Views: List, Kanban, Backlog.`],
-    ['raid', 'RAID', `Risks, assumptions, issues and decisions by phase and category (contract, scope…). High-impact risks without a mitigation raise an alert.`],
+    ['search', 'Search', `Use "Search" at the top right, or press / or Ctrl+K anywhere. Finds tasks, issues (including comments), meetings (agenda, decisions, actions), change requests and governance rules, and opens the one you pick. Items on screens your role cannot see are not shown.`],
+    ['approvals', 'Approvals (bulk)', `Everything you can approve, in one place (PM, PMO, lead).
+- **Tasks** awaiting approval (never your own)
+- **Issues / risks** the owner set to "Awaiting sign-off"
+- **Change requests** pending approval (PM, PMO)
+
+Tick items and press "Approve selected" to close them all at once (CRs become Approved). The header checkbox selects everything. "Send back" asks for one reason, returns items to the previous step and shows the reason to the owner. Right after, "Undo" at the bottom reverts it. Longest-waiting items come first.`],
+    ['raid', 'RAID', `Risks, assumptions, issues and decisions by phase and category (contract, scope…). High-impact risks without a mitigation raise an alert.\n- **List / Structure / Trends**: edit in a table, see the parent–child tree, or check the heat map and open-item trend\n- **Detail page**: click an ID. Issue card (what is happening / impact / next step), people, decision request, parent and children, affected tasks, history and comments\n- **People**: reporter (automatic), approver, owners (one or more; ★ = main)\n- **Parent and children**: set "Parent" on the detail page, or draw a line in the structure chart's edit mode\n- **Sign-off**: an owner requests sign-off; the approver (or PM, PMO, phase lead) approves and it closes\n- **Viewers** can see it too (read-only)`],
     ['meetings', 'Meetings', `Plan → record outcomes → close actions. Set a purpose and agenda with owners; record outcomes, decisions and actions afterwards. Copy the invite and minutes with one click.`],
     ['org', 'Org chart and flows', `Charts: everyone / client / our team / vendor / CR flow / approval flow / escalation / custom.\n- Switch between Tree and By-organization layouts\n- Hover a person to highlight their manager, reports and counterparts\n- **Edit mode** (PM, PMO): drag to move; bottom dot → person = reporting line; right dot → counterpart; click a line to remove; double-click empty space to add\n- Flows: drag from the right dot to connect steps, including branches (approve / reject) and loops\n- Members can also be added and edited in the member list`],
     ['governance', 'Governance', `Agree project-wide rules early: folders, naming, approvals, CR criteria, meeting bodies, RACI. Rules past their target date raise an alert. The naming tool builds compliant file names.`],
@@ -1808,6 +2020,7 @@ function renderDash(v, {b, m, alerts, rag, sev}){
     <div class="card"><h2>${t('dash.alerts')}<span class="hint">${t('dash.alertsHint')}</span></h2>${alertList(alerts.slice(0, 7))}
       ${alerts.length > 7 ? `<button class="btn ghost" data-tab="alerts">${t('dash.showAll', alerts.length)} →</button>` : ''}</div>
   </div>
+  ${decisionCard(b)}
   <div class="card" style="margin-top:14px"><h2>${t('dash.gantt')}<span class="hint">${t('dash.ganttHint')}</span></h2>${gantt(b, sev)}</div>
   <div class="grid two" style="margin-top:14px">
     <div class="card"><h2>${t('dash.upcomingMtg')}</h2>${upcomingMeetings(ms.upcoming.slice(0, 5), b, sev)}</div>
@@ -1817,6 +2030,14 @@ function renderDash(v, {b, m, alerts, rag, sev}){
     <div class="card"><h2>${t('dash.trend')}<span class="hint">${t('dash.trendHint')}</span></h2>${trendChart(m)}</div>
     <div class="card"><h2>${t('dash.openActions')}</h2>${actionMini(ms.open, b)}</div>
   </div>`;
+}
+// 今決めること：判断が必要な課題を、決定期限の近い順に（誰に何を決めてもらうかを一目で）
+const decisionsNeeded = () => state.raid.filter(r => inScope(r) && r.needDecision && r.status !== 'closed').sort((x, y) => (x.decideBy || '9999') < (y.decideBy || '9999') ? -1 : 1);
+function decisionCard(b){
+  const ds = decisionsNeeded(); if (!ds.length) return '';
+  return `<div class="card dec-card" style="margin-top:14px"><h2>${t('dash.decisions')}<span class="hint">${t('dash.decisionsHint')}</span></h2>
+    <div class="scroll-x"><table><tr><th>ID</th><th>${t('rd.ask')}</th><th>${t('rd.decider')}</th><th>${t('rd.decideBy')}</th><th>${t('col.owner')}</th></tr>
+    ${ds.map(r => `<tr><td><button class="link-btn" data-open-raid="${esc(r.id)}">${esc(r.id)}</button></td><td><b>${esc(r.ask || r.title)}</b>${r.ask ? `<div class="muted small">${esc(r.title)}</div>` : ''}</td><td>${esc(r.decider || '—')}</td><td class="${r.decideBy && d2n(r.decideBy) < b ? 'red' : ''}">${r.decideBy ? md(r.decideBy) : '—'}</td><td>${esc(ownersText(r))}</td></tr>`).join('')}</table></div></div>`;
 }
 function phaseSummary(p, b, alerts){
   if (!p) return '';
@@ -1934,7 +2155,7 @@ function renderAlerts(v, {alerts}){
   const groups = [
     ['grp.schedule', ['overdue','lag','notStarted','extended','stale','msRisk','overload','approvalStalled','holdOverdue','carriedRepeat']],
     ['grp.phase', ['gateOverdue','gateNotReady','contractOverrun']],
-    ['grp.raid', ['noMitigation','raidOverdue','issueAged','crStalled']],
+    ['grp.raid', ['noMitigation','raidOverdue','issueAged','raidNoOwner','raidNoDue','raidStale','decisionOverdue','childOpen','crStalled']],
     ['grp.meeting', ['noAgenda','noPurpose','noMinutes','actionOverdue','actionIncomplete']],
     ['grp.gov', ['govNotAgreed']],
   ];
@@ -2082,46 +2303,7 @@ function importCsv(file){
 }
 
 // ============ RAID ============
-function renderRaid(v, {b}){
-  const rows = state.raid.map((r, i) => ({r, i})).filter(({r}) => inScope(r) && (!ui.raidType || r.type === ui.raidType) && (!ui.raidCat || r.category === ui.raidCat))
-    .sort((a, c) => phaseIdx(a.r.phaseId) - phaseIdx(c.r.phaseId) || a.i - c.i);
-  const f = (i, k, o) => fld('raid', i, k, state.raid[i][k], o);
-  v.innerHTML = `<div class="card">
-    <div class="bar">
-      <select id="fRaid"><option value="">${t('flt.allTypes')}</option>${enumOpts('raidType').map(([k, l]) => `<option value="${k}" ${k === ui.raidType ? 'selected' : ''}>${l}</option>`).join('')}</select>
-      <select id="fCat"><option value="">${t('flt.allCats')}</option>${enumOpts('raidCat').map(([k, l]) => `<option value="${k}" ${k === ui.raidCat ? 'selected' : ''}>${l}</option>`).join('')}</select>
-      <span class="muted" style="font-size:12px">${t('raid.hint')}</span>
-      <span class="sp"></span>
-      <button class="btn primary" id="addRaid">＋ ${t('btn.add')}</button>
-    </div>
-    <div class="scroll-x"><table>
-      <tr><th>ID</th><th>${t('col.type')}</th><th>${t('col.phase')}</th><th>${t('col.category')}</th><th>${t('col.title')}</th><th>${t('col.owner')}</th><th>${t('col.impact')}</th><th>${t('col.prob')}</th><th>${t('col.status')}</th><th>${t('col.raised')}</th><th>${t('col.due')}</th><th>${t('col.mitigation')}</th><th></th></tr>
-      ${rows.map(({r, i}) => { const late = r.status !== 'closed' && r.due && d2n(r.due) < b; return `<tr class="${r.category === 'contract' && r.status !== 'closed' ? 'row-contract' : ''}">
-        <td>${f(i, 'id', {cls:'w-s'})}</td>
-        <td>${f(i, 'type', {type:'select', opts: enumOpts('raidType')})}</td>
-        <td>${f(i, 'phaseId', {type:'select', opts: phaseOpts(), blank: t('common.common')})}</td>
-        <td>${f(i, 'category', {type:'select', opts: enumOpts('raidCat')})}</td>
-        <td>${f(i, 'title', {cls:'w-name'})}</td>
-        <td>${f(i, 'owner', {cls:'w-s'})}</td>
-        <td>${f(i, 'impact', {type:'select', opts: enumOpts('level'), blank: true})}</td>
-        <td>${r.type === 'risk' ? f(i, 'prob', {type:'select', opts: enumOpts('level'), blank: true}) : '<span class="muted">—</span>'}</td>
-        <td>${f(i, 'status', {type:'select', opts: enumOpts('raidStatus')})}</td>
-        <td>${f(i, 'raised', {type:'date'})}</td>
-        <td class="${late ? 'cell-late' : ''}">${f(i, 'due', {type:'date'})}</td>
-        <td>${f(i, 'mitigation', {cls:'w-name'})}</td>
-        <td>${delBtn('raid', i, r.title || r.id)}</td>
-      </tr>`; }).join('')}
-    </table></div>
-    ${rows.length ? '' : `<div class="empty">${t('empty.raidAll')}</div>`}
-  </div>`;
-  $('#fRaid').onchange = e => { ui.raidType = e.target.value; render(); };
-  $('#fCat').onchange = e => { ui.raidCat = e.target.value; render(); };
-  $('#addRaid').onclick = () => {
-    const type = ui.raidType || 'risk', pre = {risk:'R', issue:'I', assumption:'A', decision:'D'}[type];
-    state.raid.push({id: nextId(pre, state.raid.filter(r => r.type === type)), type, phaseId: ui.scope, category: ui.raidCat || 'other', title: '', owner: '', impact: 'M', prob: type === 'risk' ? 'M' : '', status: 'open', raised: todayStr(), due: '', mitigation: ''});
-    save(); render();
-  };
-}
+// リスク・課題（RAID）の画面は ui-raid.js（一覧・構造図・傾向・詳細）
 
 </script>
 <script>
@@ -2206,6 +2388,9 @@ function dispMenu(tk, i){
   return `${tk.disp ? `<span class="disp ${tk.disp}" title="${esc(tk.dispNote || '')}${tk.holdUntil ? ' ～' + md(tk.holdUntil) : ''}">${t('disp.' + tk.disp)}</span>` : ''}
     ${opts.length ? `<select class="disp-sel" data-disp="${i}"><option value="">${t('disp.menu')}</option>${opts.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>` : ''}`;
 }
+// このタスクに関係する未解決の課題・リスク（課題の詳細で「影響するタスク」に入れたもの）
+const issuesOfTask = tk => state.raid.filter(r => (r.taskIds || []).includes(tk.id) && r.status !== 'closed');
+const issueBadges = tk => { const rs = issuesOfTask(tk); return rs.length ? `<div class="kc-issues">${rs.map(r => `<button class="iss-badge imp-${r.impact || 'M'}" data-open-raid="${esc(r.id)}" title="${esc(r.title)}">⚑ ${esc(r.id)}</button>`).join('')}</div>` : ''; };
 const carryBadge = tk => tk.carryCount ? `<span class="carry" title="${t('tk.carriedFrom', (tk.carriedFrom || []).map(id => phaseName(id)).join(' → '))}">↻${tk.carryCount}</span>` : '';
 
 function renderTasks(v, ctx){
@@ -2256,7 +2441,7 @@ function renderTaskList(el, {b, alerts}){
         <td><div class="tname">${prioDot(tk.priority)}${f(i, 'priority', {type: 'select', opts: prioOpts()})}</div></td>
         <td>${f(i, 'owner', {cls: 'w-s'})}</td>
         <td>${f(i, 'start', {type: 'date'})}</td><td>${f(i, 'end', {type: 'date'})}</td><td>${f(i, 'baselineEnd', {type: 'date'})}</td>
-        <td><div class="tname">${f(i, 'status', {type: 'select', opts: flowOpts(tk), cls: 'st-sel st-' + LANE_OF[tk.status]})}${tk.status === 'approval' && canApprove(tk) ? `<button class="btn primary sm" data-approve="${i}">${t('tk.approve')}</button>` : ''}</div>${tk.approvedBy && tk.status === 'closed' ? `<div class="muted small">${t('tk.approvedBy', esc(tk.approvedBy), md(tk.approvedAt))}</div>` : ''}</td>
+        <td><div class="tname">${f(i, 'status', {type: 'select', opts: flowOpts(tk), cls: 'st-sel st-' + LANE_OF[tk.status]})}${tk.status === 'approval' && canApprove(tk) ? `<button class="btn primary sm" data-approve="${i}">${t('tk.approve')}</button>` : ''}</div>${tk.approvedBy && tk.status === 'closed' ? `<div class="muted small">${t('tk.approvedBy', esc(tk.approvedBy), md(tk.approvedAt))}</div>` : isDone(tk) ? '' : returnedNote(tk)}</td>
         <td>${f(i, 'progress', {type: 'number', cls: 'w-xs'})}</td>
         <td class="num muted">${plannedPct(tk, b)}</td>
         <td>${dispMenu(tk, i)}</td>
@@ -2278,6 +2463,7 @@ function renderKanban(el, {b, alerts}){
   const closed = byLane.closed.sort((x, y) => (y.tk.updated || '') < (x.tk.updated || '') ? -1 : 1);
   const shownClosed = closed.slice(0, 8);
   const person = name => state.org.find(p => p.name === name);
+  const apN = ROLE_TABS[myRole()].includes('approvals') ? byLane.approval.filter(({tk}) => canApprove(tk)).length : 0;
   const card = ({tk, i}) => {
     const p = person(tk.owner), late = !isDone(tk) && d2n(tk.end) < b, fl = flowOf(tk), next = fl[fl.indexOf(tk.status) + 1];
     const canMove = can('tasks', i, 'status');
@@ -2285,13 +2471,15 @@ function renderKanban(el, {b, alerts}){
     return `<div class="kcard ${sev[tk.id] ? 'sev-' + sev[tk.id] : ''} ${tk.disp === 'hold' ? 'held' : ''}" draggable="${canMove}" data-kcard="${i}">
       <div class="kc-top">${prioDot(tk.priority)}<span class="tag k-${tk.kind}">${t('kind.' + tk.kind)}</span><span class="kc-st">${lbl('taskStatus', tk.status)}</span>${carryBadge(tk)}</div>
       <div class="kc-name">${esc(tk.name)}</div>
+      ${isDone(tk) ? '' : returnedNote(tk)}
+      ${issueBadges(tk)}
       ${tk.disp === 'hold' ? `<div class="kc-hold">⏸ ${esc(tk.dispNote || t('disp.hold'))}${tk.holdUntil ? ` ～${md(tk.holdUntil)}` : ''}</div>` : ''}
       <div class="kc-foot">${p ? `<span class="avatar xs" style="background:${orgColor(p.org)}">${esc(p.name.slice(0, 1))}</span>` : ''}<span class="small">${esc(tk.owner || '—')}</span><span class="sp"></span><span class="small ${late ? 'red' : 'muted'}">${md(tk.end)}</span></div>
       ${nextBtn ? `<div class="kc-act">${nextBtn}</div>` : ''}
     </div>`;
   };
   el.innerHTML = `<div class="kanban">${KANBAN_LANES.map(l => `<section class="klane" data-lane="${l}">
-      <header><span class="kdot ${l}"></span>${t('lane.' + l)}<span class="kcount">${byLane[l].length}</span></header>
+      <header><span class="kdot ${l}"></span>${t('lane.' + l)}<span class="kcount">${byLane[l].length}</span>${l === 'approval' && apN > 1 ? `<button class="btn primary sm" data-apgo>${t('ap.bulk', apN)}</button>` : ''}</header>
       <div class="klist">
         ${l === 'todo' && canCreate('tasks') ? `<input class="kquick" id="kQuick" placeholder="${t('tk.quickAdd')}">` : ''}
         ${(l === 'closed' ? shownClosed : byLane[l]).map(card).join('') || `<div class="kempty">${t('lane.empty')}</div>`}
@@ -2317,6 +2505,7 @@ function renderKanban(el, {b, alerts}){
   });
   // カードをクリック → 右のパネルで編集（ボタン以外の場所）
   el.querySelectorAll('[data-kcard]').forEach(c => c.addEventListener('click', e => { if (e.target.closest('button, input, select, textarea')) return; ui.taskSel = c.dataset.kcard; render(); }));
+  const ag = el.querySelector('[data-apgo]'); if (ag) ag.onclick = () => go({tab: 'approvals', apKind: 'tasks', apSel: []});
   el.querySelectorAll('[data-next]').forEach(btn => btn.onclick = () => { const tk = state.tasks[+btn.dataset.next], fl = flowOf(tk); if (moveTask(tk, fl[fl.indexOf(tk.status) + 1])) { save(); render(); } });
   const q = $('#kQuick'); if (q) q.onkeydown = e => { if (e.key === 'Enter' && q.value.trim()) { newTask({name: q.value.trim()}); save(); render(); setTimeout(() => { const n = $('#kQuick'); if (n) n.focus(); }); } };
 }
@@ -2361,7 +2550,7 @@ function drawTaskDrawer(v){
     <div class="form-grid one">
       <label>${t('col.task')}${f('name', {type: 'textarea', rows: 2})}</label>
       <label>${t('col.status')}<div class="tname">${f('status', {type: 'select', opts: flowOpts(tk), cls: 'st-sel st-' + LANE_OF[tk.status]})}${tk.status === 'approval' && canApprove(tk) ? `<button class="btn primary sm" data-approve="${i}">${t('tk.approve')}</button>` : ''}</div>
-        <small class="muted">${flowOf(tk).map(s => s === tk.status ? `<b>${lbl('taskStatus', s)}</b>` : lbl('taskStatus', s)).join(' → ')}</small></label>
+        ${isDone(tk) ? '' : returnedNote(tk)}<small class="muted">${flowOf(tk).map(s => s === tk.status ? `<b>${lbl('taskStatus', s)}</b>` : lbl('taskStatus', s)).join(' → ')}</small></label>
       <label>${t('tk.kind')}${f('kind', {type: 'select', opts: TASK_KINDS.map(k => [k, t('kind.' + k)])})}</label>
       <label>${t('tk.priority')}${f('priority', {type: 'select', opts: prioOpts()})}</label>
       <label>${t('col.owner')}${f('owner')}</label>
@@ -2371,12 +2560,482 @@ function drawTaskDrawer(v){
       <label>${t('col.progress')}${f('progress', {type: 'number'})}</label>
       <div class="lbl-block">${t('tk.disp')}<div>${dispMenu(tk, i)}</div>${tk.carryCount ? `<small class="muted">${t('tk.carriedFrom', (tk.carriedFrom || []).map(id => phaseName(id)).join(' → '))}</small>` : ''}</div>
       ${tk.approvedBy && tk.status === 'closed' ? `<div class="muted small">${t('tk.approvedBy', esc(tk.approvedBy), md(tk.approvedAt))}</div>` : ''}
+      ${issuesOfTask(tk).length ? `<div class="lbl-block">${t('rd.linkedIssues')}<ul class="mini-list">${issuesOfTask(tk).map(r => `<li><button class="link-btn" data-open-raid="${esc(r.id)}">${esc(r.id)}</button> ${esc(r.title)} <span class="tag">${esc(lbl('raidStatus', r.status))}</span></li>`).join('')}</ul></div>` : ''}
     </div>
     ${canDelete('tasks', i) ? `<div class="bar" style="margin-top:14px"><span class="sp"></span><button class="btn danger" data-del="tasks" data-key="${i}" data-name="${esc(tk.name)}">${TRASH} ${t('btn.delete')}</button></div>` : ''}
   </div>`;
   d.classList.add('open');
   d.querySelector('#taskClose').onclick = () => { ui.taskSel = ''; render(); };
 }
+
+</script>
+<script>
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 0kaka
+// 商用ライセンス（改変の非公開・組み込み・SaaS 提供）は COMMERCIAL.md を参照 / Commercial licensing: see COMMERCIAL.md
+'use strict';
+// ============ 承認（承認待ちを 1 か所に集めて、まとめて承認・差し戻し） ============
+// タスクの「承認待ち」、課題・リスクの「確認待ち」、CR の「承認待ち」のうち、自分が承認できるものだけを並べる。
+// 1 件ずつの承認（カンバン・一覧・CR の状態欄）はそのまま残す。まとめて処理した直後は「元に戻す」で戻せる。
+const AP_KINDS = ['tasks','raid','crs'];
+function approvalQueue(){
+  const b = d2n(baseDate()), out = [];
+  const add = (col, o, title, sub, since) => out.push({col, o, key: col + ':' + o.id, title, sub, owner: o.owner || '', phaseId: o.phaseId || '', wait: since && !isNaN(d2n(since)) ? Math.max(0, b - d2n(since)) : 0});
+  state.tasks.forEach(x => { if (x.status === 'approval' && activeTask(x) && canApprove(x)) add('tasks', x, x.name, t('kind.' + x.kind), x.updated); });
+  state.raid.forEach(x => { if (x.status === 'review' && canApproveRaid(x)) add('raid', x, x.title || x.id, `${lbl('raidType', x.type)}${x.mitigation ? ' · ' + x.mitigation : ''}`, x.reviewAt || x.raised); });
+  state.crs.forEach((x, i) => { if (x.status === 'pending' && can('crs', i, 'status')) add('crs', x, `${x.id} ${x.title}`, [x.scope, x.schedule ? t('ap.crDays', x.schedule) : '', x.cost].filter(Boolean).join(' · '), x.pendingAt || x.raised); });
+  return out.filter(x => inScope(x.o));
+}
+// まとめて処理する。mode = 'approve'（承認してクローズ）／'return'（差し戻し：1 つ前の段階へ戻し、理由を残す）
+function resolveApprovals(items, mode, note){
+  const before = items.map(x => ({col: x.col, id: x.o.id, data: JSON.parse(JSON.stringify(x.o))}));
+  const who = myName(), today = todayStr(); let n = 0;
+  items.forEach(({col, o}) => {
+    if (mode === 'approve') {
+      if (col === 'tasks') { if (!moveTask(o, 'closed')) return; }
+      else if (col === 'raid') { o.status = 'closed'; o.closedAt = today; o.approvedBy = who; o.approvedAt = today; raidLog(o, {kind: 'approve'}); }
+      else { o.status = 'approved'; o.decided = o.decided || today; o.approvedBy = who; o.approvedAt = today; }
+      delete o.returnNote; delete o.returnedBy; delete o.returnedAt;
+    } else {
+      if (col === 'tasks') { const fl = flowOf(o); if (!moveTask(o, fl[Math.max(0, fl.indexOf('approval') - 1)])) return; }
+      else if (col === 'raid') { o.status = 'wip'; raidLog(o, {kind: 'return', text: note || ''}); }
+      else o.status = 'analysis';
+      o.returnNote = note || ''; o.returnedBy = who; o.returnedAt = today;
+    }
+    n++;
+  });
+  save(); render();
+  toastAction(t(mode === 'approve' ? 'ap.doneApprove' : 'ap.doneReturn', n), t('ap.undo'), () => {
+    before.forEach(({col, id, data}) => { const k = state[col].findIndex(x => x.id === id); if (k >= 0) state[col][k] = data; });
+    save(); render(); toast(t('ap.undone'));
+  });
+  return n;
+}
+// 差し戻されたものが、担当者の画面で理由とともに見えるようにする
+const returnedNote = o => o.returnNote != null && o.returnedAt ? `<div class="returned">↩ ${t('ap.returnedBy', esc(o.returnedBy || '—'), md(o.returnedAt))}${o.returnNote ? '：' + esc(o.returnNote) : ''}</div>` : '';
+
+function renderApprovals(v){
+  const all = approvalQueue(), kind = ui.apKind || '', S = state.settings;
+  const list = all.filter(x => !kind || x.col === kind).sort((a, c) => c.wait - a.wait);
+  const sel = new Set((ui.apSel || []).filter(k => list.some(x => x.key === k))); ui.apSel = [...sel];
+  const cnt = k => k ? all.filter(x => x.col === k).length : all.length;
+  v.innerHTML = `<div class="card">
+    <div class="bar ap-bar">
+      <div class="seg">${['', ...AP_KINDS].map(k => `<button class="${kind === k ? 'on' : ''}" data-apkind="${k}">${t('ap.kind.' + (k || 'all'))}${cnt(k) ? ` <b>${cnt(k)}</b>` : ''}</button>`).join('')}</div>
+      <span class="sp"></span>
+      <span class="muted small">${t('ap.selected', sel.size)}</span>
+      <button class="btn" id="apReturn" ${sel.size ? '' : 'disabled'}>↩ ${t('ap.return')}</button>
+      <button class="btn primary" id="apApprove" ${sel.size ? '' : 'disabled'}>✓ ${t('ap.approveSel', sel.size)}</button>
+    </div>
+    ${list.length ? `<div class="scroll-x"><table class="ap-table">
+      <tr><th><input type="checkbox" id="apAll" ${sel.size === list.length ? 'checked' : ''} aria-label="${t('ap.selectAll')}" title="${t('ap.selectAll')}"></th><th>${t('ap.what')}</th><th>${t('col.title')}</th><th>${t('col.phase')}</th><th>${t('col.owner')}</th><th class="num">${t('ap.wait')}</th><th></th></tr>
+      ${list.map(x => `<tr class="${sel.has(x.key) ? 'ap-on' : ''}" data-aprow="${esc(x.key)}">
+        <td><input type="checkbox" data-apsel="${esc(x.key)}" ${sel.has(x.key) ? 'checked' : ''} aria-label="${esc(x.title)}"></td>
+        <td><span class="tag ap-${x.col}">${t('ap.kind.' + x.col)}</span></td>
+        <td><div class="ap-title">${x.col === 'raid' ? `<button class="link-btn" data-open-raid="${esc(x.o.id)}">${esc(x.title)}</button>` : esc(x.title)}</div>${x.sub ? `<div class="muted small">${esc(x.sub)}</div>` : ''}${returnedNote(x.o)}</td>
+        <td>${phaseTag(x.phaseId)}</td>
+        <td class="nowrap">${esc(x.owner || "—")}</td>
+        <td class="num ${x.wait >= S.staleDays ? 'red' : 'muted'}">${t('ap.days', x.wait)}</td>
+        <td><div class="tname"><button class="btn sm" data-apone="${esc(x.key)}" data-mode="return">↩ ${t('ap.returnOne')}</button><button class="btn primary sm" data-apone="${esc(x.key)}" data-mode="approve">${t('tk.approve')}</button></div></td>
+      </tr>`).join('')}
+    </table></div>` : `<div class="empty">${t('ap.empty')}</div>`}
+    <div class="muted small" style="margin-top:10px">${t('ap.hint', S.staleDays)}</div>
+  </div>`;
+  const pick = keys => list.filter(x => keys.includes(x.key));
+  const setSel = keys => { ui.apSel = keys; render(); };
+  v.querySelectorAll('[data-apkind]').forEach(el => el.onclick = () => { ui.apKind = el.dataset.apkind; ui.apSel = []; render(); });
+  const all$ = $('#apAll'); if (all$) all$.onchange = () => setSel(all$.checked ? list.map(x => x.key) : []);
+  v.querySelectorAll('[data-apsel]').forEach(el => el.onchange = () => { const k = el.dataset.apsel; setSel(el.checked ? [...sel, k] : [...sel].filter(x => x !== k)); });
+  // 行のどこを押しても選択を切り替えられる（ボタン以外）
+  v.querySelectorAll('[data-aprow]').forEach(r => r.onclick = e => { if (e.target.closest('button, input, a')) return; const k = r.dataset.aprow; setSel(sel.has(k) ? [...sel].filter(x => x !== k) : [...sel, k]); });
+  const ask = () => { const why = prompt(t('ap.returnWhy')); return why === null ? null : why.trim(); };
+  $('#apApprove').onclick = () => { const items = pick([...sel]); if (!items.length) return; ui.apSel = []; resolveApprovals(items, 'approve'); };
+  $('#apReturn').onclick = () => { const items = pick([...sel]); if (!items.length) return; const why = ask(); if (why === null) return; ui.apSel = []; resolveApprovals(items, 'return', why); };
+  v.querySelectorAll('[data-apone]').forEach(el => el.onclick = () => {
+    const items = pick([el.dataset.apone]); if (!items.length) return;
+    if (el.dataset.mode === 'return') { const why = ask(); if (why === null) return; resolveApprovals(items, 'return', why); } else resolveApprovals(items, 'approve');
+  });
+}
+
+</script>
+<script>
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 0kaka
+// 商用ライセンス（改変の非公開・組み込み・SaaS 提供）は COMMERCIAL.md を参照 / Commercial licensing: see COMMERCIAL.md
+'use strict';
+// ============ リスク・課題（RAID）：一覧・構造図・傾向・詳細 ============
+// 誰が見ても「何が起きていて、誰が持ち、何を決めればよいか」が分かることを目標にする。
+//  - 一覧：これまでどおり表で編集（フェーズ・カテゴリで絞り込み）
+//  - 構造図：親課題と子課題を木で表示（編集モードで線を引いて親子を付け替える）
+//  - 傾向：リスクの影響×発生確率、未解決件数の推移、担当者ごとの件数
+//  - 詳細：課題カード（起きていること／影響／次の一手）、関係者、判断の依頼、親子、関連タスク、経緯とコメント
+const raidIdx = id => state.raid.findIndex(r => r.id === id);
+const raidById = id => state.raid.find(r => r.id === id);
+const raidKids = id => state.raid.filter(r => r.parentId === id);
+const nameOpts = (cur) => { const ns = state.org.map(p => p.name).filter(Boolean); if (cur && !ns.includes(cur)) ns.push(cur); return ns.map(n => [n, n]); };
+// 親にできる課題（自分と自分の子孫は除く。循環を防ぐ）
+function raidParentOpts(r){
+  const bad = new Set([r.id]); let grow = true;
+  while (grow) { grow = false; state.raid.forEach(x => { if (x.parentId && bad.has(x.parentId) && !bad.has(x.id)) { bad.add(x.id); grow = true; } }); }
+  return state.raid.filter(x => !bad.has(x.id) && x.type !== 'decision').map(x => [x.id, `${x.id} ${x.title || ''}`]);
+}
+const ownersText = r => raidOwners(r).join('、') || '—';
+const openRaid$ = id => go({tab: 'raid', raidSel: id});
+
+function renderRaid(v, ctx){
+  if (ui.raidSel && raidById(ui.raidSel)) return renderRaidDetail(v, ctx, raidById(ui.raidSel));
+  ui.raidSel = '';
+  const view = ui.raidView || 'list';
+  const decN = state.raid.filter(r => inScope(r) && r.needDecision && r.status !== 'closed').length;
+  v.innerHTML = `<div class="bar">
+      <div class="seg">${['list','tree','trend'].map(k => `<button class="${view === k ? 'on' : ''}" data-rview="${k}">${t('rd.view.' + k)}</button>`).join('')}</div>
+      <select id="fRaid"><option value="">${t('flt.allTypes')}</option>${enumOpts('raidType').map(([k, l]) => `<option value="${k}" ${k === ui.raidType ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <select id="fCat"><option value="">${t('flt.allCats')}</option>${enumOpts('raidCat').map(([k, l]) => `<option value="${k}" ${k === ui.raidCat ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <label class="chk"><input type="checkbox" id="fOpen" ${ui.raidOpen ? 'checked' : ''}> ${t('rd.openOnly')}</label>
+      <label class="chk"><input type="checkbox" id="fDec" ${ui.raidDec ? 'checked' : ''}> ${t('rd.decOnly')}${decN ? ` <b class="cnt-inline">${decN}</b>` : ''}</label>
+      <span class="sp"></span>
+      <button class="btn primary" id="addRaid">＋ ${t('btn.add')}</button>
+    </div><div id="raidBody"></div>`;
+  const rows = state.raid.map((r, i) => ({r, i})).filter(({r}) => inScope(r) && (!ui.raidType || r.type === ui.raidType) && (!ui.raidCat || r.category === ui.raidCat) && (!ui.raidOpen || r.status !== 'closed') && (!ui.raidDec || (r.needDecision && r.status !== 'closed')));
+  const body = $('#raidBody');
+  if (view === 'tree') renderRaidTree(body, ctx, rows.map(x => x.r)); else if (view === 'trend') renderRaidTrend(body, ctx, rows.map(x => x.r)); else renderRaidList(body, ctx, rows);
+  v.querySelectorAll('[data-rview]').forEach(el => el.onclick = () => { ui.raidView = el.dataset.rview; render(true); });
+  $('#fRaid').onchange = e => { ui.raidType = e.target.value; render(); };
+  $('#fCat').onchange = e => { ui.raidCat = e.target.value; render(); };
+  $('#fOpen').onchange = e => { ui.raidOpen = e.target.checked; render(); };
+  $('#fDec').onchange = e => { ui.raidDec = e.target.checked; render(); };
+  $('#addRaid').onclick = () => { const r = newRaid({type: ui.raidType || 'risk', category: ui.raidCat || 'other'}); save(); if (view !== 'list') openRaid$(r.id); else render(); };
+}
+// 新しい課題・リスク。作成者は自動で入る（担当者は作成者を仮に入れる：メンバーは自分の起票を自分で更新できる）
+function newRaid(extra){
+  const type = (extra && extra.type) || 'risk', pre = {risk:'R', issue:'I', assumption:'A', decision:'D'}[type];
+  const r = {id: nextId(pre, state.raid.filter(x => x.type === type)), type, phaseId: ui.scope, category: 'other', title: '', owner: '', owners: [], reporter: myName(), approver: '', parentId: '',
+    impact: 'M', prob: type === 'risk' ? 'M' : '', status: 'open', raised: todayStr(), due: '', mitigation: '', detail: '', impactText: '', ask: '', needDecision: false, decider: '', decideBy: '', taskIds: [], log: [], updated: todayStr(), ...extra};
+  if (r.type !== 'risk') r.prob = '';
+  if (!r.owners.length && myRole() === 'member') r.owners = [myName()];
+  r.owner = r.owners[0] || '';
+  raidLog(r, {kind: 'create'});
+  state.raid.push(r); return r;
+}
+
+// ---- 一覧（これまでの表。ID を押すと詳細を開く） ----
+function renderRaidList(el, {b}, rows){
+  rows.sort((a, c) => phaseIdx(a.r.phaseId) - phaseIdx(c.r.phaseId) || a.i - c.i);
+  const f = (i, k, o) => fld('raid', i, k, state.raid[i][k], o);
+  el.innerHTML = `<div class="card">
+    <div class="muted small" style="margin-bottom:8px">${t('raid.hint')}　${t('rd.listHint')}</div>
+    <div class="scroll-x"><table>
+      <tr><th>ID</th><th>${t('col.type')}</th><th>${t('col.phase')}</th><th>${t('col.category')}</th><th>${t('col.title')}</th><th>${t('col.owner')}</th><th>${t('col.impact')}</th><th>${t('col.prob')}</th><th>${t('col.status')}</th><th>${t('col.raised')}</th><th>${t('col.due')}</th><th>${t('col.mitigation')}</th><th></th></tr>
+      ${rows.map(({r, i}) => { const late = r.status !== 'closed' && r.due && d2n(r.due) < b, extra = raidOwners(r).length - 1, kids = raidKids(r.id).length; return `<tr class="${r.category === 'contract' && r.status !== 'closed' ? 'row-contract' : ''}">
+        <td><button class="link-btn" data-open-raid="${esc(r.id)}" title="${t('rd.open')}">${esc(r.id)}</button></td>
+        <td>${f(i, 'type', {type:'select', opts: enumOpts('raidType')})}</td>
+        <td>${f(i, 'phaseId', {type:'select', opts: phaseOpts(), blank: t('common.common')})}</td>
+        <td>${f(i, 'category', {type:'select', opts: enumOpts('raidCat')})}</td>
+        <td>${f(i, 'title', {cls:'w-name'})}<div class="rd-sub">${r.parentId ? `<span class="muted small">↳ ${t('rd.childOf')} <button class="link-btn" data-open-raid="${esc(r.parentId)}">${esc(r.parentId)}</button></span>` : ''}${kids ? `<span class="muted small">⑂ ${t('rd.kidsN', kids)}</span>` : ''}${r.needDecision && r.status !== 'closed' ? `<span class="dec-flag">${t('rd.needDecision')}</span>` : ''}${(r.log || []).some(x => x.kind === 'comment') ? `<span class="muted small">💬 ${(r.log || []).filter(x => x.kind === 'comment').length}</span>` : ''}</div></td>
+        <td>${f(i, 'owner', {cls:'w-s'})}${extra > 0 ? `<div class="muted small" title="${esc(ownersText(r))}">＋${extra}${t('rd.personSuffix')}</div>` : ''}</td>
+        <td>${f(i, 'impact', {type:'select', opts: enumOpts('level'), blank: true})}</td>
+        <td>${r.type === 'risk' ? f(i, 'prob', {type:'select', opts: enumOpts('level'), blank: true}) : '<span class="muted">—</span>'}</td>
+        <td>${f(i, 'status', {type:'select', opts: enumOpts('raidStatus')})}${r.status === 'closed' && r.approvedBy ? `<div class="muted small">${t('ap.approvedBy', esc(r.approvedBy), md(r.approvedAt))}</div>` : r.status === 'closed' ? '' : returnedNote(r)}</td>
+        <td>${f(i, 'raised', {type:'date'})}</td>
+        <td class="${late ? 'cell-late' : ''}">${f(i, 'due', {type:'date'})}</td>
+        <td>${f(i, 'mitigation', {cls:'w-name'})}</td>
+        <td><div class="tname"><button class="btn sm" data-open-raid="${esc(r.id)}">${t('rd.open')} ›</button>${delBtn('raid', i, r.title || r.id)}</div></td>
+      </tr>`; }).join('')}
+    </table></div>
+    ${rows.length ? '' : `<div class="empty">${t('empty.raidAll')}</div>`}
+  </div>`;
+}
+
+// ---- 構造図（親課題 → 子課題の木。組織図と同じ部品で描く） ----
+const ISS_W = 230;
+// 文字幅からカードの高さを見積もる（タイトルを省略せず、カードの中で折り返して全部見せる）
+const textW = (s, wide, narrow) => [...String(s || '')].reduce((n, ch) => n + (/[　-鿿＀-￯]/.test(ch) ? wide : narrow), 0);
+function issMetaText(r){
+  const kids = raidKids(r.id);
+  return [`${t('rd.ownersShort')} ${ownersText(r)}`, r.approver ? `${t('rd.approverShort')} ${r.approver}` : '', r.due ? md(r.due) : '', kids.length ? t('rd.kidsDone', kids.filter(k => k.status === 'closed').length, kids.length) : ''].filter(Boolean).join(' · ');
+}
+function issHeight(r){
+  const inner = ISS_W - 24, lines = (s, wide, narrow) => Math.max(1, Math.ceil(textW(s, wide, narrow) / inner));
+  return 44 + lines(r.title || r.id, 13, 7.2) * 18 + lines(issMetaText(r), 11, 6.2) * 16 + (r.needDecision && r.status !== 'closed' ? 22 : 0);
+}
+function raidTreeLayout(items, avail){
+  const GX = 22, GY = 46, ids = new Set(items.map(r => r.id)), kids = {};
+  items.forEach(r => { const k = r.parentId && ids.has(r.parentId) ? r.parentId : ''; (kids[k] = kids[k] || []).push(r); });
+  const depth = {}, memo = {};
+  const width = r => memo[r.id] != null ? memo[r.id] : (memo[r.id] = Math.max(ISS_W + GX, (kids[r.id] || []).reduce((s, c) => s + width(c), 0)));
+  const mark = (r, d) => { depth[r.id] = d; (kids[r.id] || []).forEach(c => mark(c, d + 1)); };
+  const roots = kids[''] || [], trees = roots.filter(r => (kids[r.id] || []).length), loose = roots.filter(r => !(kids[r.id] || []).length);
+  trees.forEach(r => mark(r, 0));
+  const maxH = {}; items.forEach(r => { if (depth[r.id] != null) maxH[depth[r.id]] = Math.max(maxH[depth[r.id]] || 0, issHeight(r)); });
+  const rowY = [40]; Object.keys(maxH).sort((a, c) => a - c).forEach(d => { rowY[+d + 1] = rowY[+d] + maxH[d] + GY; });
+  const pos = {};
+  let x = 20;
+  const place = (r, x0) => { const w = width(r); pos[r.id] = {x: x0 + w / 2 - ISS_W / 2, y: rowY[depth[r.id]]}; let cx = x0; (kids[r.id] || []).forEach(c => { place(c, cx); cx += width(c); }); };
+  trees.forEach(r => { place(r, x); x += width(r) + 26; });
+  // 親子のない課題は、下に並べる（横に長くならないよう折り返す）
+  const top = trees.length ? rowY[rowY.length - 1] + 30 : 40, perRow = Math.max(1, Math.floor(Math.max(avail, x) / (ISS_W + GX)));
+  let y = top, rowMax = 0;
+  loose.forEach((r, k) => { if (k && k % perRow === 0) { y += rowMax + 20; rowMax = 0; } pos[r.id] = {x: 20 + (k % perRow) * (ISS_W + GX), y}; rowMax = Math.max(rowMax, issHeight(r)); });
+  return {pos, looseTop: loose.length ? top : 0, hasTrees: trees.length > 0};
+}
+function renderRaidTree(el, {alerts}, items){
+  items = items.filter(r => r.type !== 'decision' || r.parentId || raidKids(r.id).length);
+  const edit = !!ui.raidTreeEdit && ['pm','pmo','lead'].includes(myRole());
+  const avail = Math.max(600, (el.clientWidth || 1000) - 40), auto = raidTreeLayout(items, avail), key = 'raid:tree';
+  state.layouts = state.layouts || {};
+  const over = state.layouts[key] || {}, P = id => over[id] || auto.pos[id];
+  const sev = sevMap(alerts);
+  let W = 640, H = 200;
+  items.forEach(r => { const q = P(r.id); if (q) { W = Math.max(W, q.x + ISS_W + 30); H = Math.max(H, q.y + issHeight(r) + 30); } });
+  const under = auto.looseTop ? `<text x="20" y="${auto.looseTop - 10}" class="level-name">${esc(t('rd.loose'))}</text>` : '';
+  const nodes = items.map(r => {
+    const q = P(r.id); if (!q) return null; const h = issHeight(r);
+    return {id: r.id, x: q.x, y: q.y, w: ISS_W, h, cls: 'iss-node st-' + r.status + (sev[r.id] ? ' sev-' + sev[r.id] : '') + (r.id === ui.raidHi ? ' on' : ''), body: `
+      <rect width="${ISS_W}" height="${h}" rx="12" class="iss-card"/>
+      <rect width="5" height="${h}" rx="2.5" class="iss-bar imp-${r.impact || 'none'}"/>
+      <foreignObject x="0" y="0" width="${ISS_W}" height="${h}"><div xmlns="http://www.w3.org/1999/xhtml" class="iss-fo">
+        <div class="iss-top"><b>${esc(r.id)}</b><span class="tag">${esc(lbl('raidType', r.type))}</span><span class="iss-st">${esc(lbl('raidStatus', r.status))}</span></div>
+        <div class="iss-title">${esc(r.title || '—')}</div>
+        <div class="iss-meta">${esc(issMetaText(r))}${r.needDecision && r.status !== 'closed' ? `<div><span class="dec-flag">${esc(t('rd.needDecision'))}</span></div>` : ''}</div>
+      </div></foreignObject>`};
+  }).filter(Boolean);
+  const inSet = new Set(items.map(r => r.id));
+  const edges = items.filter(r => r.parentId && inSet.has(r.parentId)).map(r => ({id: 'p:' + r.id, from: r.parentId, to: r.id, kind: 'report'}));
+  el.innerHTML = `<div class="card org-canvas">
+    <div class="bar">
+      <div class="legend" style="margin:0"><span><svg width="28" height="10" style="overflow:visible"><path d="M1 5H22" class="dg-legend rep"/></svg>${t('rd.lgParent')}</span><span><i class="imp-dot H"></i>${t('rd.lgImpact')}</span><span><i class="dot-red"></i>${t('rd.lgAlert')}</span></div>
+      <span class="sp"></span>
+      ${['pm','pmo','lead'].includes(myRole()) ? `<button class="btn ${edit ? 'primary' : ''}" id="rtEdit">${edit ? '✓ ' + t('dg.editOn') : '✎ ' + t('dg.edit')}</button>` : ''}
+      ${edit && Object.keys(over).length ? `<button class="btn" id="rtAuto">${t('dg.autoLayout')}</button>` : ''}
+    </div>
+    <div class="muted small" style="margin-bottom:8px">${edit ? t('rd.treeEditHint') : t('rd.treeHint')}</div>
+    <div id="raidDiagram"></div></div>`;
+  if (!items.length) { $('#raidDiagram').innerHTML = `<div class="empty">${t('empty.raidAll')}</div>`; }
+  else diagram($('#raidDiagram'), {
+    W, H, nodes, edges, under, edit, label: t('rd.view.tree'), cls: 'iss-svg' + ($('#view').classList.contains('animate') ? ' anim' : ''),
+    handles: [{kind: 'report', at: 'bottom', title: t('rd.handle')}],
+    related: id => { const s = new Set([id]); let p = raidById(id); while (p && p.parentId && !s.has(p.parentId)) { s.add(p.parentId); p = raidById(p.parentId); } const down = x => raidKids(x).forEach(k => { if (!s.has(k.id)) { s.add(k.id); down(k.id); } }); down(id); return s; },
+    onNode: id => openRaid$(id),
+    onMove: (id, x, y) => { state.layouts[key] = {...(state.layouts[key] || {}), [id]: {x, y}}; save(); render(); },
+    onConnect: (from, to) => setRaidParent(raidById(to), from),
+    onEdge: (e, cx, cy) => {
+      const c = raidById(e.to);
+      dgPopover(cx, cy, `<div class="small muted">${esc(e.from)} → ${esc(e.to)}</div><button class="btn danger sm" data-x>${t('rd.unlink')}</button>`, (m, close) => { m.querySelector('[data-x]').onclick = () => { close(); setRaidParent(c, ''); }; });
+    },
+  });
+  const te = $('#rtEdit'); if (te) te.onclick = () => { ui.raidTreeEdit = !ui.raidTreeEdit; render(); };
+  const ra = $('#rtAuto'); if (ra) ra.onclick = () => { delete state.layouts[key]; save(); render(true); };
+}
+// 親課題を付け替える（循環になるもの・権限のないものは断る）。経緯に残す
+function setRaidParent(r, pid){
+  if (!r) return false;
+  const i = raidIdx(r.id);
+  if (!can('raid', i, 'parentId')) { toast(t('perm.denied')); return false; }
+  if (pid) { let x = raidById(pid), g = 0; while (x && g++ < 99) { if (x.id === r.id) { toast(t('rd.cycle')); return false; } x = raidById(x.parentId); } }
+  const from = r.parentId || ''; if (from === pid) return false;
+  r.parentId = pid; raidLog(r, {kind: 'change', f: 'parentId', from, to: pid});
+  save(); render(); toast(pid ? t('rd.parentSet', r.id, pid) : t('rd.parentCleared', r.id));
+  return true;
+}
+
+// ---- 傾向（影響×発生確率、未解決件数の推移、担当者ごと） ----
+function raidOpenAt(r, d){ return d2n(r.raised) <= d && (r.status !== 'closed' || (r.closedAt && d2n(r.closedAt) > d)); }
+function renderRaidTrend(el, {b}, items){
+  const act = items.filter(r => r.type === 'risk' || r.type === 'issue');
+  const risks = act.filter(r => r.type === 'risk' && r.status !== 'closed');
+  const L3 = ['H','M','L'], P3 = ['L','M','H'];
+  const heat = (i, p) => { const n = risks.filter(r => (r.impact || 'M') === i && (r.prob || 'M') === p); const score = (2 - L3.indexOf(i)) + P3.indexOf(p); return `<td class="heat h${score}"><b>${n.length || ''}</b><div>${n.map(r => `<button class="chip" data-open-raid="${esc(r.id)}" title="${esc(r.title)}">${esc(r.id)}</button>`).join('')}</div></td>`; };
+  // 直近 8 週の未解決件数（週末時点）と、週ごとの新規起票
+  const weeks = [...Array(8)].map((_, k) => b - (7 - k) * 7);
+  const series = weeks.map(d => ({d, open: act.filter(r => r.raised && raidOpenAt(r, d)).length, added: act.filter(r => r.raised && d2n(r.raised) > d - 7 && d2n(r.raised) <= d).length}));
+  const mx = Math.max(1, ...series.map(s => Math.max(s.open, s.added))), W = 560, H = 180, X = k => 40 + k * ((W - 60) / 7), Y = n => H - 28 - n / mx * (H - 50);
+  const chart = `<svg viewBox="0 0 ${W} ${H}" class="trend-svg" role="img" aria-label="${esc(t('rd.trendTitle'))}">
+    ${series.map((s, k) => `<rect x="${X(k) - 9}" y="${Y(s.added)}" width="18" height="${H - 28 - Y(s.added)}" rx="3" class="tr-added"><title>${md(n2d(s.d))}：${t('rd.added')} ${s.added}</title></rect>`).join('')}
+    <polyline points="${series.map((s, k) => `${X(k)},${Y(s.open)}`).join(' ')}" class="tr-open"/>
+    ${series.map((s, k) => `<circle cx="${X(k)}" cy="${Y(s.open)}" r="4" class="tr-dot"><title>${md(n2d(s.d))}：${t('rd.openN')} ${s.open}</title></circle><text x="${X(k)}" y="${Y(s.open) - 9}" text-anchor="middle" class="tr-n">${s.open}</text><text x="${X(k)}" y="${H - 8}" text-anchor="middle" class="tr-x">${md(n2d(s.d))}</text>`).join('')}
+  </svg>`;
+  const byOwner = {}; act.filter(r => r.status !== 'closed').forEach(r => raidOwners(r).concat(raidOwners(r).length ? [] : ['—']).forEach(o => { const x = byOwner[o] = byOwner[o] || {n: 0, h: 0, late: 0}; x.n++; if (r.impact === 'H') x.h++; if (r.due && d2n(r.due) < b) x.late++; }));
+  const byCat = {}; act.filter(r => r.status !== 'closed').forEach(r => { byCat[r.category] = (byCat[r.category] || 0) + 1; });
+  const catMax = Math.max(1, ...Object.values(byCat));
+  el.innerHTML = `<div class="grid two">
+    <div class="card"><h2>${t('rd.heatTitle')}<span class="hint">${t('rd.heatHint')}</span></h2>
+      <div class="scroll-x"><table class="heatmap"><tr><th></th>${P3.map(p => `<th>${t('col.prob')}：${lbl('level', p)}</th>`).join('')}</tr>
+        ${L3.map(i => `<tr><th>${t('col.impact')}：${lbl('level', i)}</th>${P3.map(p => heat(i, p)).join('')}</tr>`).join('')}</table></div></div>
+    <div class="card"><h2>${t('rd.trendTitle')}<span class="hint">${t('rd.trendHint')}</span></h2>${chart}
+      <div class="legend"><span><i style="background:var(--accent)"></i>${t('rd.openN')}</span><span><i style="background:var(--plan)"></i>${t('rd.added')}</span></div></div>
+  </div>
+  <div class="grid two" style="margin-top:14px">
+    <div class="card"><h2>${t('rd.byOwner')}</h2>${Object.keys(byOwner).length ? `<div class="scroll-x"><table><tr><th>${t('col.owner')}</th><th class="num">${t('rd.openN')}</th><th class="num">${t('rd.highN')}</th><th class="num">${t('rd.lateN')}</th></tr>
+      ${Object.entries(byOwner).sort((a, c) => c[1].n - a[1].n).map(([o, x]) => `<tr><td>${esc(o)}</td><td class="num">${x.n}</td><td class="num ${x.h ? 'red' : 'muted'}">${x.h}</td><td class="num ${x.late ? 'red' : 'muted'}">${x.late}</td></tr>`).join('')}</table></div>` : `<div class="empty">${t('empty.raid')}</div>`}</div>
+    <div class="card"><h2>${t('rd.byCat')}</h2>${Object.keys(byCat).length ? Object.entries(byCat).sort((a, c) => c[1] - a[1]).map(([c, n]) => `<div class="cat-bar"><span>${esc(lbl('raidCat', c))}</span><div><i style="width:${n / catMax * 100}%"></i></div><b>${n}</b></div>`).join('') : `<div class="empty">${t('empty.raid')}</div>`}</div>
+  </div>`;
+}
+
+// ---- 詳細（課題ごとの画面） ----
+const LOG_LABEL = {status: 'col.status', owner: 'col.owner', owners: 'rd.owners', approver: 'rd.approver', reporter: 'rd.reporter', due: 'col.due', impact: 'col.impact', prob: 'col.prob', type: 'col.type', category: 'col.category', phaseId: 'col.phase', parentId: 'rd.parent',
+  title: 'col.title', needDecision: 'rd.needDecision', decider: 'rd.decider', decideBy: 'rd.decideBy', detail: 'rd.detail', impactText: 'rd.impactText', mitigation: 'col.mitigation', ask: 'rd.ask', taskIds: 'rd.tasks', raised: 'col.raised'};
+const LOG_LONG = new Set(['detail','impactText','mitigation','ask','title']);
+function logValue(f, v){
+  if (v === '' || v == null || (Array.isArray(v) && !v.length)) return '—';
+  if (f === 'status') return lbl('raidStatus', v); if (f === 'impact' || f === 'prob') return lbl('level', v);
+  if (f === 'type') return lbl('raidType', v); if (f === 'category') return lbl('raidCat', v); if (f === 'phaseId') return phaseName(v);
+  if (f === 'needDecision') return v ? t('common.yes') : t('common.no');
+  if (f === 'due' || f === 'decideBy' || f === 'raised') return ymd(v);
+  return Array.isArray(v) ? v.join('、') : String(v);
+}
+function logLine(e){
+  if (e.kind === 'create') return t('rd.logCreate', esc(e.by || '—'));
+  if (e.kind === 'approve') return t('rd.logApprove', esc(e.by || '—'));
+  if (e.kind === 'return') return t('rd.logReturn', esc(e.by || '—'), esc(e.text || '—'));
+  if (e.kind === 'request') return t('rd.logRequest', esc(e.by || '—'));
+  const name = t(LOG_LABEL[e.f] || 'col.detail');
+  if (LOG_LONG.has(e.f)) return t('rd.logEdit', esc(e.by || '—'), esc(name));
+  return t('rd.logChange', esc(e.by || '—'), esc(name), esc(logValue(e.f, e.from)), esc(logValue(e.f, e.to)));
+}
+function renderRaidDetail(v, {b, alerts}, r){
+  const i = raidIdx(r.id), f = (k, o) => fld('raid', i, k, r[k], o);
+  const kids = raidKids(r.id), parent = raidById(r.parentId), myAl = alerts.filter(a => a.ref === r.id);
+  const canSt = can('raid', i, 'status'), canComment = can('raid', i, 'comment');
+  const approveBox = r.status === 'review' && canApproveRaid(r) ? `<button class="btn" data-rd-return>↩ ${t('ap.returnOne')}</button><button class="btn primary" data-rd-approve>✓ ${t('rd.approveClose')}</button>`
+    : r.status === 'review' ? `<span class="muted small">${t('rd.waiting', esc(r.approver || t('rd.approverAny')))}</span>`
+    : (['open','wip'].includes(r.status) && canSt && ['issue','risk'].includes(r.type)) ? `<button class="btn" data-rd-request>${t('rd.request')}</button>` : '';
+  const linked = (r.taskIds || []).map(id => state.tasks.find(x => x.id === id)).filter(Boolean);
+  const log = (r.log || []).slice().reverse();
+  const canOwners = can('raid', i, 'owners'), canTasks = can('raid', i, 'taskIds');
+  v.innerHTML = `<div class="bar"><button class="btn ghost" data-rd-back>‹ ${t('rd.back')}</button><span class="sp"></span>${approveBox}${canDelete('raid', i) ? `<button class="btn danger" data-del="raid" data-key="${i}" data-name="${esc(r.title || r.id)}">${TRASH} ${t('btn.delete')}</button>` : ''}</div>
+  <div class="card rd-head">
+    <div class="rd-chips"><span class="rd-id">${esc(r.id)}</span>${f('type', {type: 'select', opts: enumOpts('raidType')})}${f('status', {type: 'select', opts: enumOpts('raidStatus')})}
+      <span class="muted small">${t('col.impact')}</span>${f('impact', {type: 'select', opts: enumOpts('level'), blank: true})}${r.type === 'risk' ? `<span class="muted small">${t('col.prob')}</span>${f('prob', {type: 'select', opts: enumOpts('level'), blank: true})}` : ''}
+      ${r.needDecision && r.status !== 'closed' ? `<span class="dec-flag">${t('rd.needDecision')}</span>` : ''}</div>
+    ${f('title', {type: 'textarea', rows: 2, cls: 'rd-title', ph: t('rd.titlePh')})}
+    ${myAl.length ? `<div class="rd-alerts">${myAl.map(a => `<div>${sevBadge(a.sev)} ${esc(t('at.' + a.type))}：${esc(a.detail)}</div>`).join('')}</div>` : ''}
+    ${r.status !== 'closed' ? returnedNote(r) : r.approvedBy ? `<div class="muted small">${t('ap.approvedBy', esc(r.approvedBy), md(r.approvedAt))}</div>` : ''}
+  </div>
+  <div class="rd-grid">
+    <div class="rd-main">
+      <div class="card"><h2>${t('rd.cardTitle')}<span class="hint">${t('rd.cardHint')}</span></h2>
+        <div class="form-grid one">
+          <label>${t('rd.detail')}${f('detail', {type: 'textarea', rows: 3, ph: t('rd.detailPh')})}</label>
+          <label>${t('rd.impactText')}${f('impactText', {type: 'textarea', rows: 2, ph: t('rd.impactPh')})}</label>
+          <label>${t('rd.mitigationLbl')}${f('mitigation', {type: 'textarea', rows: 2, ph: t('rd.mitigationPh')})}</label>
+        </div></div>
+      <div class="card ${r.needDecision ? 'dec-card' : ''}"><h2>${t('rd.decisionTitle')}<span class="hint">${t('rd.decisionHint')}</span></h2>
+        <div class="form-grid">
+          <label class="chk">${f('needDecision', {type: 'checkbox'})} ${t('rd.needDecisionQ')}</label>
+          <label>${t('rd.decider')}${f('decider', {type: 'select', opts: nameOpts(r.decider), blank: true})}</label>
+          <label>${t('rd.decideBy')}${f('decideBy', {type: 'date'})}</label>
+        </div>
+        <div class="form-grid one" style="margin-top:8px"><label>${t('rd.ask')}${f('ask', {type: 'textarea', rows: 2, ph: t('rd.askPh')})}</label></div></div>
+      <div class="card"><h2>${t('rd.history')}<span class="hint">${t('rd.historyHint')}</span></h2>
+        ${canComment ? `<div class="rd-comment"><textarea id="rdComment" rows="2" placeholder="${t('rd.commentPh')}"></textarea><button class="btn primary" id="rdSend">${t('rd.send')}</button></div>` : ''}
+        <ul class="timeline">${log.map((e, k) => `<li class="${e.kind === 'comment' ? 'cm' : 'ch'}"><div class="tl-meta">${esc(e.at || '')}</div>${e.kind === 'comment'
+          ? `<div class="cm-bubble"><b>${esc(e.by || '—')}</b><div>${esc(e.text).replace(/\n/g, '<br>')}</div>${e.by === myName() || myRole() === 'pm' ? `<button class="btn ghost sm" data-rd-delc="${(r.log.length - 1) - k}" title="${t('btn.delete')}">✕</button>` : ''}</div>`
+          : `<div class="tl-text">${logLine(e)}</div>`}</li>`).join('') || `<li class="muted small">${t('rd.noHistory')}</li>`}</ul></div>
+    </div>
+    <div class="rd-side">
+      <div class="card"><h2>${t('rd.people')}</h2>
+        <div class="form-grid one">
+          <div class="lbl-block">${t('rd.reporter')}<div class="rd-person">${esc(r.reporter || '—')}</div></div>
+          <label>${t('rd.approver')}${f('approver', {type: 'select', opts: nameOpts(r.approver), blank: t('rd.approverAny')})}</label>
+          <div class="lbl-block">${t('rd.owners')}<div class="chips">${raidOwners(r).map((o, k) => `<span class="chip on">${k === 0 ? '★ ' : ''}${esc(o)}${canOwners ? `<button data-rd-rmown="${esc(o)}" aria-label="${t('btn.delete')}">✕</button>` : ''}</span>`).join('') || '<span class="muted small">—</span>'}
+            ${canOwners ? `<select id="rdAddOwner"><option value="">＋ ${t('rd.addOwner')}</option>${nameOpts().filter(([n]) => !raidOwners(r).includes(n)).map(([n]) => `<option>${esc(n)}</option>`).join('')}</select>` : ''}</div>
+            <small class="muted">${t('rd.ownersHint')}</small></div>
+        </div></div>
+      <div class="card"><h2>${t('rd.attrs')}</h2>
+        <div class="form-grid one">
+          <label>${t('col.phase')}${f('phaseId', {type: 'select', opts: phaseOpts(), blank: t('common.common')})}</label>
+          <label>${t('col.category')}${f('category', {type: 'select', opts: enumOpts('raidCat')})}</label>
+          <label>${t('col.raised')}${f('raised', {type: 'date'})}</label>
+          <label>${t('col.due')}${f('due', {type: 'date'})}</label>
+        </div></div>
+      <div class="card"><h2>${t('rd.family')}</h2>
+        <div class="form-grid one"><label>${t('rd.parent')}${f('parentId', {type: 'select', opts: raidParentOpts(r), blank: t('rd.noParent')})}</label></div>
+        ${parent ? `<div class="muted small" style="margin:6px 0">${t('rd.parentIs')} <button class="link-btn" data-open-raid="${esc(parent.id)}">${esc(parent.id)} ${esc(parent.title)}</button></div>` : ''}
+        <div class="lbl-block" style="margin-top:8px">${t('rd.kids')}${kids.length ? `<span class="muted small"> ${t('rd.kidsDone', kids.filter(k => k.status === 'closed').length, kids.length)}</span>` : ''}
+          <ul class="mini-list">${kids.map(k => `<li><button class="link-btn" data-open-raid="${esc(k.id)}">${esc(k.id)}</button> ${esc(k.title || '—')} <span class="tag">${esc(lbl('raidStatus', k.status))}</span> <span class="muted small">${esc(ownersText(k))}</span></li>`).join('') || `<li class="muted small">${t('rd.noKids')}</li>`}</ul>
+          ${canCreate('raid') ? `<button class="btn sm" data-rd-addkid>＋ ${t('rd.addKid')}</button>` : ''}</div>
+      </div>
+      <div class="card"><h2>${t('rd.tasks')}<span class="hint">${t('rd.tasksHint')}</span></h2>
+        <ul class="mini-list">${linked.map(x => `<li><button class="link-btn" data-open-task="${esc(x.id)}">${esc(x.id)}</button> ${x.milestone ? '◆ ' : ''}${esc(x.name)} <span class="muted small">${md(x.end)} · ${esc(lbl('taskStatus', x.status))}</span>${!isDone(x) && d2n(x.end) < b ? ` <span class="red small">${t('rd.taskLate')}</span>` : ''}${canTasks ? ` <button class="btn ghost sm" data-rd-rmtask="${esc(x.id)}" aria-label="${t('btn.delete')}">✕</button>` : ''}</li>`).join('') || `<li class="muted small">${t('rd.noTasks')}</li>`}</ul>
+        ${canTasks ? `<select id="rdAddTask"><option value="">＋ ${t('rd.addTask')}</option>${state.tasks.filter(x => !(r.taskIds || []).includes(x.id) && x.disp !== 'dropped').map(x => `<option value="${esc(x.id)}">${esc(x.id)} ${x.milestone ? '◆ ' : ''}${esc(x.name)}</option>`).join('')}</select>` : ''}
+      </div>
+    </div>
+  </div>`;
+  const back = () => { ui.raidSel = ''; render(true); };
+  v.querySelector('[data-rd-back]').onclick = back;
+  const ask = () => { const w = prompt(t('ap.returnWhy')); return w === null ? null : w.trim(); };
+  const ap = v.querySelector('[data-rd-approve]'); if (ap) ap.onclick = () => resolveApprovals([{col: 'raid', o: r}], 'approve');
+  const rt = v.querySelector('[data-rd-return]'); if (rt) rt.onclick = () => { const w = ask(); if (w !== null) resolveApprovals([{col: 'raid', o: r}], 'return', w); };
+  const rq = v.querySelector('[data-rd-request]'); if (rq) rq.onclick = () => { r.status = 'review'; r.reviewAt = todayStr(); raidLog(r, {kind: 'request'}); save(); render(); toast(t('rd.requested', r.approver || t('rd.approverAny'))); };
+  const send = $('#rdSend'); if (send) send.onclick = () => { const tx = $('#rdComment').value.trim(); if (!tx) return; raidLog(r, {kind: 'comment', text: tx}); save(); render(); toast(t('rd.commented')); };
+  const cm = $('#rdComment'); if (cm) cm.onkeydown = e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); send.click(); } };
+  v.querySelectorAll('[data-rd-delc]').forEach(el => el.onclick = () => { if (!confirm(t('rd.delComment'))) return; r.log.splice(+el.dataset.rdDelc, 1); save(); render(); });
+  const setOwners = list => { const from = raidOwners(r).slice(); r.owners = [...new Set(list.filter(Boolean))]; r.owner = r.owners[0] || ''; raidLog(r, {kind: 'change', f: 'owners', from, to: r.owners.slice()}); save(); render(); };
+  const ao = $('#rdAddOwner'); if (ao) ao.onchange = () => { if (ao.value) setOwners([...raidOwners(r), ao.value]); };
+  v.querySelectorAll('[data-rd-rmown]').forEach(el => el.onclick = () => setOwners(raidOwners(r).filter(o => o !== el.dataset.rdRmown)));
+  const setTasks = list => { const from = (r.taskIds || []).slice(); r.taskIds = [...new Set(list)]; raidLog(r, {kind: 'change', f: 'taskIds', from, to: r.taskIds.slice()}); save(); render(); };
+  const at = $('#rdAddTask'); if (at) at.onchange = () => { if (at.value) setTasks([...(r.taskIds || []), at.value]); };
+  v.querySelectorAll('[data-rd-rmtask]').forEach(el => el.onclick = () => setTasks((r.taskIds || []).filter(x => x !== el.dataset.rdRmtask)));
+  const ak = v.querySelector('[data-rd-addkid]'); if (ak) ak.onclick = () => { const k = newRaid({type: r.type === 'risk' ? 'risk' : 'issue', parentId: r.id, phaseId: r.phaseId, category: r.category, approver: r.approver}); save(); openRaid$(k.id); };
+}
+
+</script>
+<script>
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 0kaka
+// 商用ライセンス（改変の非公開・組み込み・SaaS 提供）は COMMERCIAL.md を参照 / Commercial licensing: see COMMERCIAL.md
+'use strict';
+// ============ 全体検索（画面右上の検索欄。「/」または Ctrl+K でどこからでも） ============
+// タスク・課題・会議（議題・決定・宿題）・変更要求・ガバナンスをまとめて探し、押すとその場所を開く。
+// 自分のロールで見られない画面のものは出さない。
+function searchAll(q){
+  const s = q.trim().toLowerCase(); if (!s) return [];
+  const tabs = ROLE_TABS[myRole()] || [], out = [];
+  const hit = (...vals) => vals.some(v => String(v || '').toLowerCase().includes(s));
+  const snip = (...vals) => { const v = vals.map(x => String(x || '')).find(x => x.toLowerCase().includes(s)) || ''; const k = v.toLowerCase().indexOf(s); return k < 0 ? '' : (k > 24 ? '…' : '') + v.slice(Math.max(0, k - 24), k + s.length + 40); };
+  if (tabs.includes('tasks')) state.tasks.forEach(x => { if (hit(x.id, x.name, x.owner)) out.push({kind: 'tasks', id: x.id, title: `${x.id} ${x.name}`, sub: [x.owner, lbl('taskStatus', x.status), md(x.end)].filter(Boolean).join(' · '), go: () => openTaskById(x.id)}); });
+  if (tabs.includes('raid')) state.raid.forEach(x => { if (hit(x.id, x.title, x.detail, x.impactText, x.mitigation, x.ask, raidOwners(x).join(' '), x.approver, ...(x.log || []).map(e => e.text))) out.push({kind: 'raid', id: x.id, title: `${x.id} ${x.title}`, sub: snip(x.title, x.detail, x.impactText, x.mitigation, x.ask, ...(x.log || []).map(e => e.text)) || ownersText(x), go: () => openRaid$(x.id)}); });
+  if (tabs.includes('meetings')) state.meetings.forEach(m => {
+    const parts = [m.title, m.purpose, m.notes, ...m.agenda.map(a => a.topic + ' ' + (a.outcome || '')), ...m.decisions.map(d => d.text), ...m.actions.map(a => a.text + ' ' + (a.owner || ''))];
+    if (hit(...parts)) out.push({kind: 'meetings', id: m.id, title: `${md(m.date)} ${m.title}`, sub: snip(...parts), go: () => go({tab: 'meetings', meetingId: m.id})});
+  });
+  if (tabs.includes('governance')) {
+    state.crs.forEach(c => { if (hit(c.id, c.title, c.scope, c.note)) out.push({kind: 'crs', id: c.id, title: `${c.id} ${c.title}`, sub: lbl('crStatus', c.status), go: () => go({tab: 'governance'})}); });
+    state.governance.forEach(g => { if (hit(g.title, g.body, g.content)) out.push({kind: 'governance', id: g.id, title: g.title, sub: snip(g.body, g.content), go: () => go({tab: 'governance'})}); });
+  }
+  return out.slice(0, 40);
+}
+function openTaskById(id){ const i = state.tasks.findIndex(x => x.id === id); if (i < 0) return; go({tab: 'tasks', taskView: ui.taskView === 'backlog' && state.tasks[i].disp !== 'backlog' ? 'kanban' : ui.taskView, taskSel: String(i)}); }
+function openSearch(){
+  document.querySelectorAll('.gs-pop').forEach(x => x.remove());
+  const box = document.createElement('div'); box.className = 'gs-pop'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', t('srch.title'));
+  box.innerHTML = `<input class="gs-input" placeholder="${t('srch.ph')}" aria-label="${t('srch.title')}"><div class="gs-list"></div><div class="gs-foot muted small">${t('srch.hint')}</div>`;
+  document.body.appendChild(box);
+  const inp = box.querySelector('input'), list = box.querySelector('.gs-list'); let res = [], cur = 0;
+  const draw = () => {
+    res = searchAll(inp.value); cur = Math.min(cur, Math.max(0, res.length - 1));
+    list.innerHTML = !inp.value.trim() ? `<div class="empty">${t('srch.start')}</div>` : res.length ? res.map((r, k) => `<button class="gs-item ${k === cur ? 'on' : ''}" data-k="${k}"><span class="tag gs-${r.kind}">${t('srch.kind.' + r.kind)}</span><span class="gs-main"><b>${esc(r.title)}</b>${r.sub ? `<small>${esc(r.sub)}</small>` : ''}</span></button>`).join('') : `<div class="empty">${t('srch.none')}</div>`;
+    list.querySelectorAll('[data-k]').forEach(b => b.onclick = () => pick(+b.dataset.k));
+  };
+  const close = () => { box.remove(); document.removeEventListener('pointerdown', out, true); };
+  const pick = k => { const r = res[k]; if (!r) return; close(); r.go(); };
+  const out = e => { if (!box.contains(e.target) && !e.target.closest('#gsBtn')) close(); };
+  inp.oninput = () => { cur = 0; draw(); };
+  inp.onkeydown = e => {
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowDown') { e.preventDefault(); cur = Math.min(res.length - 1, cur + 1); draw(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); cur = Math.max(0, cur - 1); draw(); }
+    else if (e.key === 'Enter') { e.preventDefault(); pick(cur); }
+  };
+  setTimeout(() => document.addEventListener('pointerdown', out, true));
+  draw(); inp.focus();
+  return {box, input: inp, draw};
+}
+document.addEventListener('keydown', e => {
+  if (!me()) return;
+  const typing = e.target.closest && e.target.closest('input, textarea, select, [contenteditable]');
+  if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && !typing)) { e.preventDefault(); openSearch(); }
+});
 
 </script>
 <script>
@@ -2806,7 +3465,8 @@ function buildReport(lang){
   else {
     const auto = alerts.filter(a => a.sev === 'H' && ['noMitigation','msRisk','raidOverdue','contractOverrun','gateOverdue'].includes(a.type));
     const crWait = state.crs.filter(c => inScope(c) && c.status === 'pending');
-    if (auto.length || crWait.length) { L.push(L_('rp.autoReq')); auto.forEach(a => L.push(`- ${a.target}：${a.detail}`)); crWait.forEach(c => L.push(`- ${L_('rp.crDecision', c.id, c.title)}`)); }
+    const decs = decisionsNeeded();
+    if (auto.length || crWait.length || decs.length) { L.push(L_('rp.autoReq')); decs.forEach(r => L.push(`- ${L_('rp.decisionReq', r.decider || '—', r.ask || r.title, r.id, r.decideBy ? md(r.decideBy) : '—')}`)); auto.forEach(a => L.push(`- ${a.target}：${a.detail}`)); crWait.forEach(c => L.push(`- ${L_('rp.crDecision', c.id, c.title)}`)); }
     else L.push(L_('common.none'));
   }
   return L.join('\n');
@@ -3558,7 +4218,12 @@ function myTodos(b, alerts){
   const nm = myName(), S = state.settings, r = myRole(), out = [];
   const add = (sev, text, nav) => out.push({sev, text, nav});
   // 承認待ちで自分が承認できるもの
-  state.tasks.filter(x => x.status === 'approval' && activeTask(x) && canApprove(x)).forEach(x => add('M', t('mine.todo.approve', x.name, x.owner || '—'), 'tasks'));
+  // 承認できる人：1件ずつ並べると埋もれるので、件数をまとめて「承認」画面へ案内する
+  const apN = ROLE_TABS[r].includes('approvals') ? approvalQueue().length : 0;
+  if (apN) add('M', t('mine.todo.approveN', apN), 'approvals');
+  // 差し戻されたもの（理由つき）
+  state.tasks.filter(x => x.owner === nm && !isDone(x) && x.returnedAt && x.status !== 'approval').forEach(x => add('H', t('mine.todo.returned', x.name, x.returnNote || '—'), 'tasks'));
+  state.raid.filter(x => raidOwners(x).includes(nm) && !['closed','review'].includes(x.status) && x.returnedAt).forEach(x => add('H', t('mine.todo.returned', x.title || x.id, x.returnNote || '—'), 'raid:' + x.id));
   state.tasks.filter(x => x.owner === nm && !isDone(x) && !x.milestone && activeTask(x) && x.disp !== 'hold').forEach(x => {
     const e = d2n(x.end), s = d2n(x.start);
     if (e < b) add('H', t('mine.todo.overdue', x.name, md(x.end)), 'tasks');
@@ -3570,11 +4235,15 @@ function myTodos(b, alerts){
     if (m.status === 'planned' && d2n(m.date) >= b && d2n(m.date) <= b + 7) m.agenda.forEach(a => { if (a.owner === nm) add('L', t('mine.todo.agenda', md(m.date), m.title, a.topic), `mtg:${m.id}`); });
     if (m.status === 'planned' && m.organizer === nm && d2n(m.date) < b) add('M', t('mine.todo.minutes', m.title, md(m.date)), `mtg:${m.id}`);
   });
-  state.raid.filter(x => x.owner === nm && x.status !== 'closed' && x.type !== 'decision' && x.due && d2n(x.due) < b).forEach(x => add('M', t('mine.todo.raid', x.title, md(x.due)), 'raid'));
+  state.raid.filter(x => raidOwners(x).includes(nm) && x.status !== 'closed' && x.type !== 'decision' && x.due && d2n(x.due) < b).forEach(x => add('M', t('mine.todo.raid', x.title, md(x.due)), 'raid:' + x.id));
+  // 承認者に指名された課題（承認画面がないロールでも、ここから開いて承認できる）
+  if (!apN) state.raid.filter(x => x.status === 'review' && x.approver === nm && canApproveRaid(x)).forEach(x => add('M', t('mine.todo.raidApprove', x.id, x.title), 'raid:' + x.id));
+  // 判断を依頼された課題
+  state.raid.filter(x => x.needDecision && x.status !== 'closed' && x.decider === nm).forEach(x => add(x.decideBy && d2n(x.decideBy) < b ? 'H' : 'M', t('mine.todo.decide', x.ask || x.title, x.decideBy ? md(x.decideBy) : '—'), 'raid:' + x.id));
   if (r === 'lead') { const n = alerts.filter(a => a.sev === 'H' && leadPhases().includes(a.phaseId)).length; if (n) add('H', t('mine.todo.phaseAlerts', n), 'alerts'); }
   if (r === 'pm' || r === 'pmo') {
     const h = alerts.filter(a => a.sev === 'H').length; if (h) add('H', t('mine.todo.allAlerts', h), 'alerts');
-    const cr = state.crs.filter(c => c.status === 'pending').length; if (cr) add('M', t('mine.todo.cr', cr), 'governance');
+    const cr = state.crs.filter(c => c.status === 'pending').length; if (cr && !apN) add('M', t('mine.todo.cr', cr), 'governance');
     const g = state.governance.filter(x => x.status !== 'agreed').length; if (g) add('L', t('mine.todo.gov', g), 'governance');
     const known = new Set(state.org.map(p => p.name)), missing = new Set(state.tasks.map(x => x.owner).filter(n => n && !known.has(n))).size;
     if (missing) add('L', t('mine.todo.org', missing), 'org');
@@ -3587,7 +4256,7 @@ function renderMine(v, {b, alerts}){
   const tasks = state.tasks.map((x, i) => ({x, i})).filter(({x}) => x.owner === nm && !isDone(x) && !x.milestone && activeTask(x)).sort((a, c) => d2n(a.x.end) - d2n(c.x.end));
   const acts = state.meetings.filter(m => m.status !== 'cancelled').flatMap(m => m.actions.map((a, i) => ({a, i, m}))).filter(({a}) => a.owner === nm && a.status !== 'done');
   const mtgs = state.meetings.filter(m => m.status === 'planned' && d2n(m.date) >= b && d2n(m.date) <= b + 14 && (m.organizer === nm || m.agenda.some(a => a.owner === nm) || String(m.attendees || '').includes(nm))).sort((x, y) => x.date < y.date ? -1 : 1);
-  const raid = state.raid.filter(x => x.owner === nm && x.status !== 'closed' && x.type !== 'decision');
+  const raid = state.raid.filter(x => raidOwners(x).includes(nm) && x.status !== 'closed' && x.type !== 'decision');
   v.innerHTML = `
   <div class="card hello">
     <div class="avatar">${esc((nm || 'PM').slice(0, 1))}</div>
@@ -3597,7 +4266,7 @@ function renderMine(v, {b, alerts}){
   </div>
   <div class="grid two" style="margin-top:16px">
     <div class="card"><h2>${t('mine.todo')}<span class="hint">${t('mine.todoHint')}</span></h2>
-      ${todos.length ? `<ul class="todo-list">${todos.map(x => `<li ${x.nav.startsWith('mtg:') ? `data-open-mtg="${x.nav.slice(4)}"` : `data-tab="${x.nav}"`}>${sevBadge(x.sev)}<span>${esc(x.text)}</span><span class="go">›</span></li>`).join('')}</ul>` : `<div class="empty">${t('mine.allClear')}</div>`}
+      ${todos.length ? `<ul class="todo-list">${todos.map(x => `<li ${x.nav.startsWith('mtg:') ? `data-open-mtg="${x.nav.slice(4)}"` : x.nav.startsWith('raid:') ? `data-open-raid="${esc(x.nav.slice(5))}"` : `data-tab="${x.nav}"`}>${sevBadge(x.sev)}<span>${esc(x.text)}</span><span class="go">›</span></li>`).join('')}</ul>` : `<div class="empty">${t('mine.allClear')}</div>`}
     </div>
     <div class="card"><h2>${t('mine.meetings')}</h2>
       ${mtgs.length ? `<ul class="alert-list">${mtgs.map(m => `<li><div class="date-chip">${md(m.date)}<small>${esc(m.time || '')}</small></div><div style="flex:1"><div class="t"><span class="link" data-open-mtg="${m.id}">${esc(m.title)}</span></div><div class="d">${m.organizer === nm ? t('mine.organizer') : m.agenda.filter(a => a.owner === nm).map(a => esc(a.topic)).join(' / ') || t('mine.attendee')}</div></div></li>`).join('')}</ul>` : `<div class="empty">${t('empty.upcoming')}</div>`}
@@ -3614,7 +4283,7 @@ function renderMine(v, {b, alerts}){
       ${acts.length ? `<div class="scroll-x"><table><tr><th>${t('col.action')}</th><th>${t('col.due')}</th><th>${t('col.status')}</th></tr>${acts.map(({a, i, m}) => `<tr><td>${esc(a.text)}<div class="muted small">${md(m.date)} ${esc(m.title)}</div></td><td class="${a.due && d2n(a.due) < b ? 'red' : ''}">${md(a.due)}</td><td>${fld('actions', `${m.id}:${i}`, 'status', a.status, {type: 'select', opts: enumOpts('actStatus')})}</td></tr>`).join('')}</table></div>` : `<div class="empty">${t('empty.actions')}</div>`}
     </div>
     <div class="card"><h2>${t('mine.raid')}</h2>
-      ${raid.length ? `<div class="scroll-x"><table><tr><th>ID</th><th>${t('col.title')}</th><th>${t('col.due')}</th><th>${t('col.status')}</th></tr>${raid.map(x => { const i = state.raid.indexOf(x); return `<tr><td>${esc(x.id)}</td><td>${esc(x.title)}</td><td class="${x.due && d2n(x.due) < b ? 'red' : ''}">${md(x.due)}</td><td>${fld('raid', i, 'status', x.status, {type: 'select', opts: enumOpts('raidStatus')})}</td></tr>`; }).join('')}</table></div>` : `<div class="empty">${t('empty.raid')}</div>`}
+      ${raid.length ? `<div class="scroll-x"><table><tr><th>ID</th><th>${t('col.title')}</th><th>${t('col.due')}</th><th>${t('col.status')}</th></tr>${raid.map(x => { const i = state.raid.indexOf(x); return `<tr><td><button class="link-btn" data-open-raid="${esc(x.id)}">${esc(x.id)}</button></td><td>${esc(x.title)}</td><td class="${x.due && d2n(x.due) < b ? 'red' : ''}">${md(x.due)}</td><td>${fld('raid', i, 'status', x.status, {type: 'select', opts: enumOpts('raidStatus')})}</td></tr>`; }).join('')}</table></div>` : `<div class="empty">${t('empty.raid')}</div>`}
       ${canCreate('raid') ? `<div class="bar" style="margin-top:10px"><button class="btn" data-tab="raid">＋ ${t('mine.raise')}</button></div>` : ''}
     </div>
   </div>`;
@@ -3828,13 +4497,14 @@ async function finishWizard(){
 // 商用ライセンス（改変の非公開・組み込み・SaaS 提供）は COMMERCIAL.md を参照 / Commercial licensing: see COMMERCIAL.md
 'use strict';
 // ============ 画面の組み立て ============
-const TABS = ['mine','dash','alerts','phases','tasks','raid','meetings','org','governance','report','settings'];
-const VIEWS = {mine: renderMine, dash: renderDash, alerts: renderAlerts, phases: renderPhases, tasks: renderTasks, raid: renderRaid, meetings: renderMeetings, org: renderOrg, governance: renderGovernance, report: renderReport, settings: renderSettings};
+const TABS = ['mine','dash','alerts','approvals','phases','tasks','raid','meetings','org','governance','report','settings'];
+const VIEWS = {mine: renderMine, dash: renderDash, alerts: renderAlerts, approvals: renderApprovals, phases: renderPhases, tasks: renderTasks, raid: renderRaid, meetings: renderMeetings, org: renderOrg, governance: renderGovernance, report: renderReport, settings: renderSettings};
 // SF Symbols 風の線アイコン（24x24）
 const ICONS = {
   mine: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.5 21c.6-3.8 3.7-6 7.5-6s6.9 2.2 7.5 6',
   dash: 'M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z',
   alerts: 'M12 3l9.5 17h-19zM12 10v4M12 17.5v.5',
+  approvals: 'M3 12.5l3 3 6-6M14 8h7M14 13h7M3 19h18',
   phases: 'M5 21V4M5 4h11l-2 4 2 4H5',
   tasks: 'M9 6h11M9 12h11M9 18h11M4 5.5l1 1 2-2M4 11.5l1 1 2-2M4 17.5l1 1 2-2',
   raid: 'M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6zM9 12l2 2 4-4',
@@ -3867,7 +4537,8 @@ function render(animate){
   $('#baseDate').title = t('hdr.baseHint');
   $('#langSeg').innerHTML = ['ja','en'].map(l => `<button data-lang="${l}" class="${l === lang ? 'on' : ''}">${l === 'ja' ? '日本語' : 'EN'}</button>`).join('');
   $('#hdrRag').innerHTML = ragBadge(rag);
-  const cnt = {alerts: alerts.filter(a => a.sev === 'H').length, meetings: alerts.filter(a => ['noAgenda','noMinutes','actionOverdue'].includes(a.type)).length, governance: alerts.filter(a => a.type === 'govNotAgreed').length};
+  $('#gsLbl').textContent = t('srch.btn');
+  const cnt = {alerts: alerts.filter(a => a.sev === 'H').length, meetings: alerts.filter(a => ['noAgenda','noMinutes','actionOverdue'].includes(a.type)).length, governance: alerts.filter(a => a.type === 'govNotAgreed').length, approvals: tabs.includes('approvals') ? approvalQueue().length : 0};
   // ログイン中の本人（切り替えはできない。別の人はログアウトしてから自分で入る）
   const mp = me();
   $('#meBox').innerHTML = `<span class="avatar xs">${esc(mp.name.slice(0, 1))}</span><span class="me-name">${esc(mp.name)}<small>${t('roleShort.' + (mp.access || 'member'))}</small></span><button class="btn ghost" data-logout>${t('login.logout')}</button>`;
@@ -3876,6 +4547,7 @@ function render(animate){
   const crumb = [ui.scope ? `${(phaseOf(ui.scope) || {}).code || ''} ${phaseName(ui.scope)}` : t('scope.all'), t('tab.' + ui.tab)];
   const mt = ui.tab === 'meetings' && state.meetings.find(x => x.id === ui.meetingId); if (mt) crumb.push(`${esc(mt.title)}（${md(mt.date)}）`);
   const per = ui.tab === 'org' && state.org.find(x => x.id === ui.orgSel); if (per) crumb.push(esc(per.name));
+  const rsel = ui.tab === 'raid' && ui.raidSel && state.raid.find(x => x.id === ui.raidSel); if (rsel) crumb.push(`${rsel.id} ${rsel.title || ''}`);
   const head = $('#pageHead'), view = $('#view');
   head.classList.toggle('animate', !!animate); view.classList.toggle('animate', !!animate);
   head.innerHTML = `<div class="crumb">${crumb.map(esc).join('<span class="sep">›</span>')}</div><h1 class="large-title">${t('tab.' + ui.tab)}</h1><p class="lead">${t('tabd.' + ui.tab)}</p>`;
@@ -3948,30 +4620,40 @@ document.addEventListener('change', e => {
   const el = e.target, col = el.dataset.col, f = el.dataset.f; if (!col) return;
   const obj = target(col, el.dataset.key); if (!obj) return;
   if (!can(col, el.dataset.key, f)) { toast(t('perm.denied')); scheduleRender(); return; }
+  let v = el.type === 'checkbox' ? el.checked : el.value;
   if (col === 'tasks' && f === 'status' && v === 'closed' && needsApproval(obj) && !canApprove(obj)) { toast(t('tk.needApprover')); scheduleRender(); return; }
   if (col === 'tasks' && f === 'status' && v === 'closed' && needsApproval(obj)) { obj.approvedBy = myName(); obj.approvedAt = todayStr(); }
-  let v = el.type === 'checkbox' ? el.checked : el.value;
   if (el.type === 'number') { const n = parseFloat(v); v = isNaN(n) ? 0 : n; }
+  const before = obj[f];
   if (col === 'org' && f === 'name' && obj.name && obj.name !== v) renameOwner(obj.name, v); // 体制図の名前変更を担当欄にも反映
   obj[f] = v;
   if (col === 'tasks') afterTaskChange(obj, f);
   if (col === 'org' && f === 'access') { const got = applyRoleDefaults(obj); toast(got.length ? t('role.autoPhase', obj.name, got.join('、')) : t('role.assigned', obj.name, t('role.' + v))); }
   if (col === 'raid' && f === 'type' && v !== 'risk') obj.prob = '';
+  if (col === 'raid' && f === 'owner') { obj.owners = [...new Set([v, ...raidOwners(obj).filter(o => o !== before)].filter(Boolean))]; obj.owner = obj.owners[0] || ''; }
+  if (col === 'raid' && f === 'status' && v === 'closed') obj.closedAt = todayStr();
+  if (col === 'raid' && f === 'status' && before === 'closed' && v !== 'closed') obj.closedAt = '';
+  if (col === 'raid' && f !== 'comment' && String(before ?? '') !== String(v ?? '')) raidLog(obj, {kind: 'change', f, from: before, to: v});
   if (col === 'governance' && f === 'status' && v === 'agreed' && !obj.agreedDate) obj.agreedDate = todayStr();
   if (col === 'crs' && f === 'status' && ['approved','rejected'].includes(v) && !obj.decided) obj.decided = todayStr();
+  // 承認待ちに入った日（承認画面の「待ち日数」に使う）
+  if (col === 'raid' && f === 'status' && v === 'review') obj.reviewAt = todayStr();
+  if (col === 'crs' && f === 'status' && v === 'pending') obj.pendingAt = todayStr();
   if (col === 'meetings' && f === 'typeId') { const mt = state.meetingTypes.find(x => x.id === v); if (mt && !obj.purpose) obj.purpose = mt.purpose; }
   flashFk = el.dataset.fk || '';
   save(); scheduleRender();
 });
 function renameOwner(from, to){
   state.tasks.forEach(x => { if (x.owner === from) x.owner = to; });
-  state.raid.forEach(x => { if (x.owner === from) x.owner = to; });
+  state.raid.forEach(x => { if (x.owner === from) x.owner = to; if (Array.isArray(x.owners)) x.owners = x.owners.map(o => o === from ? to : o); ['reporter','approver','decider'].forEach(k => { if (x[k] === from) x[k] = to; }); });
   state.crs.forEach(x => { if (x.owner === from) x.owner = to; });
   state.meetings.forEach(m => { if (m.organizer === from) m.organizer = to; m.agenda.forEach(a => { if (a.owner === from) a.owner = to; }); m.actions.forEach(a => { if (a.owner === from) a.owner = to; }); });
   if (state.project.pm === from) state.project.pm = to;
 }
 document.addEventListener('click', e => {
-  const tb = e.target.closest('[data-tab]'); if (tb) { go({tab: tb.dataset.tab}); return; }
+  const tb = e.target.closest('[data-tab]'); if (tb) { go({tab: tb.dataset.tab, raidSel: tb.dataset.tab === 'raid' && tb.closest('#tabs') ? '' : ui.raidSel}); return; }
+  const orr = e.target.closest('[data-open-raid]'); if (orr && !e.target.closest('select')) { const sw = ui.tab !== 'raid' || !ui.raidSel; go({tab: 'raid', raidSel: orr.dataset.openRaid}); if (!sw) window.scrollTo({top: 0}); return; }
+  const otk = e.target.closest('[data-open-task]'); if (otk) { openTaskById(otk.dataset.openTask); return; }
   const sc = e.target.closest('[data-scope]'); if (sc) { go({scope: sc.dataset.scope}); return; }
   const wz = e.target.closest('[data-wizard]'); if (wz) { openWizard(); return; }
   if (e.target.closest('[data-logout]')) { logout(); return; }
@@ -4005,6 +4687,7 @@ $('#navToggle').addEventListener('click', () => { const c = !document.body.class
 $('#brandHome').innerHTML = brandMark(); // 画面左上のロゴ（押すとダッシュボードへ）
 $('#brandHome').addEventListener('click', () => { if (me()) go({tab: ROLE_HOME[myRole()] || 'dash'}); });
 $('#pjSwitch').addEventListener('click', e => openProjectSwitcher(e.currentTarget));
+$('#gsBtn').addEventListener('click', () => openSearch());
 $('#helpBtn').addEventListener('click', () => { const el = $('#helpPanel'); if (el && el.classList.contains('open')) closeHelp(); else openHelp(); });
 $('#scopeSel').addEventListener('change', e => { ui.meetingId = ''; go({scope: e.target.value}); });
 $('#baseDate').addEventListener('change', e => { state.project.baseDate = e.target.value; save(); render(true); });

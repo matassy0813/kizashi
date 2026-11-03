@@ -8,7 +8,12 @@ function myTodos(b, alerts){
   const nm = myName(), S = state.settings, r = myRole(), out = [];
   const add = (sev, text, nav) => out.push({sev, text, nav});
   // 承認待ちで自分が承認できるもの
-  state.tasks.filter(x => x.status === 'approval' && activeTask(x) && canApprove(x)).forEach(x => add('M', t('mine.todo.approve', x.name, x.owner || '—'), 'tasks'));
+  // 承認できる人：1件ずつ並べると埋もれるので、件数をまとめて「承認」画面へ案内する
+  const apN = ROLE_TABS[r].includes('approvals') ? approvalQueue().length : 0;
+  if (apN) add('M', t('mine.todo.approveN', apN), 'approvals');
+  // 差し戻されたもの（理由つき）
+  state.tasks.filter(x => x.owner === nm && !isDone(x) && x.returnedAt && x.status !== 'approval').forEach(x => add('H', t('mine.todo.returned', x.name, x.returnNote || '—'), 'tasks'));
+  state.raid.filter(x => raidOwners(x).includes(nm) && !['closed','review'].includes(x.status) && x.returnedAt).forEach(x => add('H', t('mine.todo.returned', x.title || x.id, x.returnNote || '—'), 'raid:' + x.id));
   state.tasks.filter(x => x.owner === nm && !isDone(x) && !x.milestone && activeTask(x) && x.disp !== 'hold').forEach(x => {
     const e = d2n(x.end), s = d2n(x.start);
     if (e < b) add('H', t('mine.todo.overdue', x.name, md(x.end)), 'tasks');
@@ -20,11 +25,15 @@ function myTodos(b, alerts){
     if (m.status === 'planned' && d2n(m.date) >= b && d2n(m.date) <= b + 7) m.agenda.forEach(a => { if (a.owner === nm) add('L', t('mine.todo.agenda', md(m.date), m.title, a.topic), `mtg:${m.id}`); });
     if (m.status === 'planned' && m.organizer === nm && d2n(m.date) < b) add('M', t('mine.todo.minutes', m.title, md(m.date)), `mtg:${m.id}`);
   });
-  state.raid.filter(x => x.owner === nm && x.status !== 'closed' && x.type !== 'decision' && x.due && d2n(x.due) < b).forEach(x => add('M', t('mine.todo.raid', x.title, md(x.due)), 'raid'));
+  state.raid.filter(x => raidOwners(x).includes(nm) && x.status !== 'closed' && x.type !== 'decision' && x.due && d2n(x.due) < b).forEach(x => add('M', t('mine.todo.raid', x.title, md(x.due)), 'raid:' + x.id));
+  // 承認者に指名された課題（承認画面がないロールでも、ここから開いて承認できる）
+  if (!apN) state.raid.filter(x => x.status === 'review' && x.approver === nm && canApproveRaid(x)).forEach(x => add('M', t('mine.todo.raidApprove', x.id, x.title), 'raid:' + x.id));
+  // 判断を依頼された課題
+  state.raid.filter(x => x.needDecision && x.status !== 'closed' && x.decider === nm).forEach(x => add(x.decideBy && d2n(x.decideBy) < b ? 'H' : 'M', t('mine.todo.decide', x.ask || x.title, x.decideBy ? md(x.decideBy) : '—'), 'raid:' + x.id));
   if (r === 'lead') { const n = alerts.filter(a => a.sev === 'H' && leadPhases().includes(a.phaseId)).length; if (n) add('H', t('mine.todo.phaseAlerts', n), 'alerts'); }
   if (r === 'pm' || r === 'pmo') {
     const h = alerts.filter(a => a.sev === 'H').length; if (h) add('H', t('mine.todo.allAlerts', h), 'alerts');
-    const cr = state.crs.filter(c => c.status === 'pending').length; if (cr) add('M', t('mine.todo.cr', cr), 'governance');
+    const cr = state.crs.filter(c => c.status === 'pending').length; if (cr && !apN) add('M', t('mine.todo.cr', cr), 'governance');
     const g = state.governance.filter(x => x.status !== 'agreed').length; if (g) add('L', t('mine.todo.gov', g), 'governance');
     const known = new Set(state.org.map(p => p.name)), missing = new Set(state.tasks.map(x => x.owner).filter(n => n && !known.has(n))).size;
     if (missing) add('L', t('mine.todo.org', missing), 'org');
@@ -37,7 +46,7 @@ function renderMine(v, {b, alerts}){
   const tasks = state.tasks.map((x, i) => ({x, i})).filter(({x}) => x.owner === nm && !isDone(x) && !x.milestone && activeTask(x)).sort((a, c) => d2n(a.x.end) - d2n(c.x.end));
   const acts = state.meetings.filter(m => m.status !== 'cancelled').flatMap(m => m.actions.map((a, i) => ({a, i, m}))).filter(({a}) => a.owner === nm && a.status !== 'done');
   const mtgs = state.meetings.filter(m => m.status === 'planned' && d2n(m.date) >= b && d2n(m.date) <= b + 14 && (m.organizer === nm || m.agenda.some(a => a.owner === nm) || String(m.attendees || '').includes(nm))).sort((x, y) => x.date < y.date ? -1 : 1);
-  const raid = state.raid.filter(x => x.owner === nm && x.status !== 'closed' && x.type !== 'decision');
+  const raid = state.raid.filter(x => raidOwners(x).includes(nm) && x.status !== 'closed' && x.type !== 'decision');
   v.innerHTML = `
   <div class="card hello">
     <div class="avatar">${esc((nm || 'PM').slice(0, 1))}</div>
@@ -47,7 +56,7 @@ function renderMine(v, {b, alerts}){
   </div>
   <div class="grid two" style="margin-top:16px">
     <div class="card"><h2>${t('mine.todo')}<span class="hint">${t('mine.todoHint')}</span></h2>
-      ${todos.length ? `<ul class="todo-list">${todos.map(x => `<li ${x.nav.startsWith('mtg:') ? `data-open-mtg="${x.nav.slice(4)}"` : `data-tab="${x.nav}"`}>${sevBadge(x.sev)}<span>${esc(x.text)}</span><span class="go">›</span></li>`).join('')}</ul>` : `<div class="empty">${t('mine.allClear')}</div>`}
+      ${todos.length ? `<ul class="todo-list">${todos.map(x => `<li ${x.nav.startsWith('mtg:') ? `data-open-mtg="${x.nav.slice(4)}"` : x.nav.startsWith('raid:') ? `data-open-raid="${esc(x.nav.slice(5))}"` : `data-tab="${x.nav}"`}>${sevBadge(x.sev)}<span>${esc(x.text)}</span><span class="go">›</span></li>`).join('')}</ul>` : `<div class="empty">${t('mine.allClear')}</div>`}
     </div>
     <div class="card"><h2>${t('mine.meetings')}</h2>
       ${mtgs.length ? `<ul class="alert-list">${mtgs.map(m => `<li><div class="date-chip">${md(m.date)}<small>${esc(m.time || '')}</small></div><div style="flex:1"><div class="t"><span class="link" data-open-mtg="${m.id}">${esc(m.title)}</span></div><div class="d">${m.organizer === nm ? t('mine.organizer') : m.agenda.filter(a => a.owner === nm).map(a => esc(a.topic)).join(' / ') || t('mine.attendee')}</div></div></li>`).join('')}</ul>` : `<div class="empty">${t('empty.upcoming')}</div>`}
@@ -64,7 +73,7 @@ function renderMine(v, {b, alerts}){
       ${acts.length ? `<div class="scroll-x"><table><tr><th>${t('col.action')}</th><th>${t('col.due')}</th><th>${t('col.status')}</th></tr>${acts.map(({a, i, m}) => `<tr><td>${esc(a.text)}<div class="muted small">${md(m.date)} ${esc(m.title)}</div></td><td class="${a.due && d2n(a.due) < b ? 'red' : ''}">${md(a.due)}</td><td>${fld('actions', `${m.id}:${i}`, 'status', a.status, {type: 'select', opts: enumOpts('actStatus')})}</td></tr>`).join('')}</table></div>` : `<div class="empty">${t('empty.actions')}</div>`}
     </div>
     <div class="card"><h2>${t('mine.raid')}</h2>
-      ${raid.length ? `<div class="scroll-x"><table><tr><th>ID</th><th>${t('col.title')}</th><th>${t('col.due')}</th><th>${t('col.status')}</th></tr>${raid.map(x => { const i = state.raid.indexOf(x); return `<tr><td>${esc(x.id)}</td><td>${esc(x.title)}</td><td class="${x.due && d2n(x.due) < b ? 'red' : ''}">${md(x.due)}</td><td>${fld('raid', i, 'status', x.status, {type: 'select', opts: enumOpts('raidStatus')})}</td></tr>`; }).join('')}</table></div>` : `<div class="empty">${t('empty.raid')}</div>`}
+      ${raid.length ? `<div class="scroll-x"><table><tr><th>ID</th><th>${t('col.title')}</th><th>${t('col.due')}</th><th>${t('col.status')}</th></tr>${raid.map(x => { const i = state.raid.indexOf(x); return `<tr><td><button class="link-btn" data-open-raid="${esc(x.id)}">${esc(x.id)}</button></td><td>${esc(x.title)}</td><td class="${x.due && d2n(x.due) < b ? 'red' : ''}">${md(x.due)}</td><td>${fld('raid', i, 'status', x.status, {type: 'select', opts: enumOpts('raidStatus')})}</td></tr>`; }).join('')}</table></div>` : `<div class="empty">${t('empty.raid')}</div>`}
       ${canCreate('raid') ? `<div class="bar" style="margin-top:10px"><button class="btn" data-tab="raid">＋ ${t('mine.raise')}</button></div>` : ''}
     </div>
   </div>`;

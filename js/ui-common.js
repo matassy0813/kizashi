@@ -23,7 +23,13 @@ const TRASH = '<svg viewBox="0 0 24 24" class="ico-trash" aria-hidden="true"><pa
 const delBtn = (col, key, name) => `<button class="btn ghost del" data-del="${col}" data-key="${esc(key)}" data-name="${esc(name || '')}" title="${t('btn.delete')}" aria-label="${t('btn.delete')}">${TRASH}</button>`;
 const phaseTag = id => id ? `<span class="tag">${esc((phaseOf(id) || {}).code || '')} ${esc(phaseName(id))}</span>` : `<span class="tag common">${t('common.common')}</span>`;
 
-function toast(msg){ const el = $('#toast'); el.textContent = msg; el.classList.add('on'); clearTimeout(el._h); el._h = setTimeout(() => el.classList.remove('on'), 1800); }
+function toast(msg){ const el = $('#toast'); el.textContent = msg; el.classList.remove('act'); el.classList.add('on'); clearTimeout(el._h); el._h = setTimeout(() => el.classList.remove('on'), 1800); }
+// 取り消しボタン付きの通知（まとめて処理した直後など）。少し長めに表示する
+function toastAction(msg, label, fn){
+  const el = $('#toast'); el.innerHTML = `<span>${esc(msg)}</span><button type="button">${esc(label)}</button>`; el.classList.add('on', 'act');
+  el.querySelector('button').onclick = () => { el.classList.remove('on', 'act'); clearTimeout(el._h); fn(); };
+  clearTimeout(el._h); el._h = setTimeout(() => el.classList.remove('on', 'act'), 7000);
+}
 function download(name, content, type){
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([content], {type})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }

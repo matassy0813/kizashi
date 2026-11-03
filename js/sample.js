@@ -223,5 +223,26 @@ function sample(lang){
     mtg('M05','MT03','P3',4,'13:00','planned',s.meetingTypes[2].purpose,[ag(T('CR01 在庫引当ロジック追加の判断','Decide CR01 inventory allocation rules'),suzuki,20,'CR01')]),
     mtg('M06','MT01','',8,'10:00','planned',s.meetingTypes[0].purpose, s.meetingTypes[0].agenda.split('\n').map(x => ag(x, yamamoto, 12))),
   ];
+  // 課題の関係者・親子・課題カード・判断の依頼・経緯（サンプル）
+  const rdx = id => s.raid.find(r => r.id === id), at = (k, hm) => `${o(k)} ${hm}`;
+  s.raid.forEach(r => { r.reporter = r.reporter || r.owner; r.owners = r.owner ? [r.owner] : []; r.log = [{at: at(d2n(r.raised) - b, '09:00'), by: r.owner, kind: 'create'}]; r.updated = r.raised; });
+  Object.assign(rdx('I01'), {reporter: ito, owners: [takahashi, matsumoto], approver: yamamoto, taskIds: ['T16','T18'], needDecision: true, decider: tamura, decideBy: o(4),
+    detail: T('結合テストで使うサーバー2台の発注が、顧客の社内稟議で止まっている。','Two servers for SIT are stuck in the client\'s internal purchase approval.'),
+    impactText: T('3週間後の単体テスト・結合テストの開始に間に合わない。遅れると開発完了マイルストーンが後ろにずれる。','Unit and system tests starting in 3 weeks cannot begin; the build-complete milestone would slip.'),
+    ask: T('稟議を前倒しで承認するか、クラウド環境を暫定で使うかを決めてください','Approve the purchase early, or allow a temporary cloud environment'),
+    mitigation: T('顧客情シスに調達状況を確認中。代替としてクラウド環境の見積もりを取得済み','Checking with client IT; cloud alternative already quoted')});
+  rdx('I01').log.push({at: at(-6, '15:20'), by: takahashi, kind: 'comment', text: T('情シスの松本さんに確認。稟議は部長承認待ちとのこと。','Confirmed with Matsumoto (client IT): waiting for the department head.')},
+    {at: at(-3, '10:05'), by: yamamoto, kind: 'change', f: 'due', from: o(-10), to: o(-3)}, {at: at(-2, '18:40'), by: matsumoto, kind: 'comment', text: T('今週のステコミで判断いただく方向で調整します。','We will ask for a decision at this week\'s steering committee.')});
+  Object.assign(rdx('I03'), {reporter: tanaka, owners: [yamamoto, tanaka], approver: yamamoto, taskIds: ['T11'], needDecision: true, decider: nakamura, decideBy: o(6),
+    detail: T('契約書の成果物一覧に「帳票設計書」がなく、詳細設計の完了条件と食い違っている。','The contract deliverable list lacks the report design document, so it conflicts with the design exit criteria.'),
+    impactText: T('このままでは詳細設計の検収ができず、第3期の請求が遅れる。','Detailed design cannot be accepted and the phase-3 invoice is delayed.'),
+    ask: T('成果物一覧を契約変更で直すか、覚書で補うかを決めてください','Decide whether to amend the contract or add a memorandum')});
+  rdx('I03').log.push({at: at(-3, '11:30'), by: tanaka, kind: 'comment', text: T('差分を洗い出す子課題を作りました（I04）。','Created a child issue to list the differences (I04).')});
+  s.raid.push(
+    {id:'I04',type:'issue',phaseId:'P3',category:'contract',title:T('成果物一覧と詳細設計書の差分を洗い出す','List the gaps between the deliverable list and the design docs'),owner:ito,owners:[ito],reporter:tanaka,approver:tanaka,parentId:'I03',impact:'M',prob:'',status:'wip',raised:o(-3),due:o(2),mitigation:'',detail:'',impactText:'',ask:'',taskIds:[],log:[{at:at(-3,'11:25'),by:tanaka,kind:'create'}],updated:o(-1)},
+    {id:'I05',type:'issue',phaseId:'P3',category:'contract',title:T('契約変更の要否を顧客調達部門と確認する','Confirm with client procurement whether an amendment is needed'),owner:yamamoto,owners:[yamamoto],reporter:tanaka,approver:'',parentId:'I03',impact:'H',prob:'',status:'open',raised:o(-3),due:o(5),mitigation:'',detail:'',impactText:'',ask:'',taskIds:[],log:[{at:at(-3,'11:28'),by:tanaka,kind:'create'}],updated:o(-3)},
+  );
+  Object.assign(rdx('R01'), {owners: [suzuki, kobayashi], taskIds: ['T07','T14']});
+  s.raid.forEach(r => { const last = r.log.map(e => e.at.slice(0, 10)).sort().pop(); if (last && last > r.updated) r.updated = last; });
   return s;
 }

@@ -104,7 +104,8 @@ function buildReport(lang){
   else {
     const auto = alerts.filter(a => a.sev === 'H' && ['noMitigation','msRisk','raidOverdue','contractOverrun','gateOverdue'].includes(a.type));
     const crWait = state.crs.filter(c => inScope(c) && c.status === 'pending');
-    if (auto.length || crWait.length) { L.push(L_('rp.autoReq')); auto.forEach(a => L.push(`- ${a.target}：${a.detail}`)); crWait.forEach(c => L.push(`- ${L_('rp.crDecision', c.id, c.title)}`)); }
+    const decs = decisionsNeeded();
+    if (auto.length || crWait.length || decs.length) { L.push(L_('rp.autoReq')); decs.forEach(r => L.push(`- ${L_('rp.decisionReq', r.decider || '—', r.ask || r.title, r.id, r.decideBy ? md(r.decideBy) : '—')}`)); auto.forEach(a => L.push(`- ${a.target}：${a.detail}`)); crWait.forEach(c => L.push(`- ${L_('rp.crDecision', c.id, c.title)}`)); }
     else L.push(L_('common.none'));
   }
   return L.join('\n');

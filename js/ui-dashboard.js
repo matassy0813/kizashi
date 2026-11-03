@@ -32,6 +32,7 @@ function renderDash(v, {b, m, alerts, rag, sev}){
     <div class="card"><h2>${t('dash.alerts')}<span class="hint">${t('dash.alertsHint')}</span></h2>${alertList(alerts.slice(0, 7))}
       ${alerts.length > 7 ? `<button class="btn ghost" data-tab="alerts">${t('dash.showAll', alerts.length)} →</button>` : ''}</div>
   </div>
+  ${decisionCard(b)}
   <div class="card" style="margin-top:14px"><h2>${t('dash.gantt')}<span class="hint">${t('dash.ganttHint')}</span></h2>${gantt(b, sev)}</div>
   <div class="grid two" style="margin-top:14px">
     <div class="card"><h2>${t('dash.upcomingMtg')}</h2>${upcomingMeetings(ms.upcoming.slice(0, 5), b, sev)}</div>
@@ -41,6 +42,14 @@ function renderDash(v, {b, m, alerts, rag, sev}){
     <div class="card"><h2>${t('dash.trend')}<span class="hint">${t('dash.trendHint')}</span></h2>${trendChart(m)}</div>
     <div class="card"><h2>${t('dash.openActions')}</h2>${actionMini(ms.open, b)}</div>
   </div>`;
+}
+// 今決めること：判断が必要な課題を、決定期限の近い順に（誰に何を決めてもらうかを一目で）
+const decisionsNeeded = () => state.raid.filter(r => inScope(r) && r.needDecision && r.status !== 'closed').sort((x, y) => (x.decideBy || '9999') < (y.decideBy || '9999') ? -1 : 1);
+function decisionCard(b){
+  const ds = decisionsNeeded(); if (!ds.length) return '';
+  return `<div class="card dec-card" style="margin-top:14px"><h2>${t('dash.decisions')}<span class="hint">${t('dash.decisionsHint')}</span></h2>
+    <div class="scroll-x"><table><tr><th>ID</th><th>${t('rd.ask')}</th><th>${t('rd.decider')}</th><th>${t('rd.decideBy')}</th><th>${t('col.owner')}</th></tr>
+    ${ds.map(r => `<tr><td><button class="link-btn" data-open-raid="${esc(r.id)}">${esc(r.id)}</button></td><td><b>${esc(r.ask || r.title)}</b>${r.ask ? `<div class="muted small">${esc(r.title)}</div>` : ''}</td><td>${esc(r.decider || '—')}</td><td class="${r.decideBy && d2n(r.decideBy) < b ? 'red' : ''}">${r.decideBy ? md(r.decideBy) : '—'}</td><td>${esc(ownersText(r))}</td></tr>`).join('')}</table></div></div>`;
 }
 function phaseSummary(p, b, alerts){
   if (!p) return '';
@@ -158,7 +167,7 @@ function renderAlerts(v, {alerts}){
   const groups = [
     ['grp.schedule', ['overdue','lag','notStarted','extended','stale','msRisk','overload','approvalStalled','holdOverdue','carriedRepeat']],
     ['grp.phase', ['gateOverdue','gateNotReady','contractOverrun']],
-    ['grp.raid', ['noMitigation','raidOverdue','issueAged','crStalled']],
+    ['grp.raid', ['noMitigation','raidOverdue','issueAged','raidNoOwner','raidNoDue','raidStale','decisionOverdue','childOpen','crStalled']],
     ['grp.meeting', ['noAgenda','noPurpose','noMinutes','actionOverdue','actionIncomplete']],
     ['grp.gov', ['govNotAgreed']],
   ];

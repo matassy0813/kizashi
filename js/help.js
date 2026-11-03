@@ -4,7 +4,7 @@
 'use strict';
 // ============ ヘルプ（どの画面からでも「？」ですぐ開ける説明書） ============
 // 今いる画面の説明を最初に開く。内容は README と同じ考え方で、画面ごとに短くまとめる。
-const HELP_FOR_TAB = {mine: 'mine', dash: 'dash', alerts: 'alerts', phases: 'phases', tasks: 'tasks', raid: 'raid', meetings: 'meetings', org: 'org', governance: 'governance', report: 'report', settings: 'data'};
+const HELP_FOR_TAB = {mine: 'mine', dash: 'dash', alerts: 'alerts', phases: 'phases', tasks: 'tasks', approvals: 'approvals', raid: 'raid', meetings: 'meetings', org: 'org', governance: 'governance', report: 'report', settings: 'data'};
 const HELP = {
   ja: [
     ['intro', 'このツールでできること', `**Kizashi（兆し）** は、PMO（プロジェクト管理）の「見える化」「早期警戒」「報告の自動化」を、1つのファイルで行うツールです。遅れの「兆し」を先に見つけるのが名前の由来です。\n- インストール不要。Kizashi.html を開くだけで動きます\n- データはこのPCのブラウザの中だけに保存され、外部には送信されません\n- 日本語と英語を画面右上で切り替えられます（週次報告は画面とは別に言語を選べます）`],
@@ -22,7 +22,14 @@ const HELP = {
     ['alerts', '早期警戒', `期限超過・進捗遅延・期限延長の常態化・更新停滞・負荷集中・契約期間の超過・会議の結果未記録など、遅れの兆候を自動で判定します。判定ルールと しきい値は同じ画面に表示され、「設定・データ」で変えられます。`],
     ['phases', 'フェーズ', `フェーズごとに契約形態（準委任／請負）、契約終了日、成果物、完了基準、フェーズゲートを管理します。契約終了日を超える計画は警戒します。`],
     ['tasks', 'タスク（ステータス・カンバン・扱い）', `**種類**を選ぶとステータスの流れが決まります。\n- 一般：未着手 → 進行中 → クローズ\n- 検討：未着手 → 議論中 → 方針確定 → クローズ\n- 開発：未着手 → 実装中 → テスト中 → 承認待ち → クローズ\n- 成果物：未着手 → 作成中 → レビュー中 → 承認待ち → クローズ\n\n承認待ちは、PM・PMO・担当リードが「承認」すると自動でクローズします（自分のタスクは承認不可）。\n\n**扱い**：次のフェーズに回す／Backlog（時期未定）／保留／見送り。表示は「一覧」「カンバン」「Backlog」から選べます。`],
-    ['raid', 'リスク・課題（RAID）', `リスク・前提・課題・決定事項を、フェーズとカテゴリ（契約・スコープなど）ごとに管理します。影響度「高」のリスクに対策がないと警戒します。`],
+    ['search', '全体検索', `画面右上の「検索」、またはどの画面でも「/」かCtrl+Kで開きます。タスク・課題（コメントも含む）・会議（議題・決定・宿題）・変更要求・ガバナンスのルールをまとめて探し、押すとその場所を開きます。自分のロールで見られない画面のものは出ません。`],
+    ['approvals', '承認（まとめて承認）', `自分が承認できるものだけを1か所に集めた画面です（PM・PMO・リード）。
+- **タスク**：承認待ちのもの（自分のタスクは出ません）
+- **課題・リスク**：担当者が状態を「確認待ち」にしたもの
+- **変更要求（CR）**：承認待ちのもの（PM・PMO）
+
+チェックを付けて「選択を承認」を押すと、まとめてクローズ（CRは承認）します。見出しのチェックで全部を選べます。「差し戻し」は理由を1つ入力すると、1つ前の段階に戻り、担当者の画面に理由が表示されます。処理した直後は、画面下の「元に戻す」で取り消せます。待ち日数が長いものほど上に並びます。`],
+    ['raid', 'リスク・課題（RAID）', `リスク・前提・課題・決定事項を、フェーズとカテゴリ（契約・スコープなど）ごとに管理します。影響度「高」のリスクに対策がないと警戒します。\n- **一覧／構造図／傾向**：表で編集、親子の木で全体像、影響×発生確率・件数の推移で傾向を確認\n- **詳細画面**：IDを押すと開きます。「何が起きているか／影響／次の一手」の課題カード、関係者、判断の依頼、親子、影響するタスク、経緯とコメント\n- **関係者**：作成者（自動）・承認者・担当者（複数可。★が主担当）\n- **親子**：詳細画面の「親の課題」か、構造図の編集モードで線を引いて設定。子の完了数が親に表示されます\n- **承認**：担当者が「確認待ちにする」→ 承認者（未設定ならPM・PMO・担当リード）が承認すると、クローズします\n- **閲覧者**も見ることができます（編集はできません）`],
     ['meetings', '会議', `「計画 → 結果の記録 → アクション完了」で管理します。目的と担当付きの議題を設定し、会議後に結論・決定事項・アクションを記録します。招集案内と議事録はボタンでコピーできます。`],
     ['org', '体制図とフロー', `図の種類：全体／顧客／自社／ベンダー／CRフロー／承認フロー／エスカレーション／カスタム。\n- 配置は「木構造」と「所属の列」を切り替えられます\n- 人にカーソルを合わせると、上司・部下・連携相手だけが浮かび上がります\n- **編集モード**（PM・PMO）：ドラッグで移動、下の丸から人へドラッグで報告ライン、右の丸から連携線、線をクリックで外す、空き領域のダブルクリックで追加\n- フローは右の丸からドラッグで矢印をつなぎ、分岐（承認／却下）や差し戻しも描けます\n- メンバーの追加・編集は「メンバー一覧」でもできます`],
     ['governance', 'ガバナンス', `フォルダ構成・命名規則・承認ステップ・CRの起票基準・会議体・RACIなど、全フェーズ共通のルールを序盤に決めます。合意目標日を過ぎると警戒します。命名ルールツールで規則どおりのファイル名を作れます。`],
@@ -46,7 +53,14 @@ const HELP = {
     ['alerts', 'Early warning', `Detects overdue and slipping tasks, habitual re-planning, stale updates, overload, contract overrun, unrecorded meetings and more. Rules and thresholds are shown on the screen and editable in Settings.`],
     ['phases', 'Phases', `Track contract type, contract end, deliverables, exit criteria and phase gate per phase. Plans beyond the contract end raise an alert.`],
     ['tasks', 'Tasks (status, kanban, disposition)', `The **type** sets the status flow:\n- General: Not started → In progress → Closed\n- Decision: Not started → Discussing → Decided → Closed\n- Build: Not started → Building → Testing → Awaiting approval → Closed\n- Deliverable: Not started → Drafting → In review → Awaiting approval → Closed\n\nA PM, PMO or phase lead closes approval items with "Approve" (not your own).\n\n**Disposition**: move to next phase / backlog / on hold / drop. Views: List, Kanban, Backlog.`],
-    ['raid', 'RAID', `Risks, assumptions, issues and decisions by phase and category (contract, scope…). High-impact risks without a mitigation raise an alert.`],
+    ['search', 'Search', `Use "Search" at the top right, or press / or Ctrl+K anywhere. Finds tasks, issues (including comments), meetings (agenda, decisions, actions), change requests and governance rules, and opens the one you pick. Items on screens your role cannot see are not shown.`],
+    ['approvals', 'Approvals (bulk)', `Everything you can approve, in one place (PM, PMO, lead).
+- **Tasks** awaiting approval (never your own)
+- **Issues / risks** the owner set to "Awaiting sign-off"
+- **Change requests** pending approval (PM, PMO)
+
+Tick items and press "Approve selected" to close them all at once (CRs become Approved). The header checkbox selects everything. "Send back" asks for one reason, returns items to the previous step and shows the reason to the owner. Right after, "Undo" at the bottom reverts it. Longest-waiting items come first.`],
+    ['raid', 'RAID', `Risks, assumptions, issues and decisions by phase and category (contract, scope…). High-impact risks without a mitigation raise an alert.\n- **List / Structure / Trends**: edit in a table, see the parent–child tree, or check the heat map and open-item trend\n- **Detail page**: click an ID. Issue card (what is happening / impact / next step), people, decision request, parent and children, affected tasks, history and comments\n- **People**: reporter (automatic), approver, owners (one or more; ★ = main)\n- **Parent and children**: set "Parent" on the detail page, or draw a line in the structure chart's edit mode\n- **Sign-off**: an owner requests sign-off; the approver (or PM, PMO, phase lead) approves and it closes\n- **Viewers** can see it too (read-only)`],
     ['meetings', 'Meetings', `Plan → record outcomes → close actions. Set a purpose and agenda with owners; record outcomes, decisions and actions afterwards. Copy the invite and minutes with one click.`],
     ['org', 'Org chart and flows', `Charts: everyone / client / our team / vendor / CR flow / approval flow / escalation / custom.\n- Switch between Tree and By-organization layouts\n- Hover a person to highlight their manager, reports and counterparts\n- **Edit mode** (PM, PMO): drag to move; bottom dot → person = reporting line; right dot → counterpart; click a line to remove; double-click empty space to add\n- Flows: drag from the right dot to connect steps, including branches (approve / reject) and loops\n- Members can also be added and edited in the member list`],
     ['governance', 'Governance', `Agree project-wide rules early: folders, naming, approvals, CR criteria, meeting bodies, RACI. Rules past their target date raise an alert. The naming tool builds compliant file names.`],

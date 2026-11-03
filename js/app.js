@@ -3,13 +3,14 @@
 // 商用ライセンス（改変の非公開・組み込み・SaaS 提供）は COMMERCIAL.md を参照 / Commercial licensing: see COMMERCIAL.md
 'use strict';
 // ============ 画面の組み立て ============
-const TABS = ['mine','dash','alerts','phases','tasks','raid','meetings','org','governance','report','settings'];
-const VIEWS = {mine: renderMine, dash: renderDash, alerts: renderAlerts, phases: renderPhases, tasks: renderTasks, raid: renderRaid, meetings: renderMeetings, org: renderOrg, governance: renderGovernance, report: renderReport, settings: renderSettings};
+const TABS = ['mine','dash','alerts','approvals','phases','tasks','raid','meetings','org','governance','report','settings'];
+const VIEWS = {mine: renderMine, dash: renderDash, alerts: renderAlerts, approvals: renderApprovals, phases: renderPhases, tasks: renderTasks, raid: renderRaid, meetings: renderMeetings, org: renderOrg, governance: renderGovernance, report: renderReport, settings: renderSettings};
 // SF Symbols 風の線アイコン（24x24）
 const ICONS = {
   mine: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4.5 21c.6-3.8 3.7-6 7.5-6s6.9 2.2 7.5 6',
   dash: 'M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z',
   alerts: 'M12 3l9.5 17h-19zM12 10v4M12 17.5v.5',
+  approvals: 'M3 12.5l3 3 6-6M14 8h7M14 13h7M3 19h18',
   phases: 'M5 21V4M5 4h11l-2 4 2 4H5',
   tasks: 'M9 6h11M9 12h11M9 18h11M4 5.5l1 1 2-2M4 11.5l1 1 2-2M4 17.5l1 1 2-2',
   raid: 'M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6zM9 12l2 2 4-4',
@@ -42,7 +43,8 @@ function render(animate){
   $('#baseDate').title = t('hdr.baseHint');
   $('#langSeg').innerHTML = ['ja','en'].map(l => `<button data-lang="${l}" class="${l === lang ? 'on' : ''}">${l === 'ja' ? '日本語' : 'EN'}</button>`).join('');
   $('#hdrRag').innerHTML = ragBadge(rag);
-  const cnt = {alerts: alerts.filter(a => a.sev === 'H').length, meetings: alerts.filter(a => ['noAgenda','noMinutes','actionOverdue'].includes(a.type)).length, governance: alerts.filter(a => a.type === 'govNotAgreed').length};
+  $('#gsLbl').textContent = t('srch.btn');
+  const cnt = {alerts: alerts.filter(a => a.sev === 'H').length, meetings: alerts.filter(a => ['noAgenda','noMinutes','actionOverdue'].includes(a.type)).length, governance: alerts.filter(a => a.type === 'govNotAgreed').length, approvals: tabs.includes('approvals') ? approvalQueue().length : 0};
   // ログイン中の本人（切り替えはできない。別の人はログアウトしてから自分で入る）
   const mp = me();
   $('#meBox').innerHTML = `<span class="avatar xs">${esc(mp.name.slice(0, 1))}</span><span class="me-name">${esc(mp.name)}<small>${t('roleShort.' + (mp.access || 'member'))}</small></span><button class="btn ghost" data-logout>${t('login.logout')}</button>`;
@@ -51,6 +53,7 @@ function render(animate){
   const crumb = [ui.scope ? `${(phaseOf(ui.scope) || {}).code || ''} ${phaseName(ui.scope)}` : t('scope.all'), t('tab.' + ui.tab)];
   const mt = ui.tab === 'meetings' && state.meetings.find(x => x.id === ui.meetingId); if (mt) crumb.push(`${esc(mt.title)}（${md(mt.date)}）`);
   const per = ui.tab === 'org' && state.org.find(x => x.id === ui.orgSel); if (per) crumb.push(esc(per.name));
+  const rsel = ui.tab === 'raid' && ui.raidSel && state.raid.find(x => x.id === ui.raidSel); if (rsel) crumb.push(`${rsel.id} ${rsel.title || ''}`);
   const head = $('#pageHead'), view = $('#view');
   head.classList.toggle('animate', !!animate); view.classList.toggle('animate', !!animate);
   head.innerHTML = `<div class="crumb">${crumb.map(esc).join('<span class="sep">›</span>')}</div><h1 class="large-title">${t('tab.' + ui.tab)}</h1><p class="lead">${t('tabd.' + ui.tab)}</p>`;
@@ -123,30 +126,40 @@ document.addEventListener('change', e => {
   const el = e.target, col = el.dataset.col, f = el.dataset.f; if (!col) return;
   const obj = target(col, el.dataset.key); if (!obj) return;
   if (!can(col, el.dataset.key, f)) { toast(t('perm.denied')); scheduleRender(); return; }
+  let v = el.type === 'checkbox' ? el.checked : el.value;
   if (col === 'tasks' && f === 'status' && v === 'closed' && needsApproval(obj) && !canApprove(obj)) { toast(t('tk.needApprover')); scheduleRender(); return; }
   if (col === 'tasks' && f === 'status' && v === 'closed' && needsApproval(obj)) { obj.approvedBy = myName(); obj.approvedAt = todayStr(); }
-  let v = el.type === 'checkbox' ? el.checked : el.value;
   if (el.type === 'number') { const n = parseFloat(v); v = isNaN(n) ? 0 : n; }
+  const before = obj[f];
   if (col === 'org' && f === 'name' && obj.name && obj.name !== v) renameOwner(obj.name, v); // 体制図の名前変更を担当欄にも反映
   obj[f] = v;
   if (col === 'tasks') afterTaskChange(obj, f);
   if (col === 'org' && f === 'access') { const got = applyRoleDefaults(obj); toast(got.length ? t('role.autoPhase', obj.name, got.join('、')) : t('role.assigned', obj.name, t('role.' + v))); }
   if (col === 'raid' && f === 'type' && v !== 'risk') obj.prob = '';
+  if (col === 'raid' && f === 'owner') { obj.owners = [...new Set([v, ...raidOwners(obj).filter(o => o !== before)].filter(Boolean))]; obj.owner = obj.owners[0] || ''; }
+  if (col === 'raid' && f === 'status' && v === 'closed') obj.closedAt = todayStr();
+  if (col === 'raid' && f === 'status' && before === 'closed' && v !== 'closed') obj.closedAt = '';
+  if (col === 'raid' && f !== 'comment' && String(before ?? '') !== String(v ?? '')) raidLog(obj, {kind: 'change', f, from: before, to: v});
   if (col === 'governance' && f === 'status' && v === 'agreed' && !obj.agreedDate) obj.agreedDate = todayStr();
   if (col === 'crs' && f === 'status' && ['approved','rejected'].includes(v) && !obj.decided) obj.decided = todayStr();
+  // 承認待ちに入った日（承認画面の「待ち日数」に使う）
+  if (col === 'raid' && f === 'status' && v === 'review') obj.reviewAt = todayStr();
+  if (col === 'crs' && f === 'status' && v === 'pending') obj.pendingAt = todayStr();
   if (col === 'meetings' && f === 'typeId') { const mt = state.meetingTypes.find(x => x.id === v); if (mt && !obj.purpose) obj.purpose = mt.purpose; }
   flashFk = el.dataset.fk || '';
   save(); scheduleRender();
 });
 function renameOwner(from, to){
   state.tasks.forEach(x => { if (x.owner === from) x.owner = to; });
-  state.raid.forEach(x => { if (x.owner === from) x.owner = to; });
+  state.raid.forEach(x => { if (x.owner === from) x.owner = to; if (Array.isArray(x.owners)) x.owners = x.owners.map(o => o === from ? to : o); ['reporter','approver','decider'].forEach(k => { if (x[k] === from) x[k] = to; }); });
   state.crs.forEach(x => { if (x.owner === from) x.owner = to; });
   state.meetings.forEach(m => { if (m.organizer === from) m.organizer = to; m.agenda.forEach(a => { if (a.owner === from) a.owner = to; }); m.actions.forEach(a => { if (a.owner === from) a.owner = to; }); });
   if (state.project.pm === from) state.project.pm = to;
 }
 document.addEventListener('click', e => {
-  const tb = e.target.closest('[data-tab]'); if (tb) { go({tab: tb.dataset.tab}); return; }
+  const tb = e.target.closest('[data-tab]'); if (tb) { go({tab: tb.dataset.tab, raidSel: tb.dataset.tab === 'raid' && tb.closest('#tabs') ? '' : ui.raidSel}); return; }
+  const orr = e.target.closest('[data-open-raid]'); if (orr && !e.target.closest('select')) { const sw = ui.tab !== 'raid' || !ui.raidSel; go({tab: 'raid', raidSel: orr.dataset.openRaid}); if (!sw) window.scrollTo({top: 0}); return; }
+  const otk = e.target.closest('[data-open-task]'); if (otk) { openTaskById(otk.dataset.openTask); return; }
   const sc = e.target.closest('[data-scope]'); if (sc) { go({scope: sc.dataset.scope}); return; }
   const wz = e.target.closest('[data-wizard]'); if (wz) { openWizard(); return; }
   if (e.target.closest('[data-logout]')) { logout(); return; }
@@ -180,6 +193,7 @@ $('#navToggle').addEventListener('click', () => { const c = !document.body.class
 $('#brandHome').innerHTML = brandMark(); // 画面左上のロゴ（押すとダッシュボードへ）
 $('#brandHome').addEventListener('click', () => { if (me()) go({tab: ROLE_HOME[myRole()] || 'dash'}); });
 $('#pjSwitch').addEventListener('click', e => openProjectSwitcher(e.currentTarget));
+$('#gsBtn').addEventListener('click', () => openSearch());
 $('#helpBtn').addEventListener('click', () => { const el = $('#helpPanel'); if (el && el.classList.contains('open')) closeHelp(); else openHelp(); });
 $('#scopeSel').addEventListener('change', e => { ui.meetingId = ''; go({scope: e.target.value}); });
 $('#baseDate').addEventListener('change', e => { state.project.baseDate = e.target.value; save(); render(true); });
