@@ -127,6 +127,13 @@ function runSmoke(){
     check('F44', 'ダッシュボード：今決めること', () => { ui.tab = 'dash'; ui.raidSel = ''; render(); return !!document.querySelector('.dec-card [data-open-raid]'); });
     check('F45', 'カンバン：課題と紐づいたタスクに⚑印', () => { ui.tab = 'tasks'; ui.taskView = 'kanban'; render(); return q('.kcard .iss-badge').length > 0; });
     check('F47', 'タスク：担当者・承認者をメンバーから選べる（一覧・編集パネル）', () => { ui.tab = 'tasks'; ui.taskView = 'list'; render(); const list = q('select[data-col="tasks"][data-f="owner"]').length > 5 && q('select[data-col="tasks"][data-f="approver"]').length > 3; ui.taskView = 'kanban'; ui.taskSel = String(state.tasks.findIndex(x => x.kind === 'doc')); render(); const drawer = !!document.querySelector('#taskDrawer select[data-f="owner"]') && !!document.querySelector('#taskDrawer select[data-f="approver"]'); ui.taskSel = ''; return (list && drawer) || {list, drawer}; });
+    check('F48', 'ログイン画面：メニューの開閉ボタンを出さず、閉じた設定が残っていてもレイアウトが崩れない', () => {
+      const keepMe = ui.me; ui.me = ''; document.body.classList.add('nav-collapsed'); render();
+      const btn = getComputedStyle(document.querySelector('#navToggle')).display === 'none', cols = getComputedStyle(document.body).gridTemplateColumns.split(' ').length;
+      const w = document.querySelector('.card.login').getBoundingClientRect().width;
+      document.body.classList.remove('nav-collapsed'); ui.me = keepMe || 'O03'; render();
+      return (btn && cols === 1 && w > 200) || {btn, cols, w};
+    });
     check('F46','翻訳キーの重複がない（後から同じキーで上書きしていない）', () => DUP_KEYS.size === 0 || [...DUP_KEYS]);
     check('F26', '翻訳漏れがない', () => MISSING.size === 0 || [...MISSING]);
   } finally {
