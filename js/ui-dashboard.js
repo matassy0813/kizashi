@@ -165,7 +165,7 @@ function trendChart(m){
 function renderAlerts(v, {alerts}){
   const S = state.settings;
   const groups = [
-    ['grp.schedule', ['overdue','lag','notStarted','extended','stale','msRisk','overload','approvalStalled','holdOverdue','carriedRepeat']],
+    ['grp.schedule', ['overdue','lag','notStarted','extended','stale','msRisk','overload','approvalStalled','holdOverdue','carriedRepeat','taskNoOwner']],
     ['grp.phase', ['gateOverdue','gateNotReady','contractOverrun']],
     ['grp.raid', ['noMitigation','raidOverdue','issueAged','raidNoOwner','raidNoDue','raidStale','decisionOverdue','childOpen','crStalled']],
     ['grp.meeting', ['noAgenda','noPurpose','noMinutes','actionOverdue','actionIncomplete']],

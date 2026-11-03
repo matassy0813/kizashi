@@ -126,7 +126,8 @@ function runSmoke(){
     check('F43', '全体検索：「/」で開き、結果を押すとその場所が開く', () => { ui.tab = 'dash'; render(); document.dispatchEvent(new KeyboardEvent('keydown', {key: '/', bubbles: true})); const pop = document.querySelector('.gs-pop'); const inp = pop && pop.querySelector('input'); inp.value = 'サーバー'; inp.dispatchEvent(new Event('input')); const hits = pop.querySelectorAll('.gs-item').length; pop.querySelector('.gs-item').click(); return (hits > 0 && !document.querySelector('.gs-pop') && ui.tab === 'raid') || {hits, tab: ui.tab}; });
     check('F44', 'ダッシュボード：今決めること', () => { ui.tab = 'dash'; ui.raidSel = ''; render(); return !!document.querySelector('.dec-card [data-open-raid]'); });
     check('F45', 'カンバン：課題と紐づいたタスクに⚑印', () => { ui.tab = 'tasks'; ui.taskView = 'kanban'; render(); return q('.kcard .iss-badge').length > 0; });
-    check('F46', '翻訳キーの重複がない（後から同じキーで上書きしていない）', () => DUP_KEYS.size === 0 || [...DUP_KEYS]);
+    check('F47', 'タスク：担当者・承認者をメンバーから選べる（一覧・編集パネル）', () => { ui.tab = 'tasks'; ui.taskView = 'list'; render(); const list = q('select[data-col="tasks"][data-f="owner"]').length > 5 && q('select[data-col="tasks"][data-f="approver"]').length > 3; ui.taskView = 'kanban'; ui.taskSel = String(state.tasks.findIndex(x => x.kind === 'doc')); render(); const drawer = !!document.querySelector('#taskDrawer select[data-f="owner"]') && !!document.querySelector('#taskDrawer select[data-f="approver"]'); ui.taskSel = ''; return (list && drawer) || {list, drawer}; });
+    check('F46','翻訳キーの重複がない（後から同じキーで上書きしていない）', () => DUP_KEYS.size === 0 || [...DUP_KEYS]);
     check('F26', '翻訳漏れがない', () => MISSING.size === 0 || [...MISSING]);
   } finally {
     state = keep.state; Object.keys(ui).forEach(k => delete ui[k]); Object.assign(ui, keep.ui); save = keep.save; render(true);

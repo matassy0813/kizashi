@@ -9,7 +9,7 @@ const AP_KINDS = ['tasks','raid','crs'];
 function approvalQueue(){
   const b = d2n(baseDate()), out = [];
   const add = (col, o, title, sub, since) => out.push({col, o, key: col + ':' + o.id, title, sub, owner: o.owner || '', phaseId: o.phaseId || '', wait: since && !isNaN(d2n(since)) ? Math.max(0, b - d2n(since)) : 0});
-  state.tasks.forEach(x => { if (x.status === 'approval' && activeTask(x) && canApprove(x)) add('tasks', x, x.name, t('kind.' + x.kind), x.updated); });
+  state.tasks.forEach(x => { if (x.status === 'approval' && activeTask(x) && canApprove(x)) add('tasks', x, x.name, [t('kind.' + x.kind), x.approver ? t('ap.named', x.approver) : ''].filter(Boolean).join(' · '), x.updated); });
   state.raid.forEach(x => { if (x.status === 'review' && canApproveRaid(x)) add('raid', x, x.title || x.id, `${lbl('raidType', x.type)}${x.mitigation ? ' · ' + x.mitigation : ''}`, x.reviewAt || x.raised); });
   state.crs.forEach((x, i) => { if (x.status === 'pending' && can('crs', i, 'status')) add('crs', x, `${x.id} ${x.title}`, [x.scope, x.schedule ? t('ap.crDays', x.schedule) : '', x.cost].filter(Boolean).join(' · '), x.pendingAt || x.raised); });
   return out.filter(x => inScope(x.o));

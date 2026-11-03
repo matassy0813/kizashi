@@ -21,7 +21,7 @@ const HELP = {
 - Backlog と見送りのタスクは計算に入れません`],
     ['alerts', '早期警戒', `期限超過・進捗遅延・期限延長の常態化・更新停滞・負荷集中・契約期間の超過・会議の結果未記録など、遅れの兆候を自動で判定します。判定ルールと しきい値は同じ画面に表示され、「設定・データ」で変えられます。`],
     ['phases', 'フェーズ', `フェーズごとに契約形態（準委任／請負）、契約終了日、成果物、完了基準、フェーズゲートを管理します。契約終了日を超える計画は警戒します。`],
-    ['tasks', 'タスク（ステータス・カンバン・扱い）', `**種類**を選ぶとステータスの流れが決まります。\n- 一般：未着手 → 進行中 → クローズ\n- 検討：未着手 → 議論中 → 方針確定 → クローズ\n- 開発：未着手 → 実装中 → テスト中 → 承認待ち → クローズ\n- 成果物：未着手 → 作成中 → レビュー中 → 承認待ち → クローズ\n\n承認待ちは、PM・PMO・担当リードが「承認」すると自動でクローズします（自分のタスクは承認不可）。\n\n**扱い**：次のフェーズに回す／Backlog（時期未定）／保留／見送り。表示は「一覧」「カンバン」「Backlog」から選べます。`],
+    ['tasks', 'タスク（ステータス・カンバン・扱い）', `**種類**を選ぶとステータスの流れが決まります。\n- 一般：未着手 → 進行中 → クローズ\n- 検討：未着手 → 議論中 → 方針確定 → クローズ\n- 開発：未着手 → 実装中 → テスト中 → 承認待ち → クローズ\n- 成果物：未着手 → 作成中 → レビュー中 → 承認待ち → クローズ\n\n承認待ちは、承認者が「承認」すると自動でクローズします（自分のタスクは承認不可）。\n\n**担当者・承認者**はプロジェクトのメンバー（体制図）から選びます。担当者になった人の「自分の仕事」に入り、進捗はその人が更新します。承認者に指名された人には、承認待ちになった時点で「承認」画面に表示されます（メンバーや顧客の閲覧者でも指名できます）。承認者を空にすると、PM・PMO・担当リードが承認します。\n\n**扱い**：次のフェーズに回す／Backlog（時期未定）／保留／見送り。表示は「一覧」「カンバン」「Backlog」から選べます。`],
     ['search', '全体検索', `画面右上の「検索」、またはどの画面でも「/」かCtrl+Kで開きます。タスク・課題（コメントも含む）・会議（議題・決定・宿題）・変更要求・ガバナンスのルールをまとめて探し、押すとその場所を開きます。自分のロールで見られない画面のものは出ません。`],
     ['approvals', '承認（まとめて承認）', `自分が承認できるものだけを1か所に集めた画面です（PM・PMO・リード）。
 - **タスク**：承認待ちのもの（自分のタスクは出ません）
@@ -52,7 +52,9 @@ const HELP = {
 - Backlog and dropped tasks are excluded`],
     ['alerts', 'Early warning', `Detects overdue and slipping tasks, habitual re-planning, stale updates, overload, contract overrun, unrecorded meetings and more. Rules and thresholds are shown on the screen and editable in Settings.`],
     ['phases', 'Phases', `Track contract type, contract end, deliverables, exit criteria and phase gate per phase. Plans beyond the contract end raise an alert.`],
-    ['tasks', 'Tasks (status, kanban, disposition)', `The **type** sets the status flow:\n- General: Not started → In progress → Closed\n- Decision: Not started → Discussing → Decided → Closed\n- Build: Not started → Building → Testing → Awaiting approval → Closed\n- Deliverable: Not started → Drafting → In review → Awaiting approval → Closed\n\nA PM, PMO or phase lead closes approval items with "Approve" (not your own).\n\n**Disposition**: move to next phase / backlog / on hold / drop. Views: List, Kanban, Backlog.`],
+    ['tasks', 'Tasks (status, kanban, disposition)', `The **type** sets the status flow:\n- General: Not started → In progress → Closed\n- Decision: Not started → Discussing → Decided → Closed\n- Build: Not started → Building → Testing → Awaiting approval → Closed\n- Deliverable: Not started → Drafting → In review → Awaiting approval → Closed\n\nThe approver closes approval items with "Approve" (not your own).
+
+**Owner and approver** are picked from the project members (org chart). The owner gets the task in My work and updates its progress. The named approver sees it in Approvals once it reaches the approval step (members and client viewers can be named). Leave the approver empty and a PM, PMO or phase lead approves.\n\n**Disposition**: move to next phase / backlog / on hold / drop. Views: List, Kanban, Backlog.`],
     ['search', 'Search', `Use "Search" at the top right, or press / or Ctrl+K anywhere. Finds tasks, issues (including comments), meetings (agenda, decisions, actions), change requests and governance rules, and opens the one you pick. Items on screens your role cannot see are not shown.`],
     ['approvals', 'Approvals (bulk)', `Everything you can approve, in one place (PM, PMO, lead).
 - **Tasks** awaiting approval (never your own)

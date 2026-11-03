@@ -9,7 +9,9 @@ function myTodos(b, alerts){
   const add = (sev, text, nav) => out.push({sev, text, nav});
   // 承認待ちで自分が承認できるもの
   // 承認できる人：1件ずつ並べると埋もれるので、件数をまとめて「承認」画面へ案内する
-  const apN = ROLE_TABS[r].includes('approvals') ? approvalQueue().length : 0;
+  const apN = hasApprovals() ? approvalQueue().length : 0;
+  // 新しく割り当てられたタスク（自分以外が割り当てたもの、7日以内、未着手）
+  state.tasks.filter(x => x.owner === nm && x.assignedAt && x.assignedBy && x.assignedBy !== nm && x.status === 'todo' && activeTask(x) && b - d2n(x.assignedAt) <= 7).forEach(x => add('M', t('mine.todo.assigned', x.name, x.assignedBy, md(x.end)), 'task:' + x.id));
   if (apN) add('M', t('mine.todo.approveN', apN), 'approvals');
   // 差し戻されたもの（理由つき）
   state.tasks.filter(x => x.owner === nm && !isDone(x) && x.returnedAt && x.status !== 'approval').forEach(x => add('H', t('mine.todo.returned', x.name, x.returnNote || '—'), 'tasks'));
@@ -56,7 +58,7 @@ function renderMine(v, {b, alerts}){
   </div>
   <div class="grid two" style="margin-top:16px">
     <div class="card"><h2>${t('mine.todo')}<span class="hint">${t('mine.todoHint')}</span></h2>
-      ${todos.length ? `<ul class="todo-list">${todos.map(x => `<li ${x.nav.startsWith('mtg:') ? `data-open-mtg="${x.nav.slice(4)}"` : x.nav.startsWith('raid:') ? `data-open-raid="${esc(x.nav.slice(5))}"` : `data-tab="${x.nav}"`}>${sevBadge(x.sev)}<span>${esc(x.text)}</span><span class="go">›</span></li>`).join('')}</ul>` : `<div class="empty">${t('mine.allClear')}</div>`}
+      ${todos.length ? `<ul class="todo-list">${todos.map(x => `<li ${x.nav.startsWith('mtg:') ? `data-open-mtg="${x.nav.slice(4)}"` : x.nav.startsWith('raid:') ? `data-open-raid="${esc(x.nav.slice(5))}"` : x.nav.startsWith('task:') ? `data-open-task="${esc(x.nav.slice(5))}"` : `data-tab="${x.nav}"`}>${sevBadge(x.sev)}<span>${esc(x.text)}</span><span class="go">›</span></li>`).join('')}</ul>` : `<div class="empty">${t('mine.allClear')}</div>`}
     </div>
     <div class="card"><h2>${t('mine.meetings')}</h2>
       ${mtgs.length ? `<ul class="alert-list">${mtgs.map(m => `<li><div class="date-chip">${md(m.date)}<small>${esc(m.time || '')}</small></div><div style="flex:1"><div class="t"><span class="link" data-open-mtg="${m.id}">${esc(m.title)}</span></div><div class="d">${m.organizer === nm ? t('mine.organizer') : m.agenda.filter(a => a.owner === nm).map(a => esc(a.topic)).join(' / ') || t('mine.attendee')}</div></div></li>`).join('')}</ul>` : `<div class="empty">${t('empty.upcoming')}</div>`}
@@ -65,7 +67,7 @@ function renderMine(v, {b, alerts}){
   <div class="card" style="margin-top:16px"><h2>${t('mine.tasks')}<span class="hint">${t('mine.tasksHint')}</span></h2>
     ${tasks.length ? `<div class="scroll-x"><table><tr><th>${t('col.task')}</th><th>${t('col.phase')}</th><th>${t('col.end')}</th><th class="num">${t('col.planPct')}</th><th>${t('col.progress')}</th><th>${t('col.status')}</th></tr>
       ${tasks.map(({x, i}) => `<tr><td>${esc(x.name)}</td><td>${phaseTag(x.phaseId)}</td><td class="${d2n(x.end) < b ? 'red' : ''}">${md(x.end)}</td><td class="num muted">${plannedPct(x, b)}</td>
-        <td><div class="prog">${fld('tasks', i, 'progress', x.progress, {type: 'range', cls: 'range'})}<span>${x.progress}%</span></div></td><td>${fld('tasks', i, 'status', x.status, {type: 'select', opts: flowOpts(x)})}${x.status === 'approval' ? `<div class="muted small">${t('tk.waitApprove')}</div>` : ''}</td></tr>`).join('')}
+        <td><div class="prog">${fld('tasks', i, 'progress', x.progress, {type: 'range', cls: 'range'})}<span>${x.progress}%</span></div></td><td>${fld('tasks', i, 'status', x.status, {type: 'select', opts: flowOpts(x)})}${x.status === 'approval' ? `<div class="muted small">${waitText(x)}</div>` : ''}</td></tr>`).join('')}
     </table></div>` : `<div class="empty">${t('empty.tasks')}</div>`}
   </div>
   <div class="grid two" style="margin-top:16px">

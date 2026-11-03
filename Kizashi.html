@@ -748,6 +748,14 @@ function lbl(group, v, lang){ return v ? tl(lang || LANG(), `${group}.${v}`) : '
   ['srch.hint','↑↓で選ぶ・Enterで開く・Escで閉じる。どの画面でも「/」かCtrl+Kで開けます','↑↓ to choose, Enter to open, Esc to close. Press / or Ctrl+K anywhere'],
   ['srch.start','言葉を入力すると、すべての画面からまとめて探します','Type to search across every screen'], ['srch.none','見つかりませんでした','No matches'],
   ['srch.kind.tasks','タスク','Task'], ['srch.kind.raid','課題・リスク','Issue / risk'], ['srch.kind.meetings','会議','Meeting'], ['srch.kind.crs','CR','CR'], ['srch.kind.governance','ルール','Rule'],
+  ['tk.approver','承認者','Approver'], ['tk.unassigned','未割り当て','Unassigned'], ['tk.approverAny','（PM・PMO・担当リード）','(PM, PMO or phase lead)'],
+  ['tk.noApprovalStep','承認の段階なし','No approval step'], ['tk.waitApprover','承認待ち：{0}','Awaiting approval: {0}'],
+  ['tk.ownerHint','担当者の「自分の仕事」に入り、進捗はその人が更新します','Goes to the owner\'s My work; the owner updates progress'],
+  ['tk.approverHint','承認待ちになると、この人の承認の一覧に出ます','When it reaches approval, it appears in this person\'s approvals'],
+  ['tk.assignedTo','{0}さんに割り当てました','Assigned to {0}'], ['tk.approverSelf','担当者本人は承認者にできません','The owner cannot be the approver'],
+  ['tk.approverReset','{0}さんが担当者になったため、承認者を初期値に戻しました','{0} is now the owner, so the approver was reset'],
+  ['ap.named','承認者：{0}','Approver: {0}'], ['mine.todo.assigned','新しく割り当てられました：{0}（{1}さんから、期限 {2}）','Newly assigned: {0} (from {1}, due {2})'],
+  ['at.taskNoOwner','担当者なし','No owner'], ['ad.taskNoOwner','タスクに担当者が決まっていない','Nobody owns this task'], ['rule.taskNoOwner','未完了のタスクに担当者がいない','Open task without an owner'],
   ['tab.approvals','承認','Approvals'], ['tabd.approvals','あなたが承認できるものを集めています。チェックしてまとめて承認・差し戻しできます','Everything you can approve. Tick items to approve or send back in one go'],
   ['ap.kind.all','すべて','All'], ['ap.kind.tasks','タスク','Tasks'], ['ap.kind.raid','課題・リスク','Issues / risks'], ['ap.kind.crs','変更要求（CR）','Change requests'],
   ['ap.selected','{0}件を選択中','{0} selected'], ['ap.selectAll','表示中をすべて選択','Select all shown'], ['ap.approveSel','選択を承認（{0}件）','Approve selected ({0})'],
@@ -1088,6 +1096,7 @@ function normalize(){
     if (!TASK_KINDS.includes(t.kind)) t.kind = 'general';
     if (!t.priority) t.priority = 'M';
     if (t.disp === undefined) t.disp = '';
+    if (t.approver == null) t.approver = '';
     if (t.status === 'done') t.status = 'closed';
     if (t.status === 'hold') { t.status = +t.progress > 0 ? 'doing' : 'todo'; t.disp = 'hold'; }
     if (!flowOf(t).includes(t.status)) { const lane = LANE_OF[t.status] || 'todo'; t.status = flowOf(t).find(s => LANE_OF[s] === lane) || (lane === 'todo' ? 'todo' : flowOf(t)[1]); }
@@ -1224,7 +1233,8 @@ function computeAlerts(lang){
     if (isDone(t) || !activeTask(t)) return;
     if (t.carryCount >= 2) add('M','carriedRepeat',t.name,t.owner,L('ad.carriedRepeat', t.carryCount),t.id,t.phaseId);
     if (t.disp === 'hold') { if (t.holdUntil && d2n(t.holdUntil) < b) add('M','holdOverdue',t.name,t.owner,L('ad.holdOverdue', md(t.holdUntil), b - d2n(t.holdUntil), t.dispNote || '—'),t.id,t.phaseId); return; }
-    if (t.status === 'approval' && t.updated && b - d2n(t.updated) >= S.staleDays) add('M','approvalStalled',t.name,t.owner,L('ad.approvalStalled', b - d2n(t.updated)),t.id,t.phaseId);
+    if (t.status === 'approval' && t.updated && b - d2n(t.updated) >= S.staleDays) add('M','approvalStalled',t.name,t.approver || t.owner,L('ad.approvalStalled', b - d2n(t.updated)),t.id,t.phaseId);
+    if (!t.owner && !t.milestone) add('M','taskNoOwner',t.name,'',L('ad.taskNoOwner'),t.id,t.phaseId);
     const s = d2n(t.start), e = d2n(t.end), be = d2n(t.baselineEnd), p = +t.progress || 0;
     if (isNaN(s) || isNaN(e)) return;
     if (e < b) add('H','overdue',t.name,t.owner,L('ad.overdue', md(t.end), b-e, p),t.id,t.phaseId);
@@ -1442,14 +1452,26 @@ function canApprove(t){
   const r = myRole(), nm = myName();
   // 自分のタスク：ほかに承認できる人がいない（PM が 1 人で回している）ときだけ PM 本人が承認できる
   if (!t || t.owner === nm) return r === 'pm' && !state.org.some(p => ['pm','pmo','lead'].includes(p.access) && p.name !== nm);
+  // 承認者が指名されていれば、その人（ロールを問わない：顧客の承認など）と PM・PMO
+  if (t.approver) return r !== 'none' && (t.approver === nm || r === 'pm' || r === 'pmo');
   if (r === 'pm' || r === 'pmo') return true;
   return r === 'lead' && !!t.phaseId && leadPhases().includes(t.phaseId);
 }
 // 課題・リスクの承認：承認者が決まっていればその人（と PM・PMO）、決まっていなければタスクと同じ
 function canApproveRaid(r){
-  const role = myRole(); if (!r || role === 'none' || role === 'viewer') return false;
+  const role = myRole(); if (!r || role === 'none') return false;
   if (r.approver) return r.approver === myName() || role === 'pm' || role === 'pmo';
+  if (role === 'viewer') return false;
   return canApprove(r);
+}
+// 承認画面を出すか：PM・PMO・リードは常に。メンバー・閲覧者は承認者に指名されたものがあるときだけ
+const hasApprovals = () => (ROLE_TABS[myRole()] || []).includes('approvals') || (myRole() !== 'none' && typeof approvalQueue === 'function' && approvalQueue().length > 0);
+const tabsFor = () => { const tabs = ROLE_TABS[myRole()] || []; return !tabs.includes('approvals') && hasApprovals() ? [...tabs, 'approvals'] : tabs; };
+// 新しいタスクの承認者の初期値：承認の段階がある種類なら、フェーズのリード（いなければ PM）。担当者本人は除く
+function defaultApprover(tk){
+  if (!needsApproval(tk)) return '';
+  const ph = phaseOf(tk.phaseId), lead = ph && ph.owner, pm = state.project.pm;
+  return [lead, pm].find(n => n && n !== tk.owner && state.org.some(p => p.name === n)) || '';
 }
 // 「次のフェーズへ」「Backlog」などの扱いを決められるのは PM・PMO・担当フェーズのリード（スコープの判断になるため）
 function canDispose(t){
@@ -1915,7 +1937,7 @@ const HELP = {
 - Backlog と見送りのタスクは計算に入れません`],
     ['alerts', '早期警戒', `期限超過・進捗遅延・期限延長の常態化・更新停滞・負荷集中・契約期間の超過・会議の結果未記録など、遅れの兆候を自動で判定します。判定ルールと しきい値は同じ画面に表示され、「設定・データ」で変えられます。`],
     ['phases', 'フェーズ', `フェーズごとに契約形態（準委任／請負）、契約終了日、成果物、完了基準、フェーズゲートを管理します。契約終了日を超える計画は警戒します。`],
-    ['tasks', 'タスク（ステータス・カンバン・扱い）', `**種類**を選ぶとステータスの流れが決まります。\n- 一般：未着手 → 進行中 → クローズ\n- 検討：未着手 → 議論中 → 方針確定 → クローズ\n- 開発：未着手 → 実装中 → テスト中 → 承認待ち → クローズ\n- 成果物：未着手 → 作成中 → レビュー中 → 承認待ち → クローズ\n\n承認待ちは、PM・PMO・担当リードが「承認」すると自動でクローズします（自分のタスクは承認不可）。\n\n**扱い**：次のフェーズに回す／Backlog（時期未定）／保留／見送り。表示は「一覧」「カンバン」「Backlog」から選べます。`],
+    ['tasks', 'タスク（ステータス・カンバン・扱い）', `**種類**を選ぶとステータスの流れが決まります。\n- 一般：未着手 → 進行中 → クローズ\n- 検討：未着手 → 議論中 → 方針確定 → クローズ\n- 開発：未着手 → 実装中 → テスト中 → 承認待ち → クローズ\n- 成果物：未着手 → 作成中 → レビュー中 → 承認待ち → クローズ\n\n承認待ちは、承認者が「承認」すると自動でクローズします（自分のタスクは承認不可）。\n\n**担当者・承認者**はプロジェクトのメンバー（体制図）から選びます。担当者になった人の「自分の仕事」に入り、進捗はその人が更新します。承認者に指名された人には、承認待ちになった時点で「承認」画面に表示されます（メンバーや顧客の閲覧者でも指名できます）。承認者を空にすると、PM・PMO・担当リードが承認します。\n\n**扱い**：次のフェーズに回す／Backlog（時期未定）／保留／見送り。表示は「一覧」「カンバン」「Backlog」から選べます。`],
     ['search', '全体検索', `画面右上の「検索」、またはどの画面でも「/」かCtrl+Kで開きます。タスク・課題（コメントも含む）・会議（議題・決定・宿題）・変更要求・ガバナンスのルールをまとめて探し、押すとその場所を開きます。自分のロールで見られない画面のものは出ません。`],
     ['approvals', '承認（まとめて承認）', `自分が承認できるものだけを1か所に集めた画面です（PM・PMO・リード）。
 - **タスク**：承認待ちのもの（自分のタスクは出ません）
@@ -1946,7 +1968,9 @@ const HELP = {
 - Backlog and dropped tasks are excluded`],
     ['alerts', 'Early warning', `Detects overdue and slipping tasks, habitual re-planning, stale updates, overload, contract overrun, unrecorded meetings and more. Rules and thresholds are shown on the screen and editable in Settings.`],
     ['phases', 'Phases', `Track contract type, contract end, deliverables, exit criteria and phase gate per phase. Plans beyond the contract end raise an alert.`],
-    ['tasks', 'Tasks (status, kanban, disposition)', `The **type** sets the status flow:\n- General: Not started → In progress → Closed\n- Decision: Not started → Discussing → Decided → Closed\n- Build: Not started → Building → Testing → Awaiting approval → Closed\n- Deliverable: Not started → Drafting → In review → Awaiting approval → Closed\n\nA PM, PMO or phase lead closes approval items with "Approve" (not your own).\n\n**Disposition**: move to next phase / backlog / on hold / drop. Views: List, Kanban, Backlog.`],
+    ['tasks', 'Tasks (status, kanban, disposition)', `The **type** sets the status flow:\n- General: Not started → In progress → Closed\n- Decision: Not started → Discussing → Decided → Closed\n- Build: Not started → Building → Testing → Awaiting approval → Closed\n- Deliverable: Not started → Drafting → In review → Awaiting approval → Closed\n\nThe approver closes approval items with "Approve" (not your own).
+
+**Owner and approver** are picked from the project members (org chart). The owner gets the task in My work and updates its progress. The named approver sees it in Approvals once it reaches the approval step (members and client viewers can be named). Leave the approver empty and a PM, PMO or phase lead approves.\n\n**Disposition**: move to next phase / backlog / on hold / drop. Views: List, Kanban, Backlog.`],
     ['search', 'Search', `Use "Search" at the top right, or press / or Ctrl+K anywhere. Finds tasks, issues (including comments), meetings (agenda, decisions, actions), change requests and governance rules, and opens the one you pick. Items on screens your role cannot see are not shown.`],
     ['approvals', 'Approvals (bulk)', `Everything you can approve, in one place (PM, PMO, lead).
 - **Tasks** awaiting approval (never your own)
@@ -2153,7 +2177,7 @@ function trendChart(m){
 function renderAlerts(v, {alerts}){
   const S = state.settings;
   const groups = [
-    ['grp.schedule', ['overdue','lag','notStarted','extended','stale','msRisk','overload','approvalStalled','holdOverdue','carriedRepeat']],
+    ['grp.schedule', ['overdue','lag','notStarted','extended','stale','msRisk','overload','approvalStalled','holdOverdue','carriedRepeat','taskNoOwner']],
     ['grp.phase', ['gateOverdue','gateNotReady','contractOverrun']],
     ['grp.raid', ['noMitigation','raidOverdue','issueAged','raidNoOwner','raidNoDue','raidStale','decisionOverdue','childOpen','crStalled']],
     ['grp.meeting', ['noAgenda','noPurpose','noMinutes','actionOverdue','actionIncomplete']],
@@ -2318,12 +2342,19 @@ const flowOpts = t => flowOf(t).map(s => [s, lbl('taskStatus', s)]);
 const prioOpts = () => ['H','M','L'].map(v => [v, lbl('level', v)]);
 const prioDot = p => `<span class="prio ${p || 'M'}" title="${t('tk.priority')}：${lbl('level', p || 'M')}"></span>`;
 const PRIO_ORDER = {H: 0, M: 1, L: 2};
+// 担当者・承認者はプロジェクトのメンバー（体制図）から選ぶ
+const memberOpts = cur => { const ns = state.org.map(p => p.name).filter(Boolean); if (cur && !ns.includes(cur)) ns.push(cur); return ns.map(n => [n, n]); };
+const ownerSel = (f, tk) => f('owner', {type: 'select', opts: memberOpts(tk.owner), blank: t('tk.unassigned')});
+const approverSel = (f, tk) => needsApproval(tk) ? f('approver', {type: 'select', opts: memberOpts(tk.approver).filter(([n]) => n !== tk.owner), blank: t('tk.approverAny')}) : `<span class="muted small">${t('tk.noApprovalStep')}</span>`;
+const waitText = tk => tk.approver ? t('tk.waitApprover', esc(tk.approver)) : t('tk.waitApprove');
 
 function newTask(extra){
   const bd = baseDate(), last = state.tasks.filter(x => x.phaseId).pop();
   const r = myRole(), ph = ui.scope || (r === 'lead' && leadPhases()[0]) || (last ? last.phaseId : (state.phases[0] || {}).id || '');
   const t0 = {id: nextId('T', state.tasks), phaseId: ph, name: t('tk.newName'), owner: r === 'member' ? myName() : (ui.owner || ''), start: bd, end: n2d(d2n(bd) + 6), baselineEnd: n2d(d2n(bd) + 6),
-    progress: 0, status: 'todo', kind: 'general', priority: 'M', disp: '', milestone: false, updated: todayStr(), ...extra};
+    progress: 0, status: 'todo', kind: 'general', priority: 'M', disp: '', milestone: false, updated: todayStr(), approver: '', ...extra};
+  if (!t0.approver) t0.approver = defaultApprover(t0);
+  if (t0.owner) { t0.assignedAt = todayStr(); t0.assignedBy = myName(); }
   state.tasks.push(t0); return t0;
 }
 function afterTaskChange(tk, f){
@@ -2331,6 +2362,7 @@ function afterTaskChange(tk, f){
     const lane = LANE_OF[tk.status] || 'todo', fl = flowOf(tk);
     tk.status = fl.find(s => LANE_OF[s] === lane) || fl[Math.min(fl.length - 2, KANBAN_LANES.indexOf(lane))] || 'todo';
     tk.progress = TASK_PCT[tk.status];
+    if (!tk.approver) tk.approver = defaultApprover(tk);
   }
   if (f === 'status') tk.progress = TASK_PCT[tk.status] ?? tk.progress;
   if (f === 'progress') {
@@ -2411,7 +2443,7 @@ function renderTasks(v, ctx){
   v.querySelectorAll('[data-tview]').forEach(el => el.onclick = () => { ui.taskView = el.dataset.tview; ui.taskSel = ''; render(true); });
   $('#fOwner').onchange = e => { ui.owner = e.target.value; render(); };
   const fa = $('#fAlert'); if (fa) fa.onchange = e => { ui.alertOnly = e.target.checked; render(); };
-  $('#addTask').onclick = () => { newTask(view === 'backlog' ? {disp: 'backlog', phaseId: ''} : {}); save(); render(); };
+  $('#addTask').onclick = () => { const tk = newTask(view === 'backlog' ? {disp: 'backlog', phaseId: ''} : {}); save(); if (view !== 'backlog') ui.taskSel = String(state.tasks.indexOf(tk)); render(); setTimeout(() => { const n = document.querySelector('#taskDrawer textarea[data-f="name"]'); if (n) { n.focus(); n.select(); } }); };
   if (view === 'list') {
     const head = () => TASK_COLS.map(([k]) => t('csv.' + k));
     $('#tplCsv').onclick = () => download(t('tk.templateFile'), '﻿' + toCsv([head(), ['T01', (state.phases[0] || {}).name || 'Phase', 'Task A', 'Owner', '2026/10/01', '2026/10/15', '2026/10/15', '50', lbl('taskStatus', 'doing'), '', '2026/10/10'], ['T02', (state.phases[0] || {}).name || 'Phase', 'Milestone', 'PM', '2026/10/31', '2026/10/31', '2026/10/31', '0', lbl('taskStatus', 'todo'), '○', '']]), 'text/csv');
@@ -2432,14 +2464,15 @@ function renderTaskList(el, {b, alerts}){
   el.innerHTML = `<div class="card">
     <div class="muted small" style="margin-bottom:8px">${t('tk.hint2')}</div>
     <div class="scroll-x"><table class="tasks">
-      <tr><th>ID</th><th>${t('col.phase')}</th><th>${t('col.task')}</th><th>${t('tk.kind')}</th><th>${t('tk.priority')}</th><th>${t('col.owner')}</th><th>${t('col.start')}</th><th>${t('col.end')}</th><th>${t('col.baseline')}</th><th>${t('col.status')}</th><th class="num">${t('col.progress')}</th><th class="num">${t('col.planPct')}</th><th>${t('tk.disp')}</th><th>${t('col.alerts')}</th><th></th></tr>
+      <tr><th>ID</th><th>${t('col.phase')}</th><th>${t('col.task')}</th><th>${t('tk.kind')}</th><th>${t('tk.priority')}</th><th>${t('col.owner')}</th><th>${t('tk.approver')}</th><th>${t('col.start')}</th><th>${t('col.end')}</th><th>${t('col.baseline')}</th><th>${t('col.status')}</th><th class="num">${t('col.progress')}</th><th class="num">${t('col.planPct')}</th><th>${t('tk.disp')}</th><th>${t('col.alerts')}</th><th></th></tr>
       ${rows.map(({tk, i}) => `<tr class="${isDone(tk) ? 'closed' : ''} ${tk.disp === 'hold' ? 'held' : ''}">
         <td>${f(i, 'id', {cls: 'w-xs'})}</td>
         <td>${f(i, 'phaseId', {type: 'select', opts: phaseOpts(), blank: true})}</td>
         <td><div class="tname">${tk.milestone ? '<span class="ms">◆</span>' : ''}${f(i, 'name', {cls: 'w-name'})}${carryBadge(tk)}</div></td>
         <td>${tk.milestone ? '<span class="muted small">MS</span>' : f(i, 'kind', {type: 'select', opts: TASK_KINDS.map(k => [k, t('kind.' + k)])})}</td>
         <td><div class="tname">${prioDot(tk.priority)}${f(i, 'priority', {type: 'select', opts: prioOpts()})}</div></td>
-        <td>${f(i, 'owner', {cls: 'w-s'})}</td>
+        <td>${ownerSel((k, o) => f(i, k, o), tk)}</td>
+        <td>${tk.milestone ? '' : approverSel((k, o) => f(i, k, o), tk)}</td>
         <td>${f(i, 'start', {type: 'date'})}</td><td>${f(i, 'end', {type: 'date'})}</td><td>${f(i, 'baselineEnd', {type: 'date'})}</td>
         <td><div class="tname">${f(i, 'status', {type: 'select', opts: flowOpts(tk), cls: 'st-sel st-' + LANE_OF[tk.status]})}${tk.status === 'approval' && canApprove(tk) ? `<button class="btn primary sm" data-approve="${i}">${t('tk.approve')}</button>` : ''}</div>${tk.approvedBy && tk.status === 'closed' ? `<div class="muted small">${t('tk.approvedBy', esc(tk.approvedBy), md(tk.approvedAt))}</div>` : isDone(tk) ? '' : returnedNote(tk)}</td>
         <td>${f(i, 'progress', {type: 'number', cls: 'w-xs'})}</td>
@@ -2467,14 +2500,14 @@ function renderKanban(el, {b, alerts}){
   const card = ({tk, i}) => {
     const p = person(tk.owner), late = !isDone(tk) && d2n(tk.end) < b, fl = flowOf(tk), next = fl[fl.indexOf(tk.status) + 1];
     const canMove = can('tasks', i, 'status');
-    const nextBtn = next && canMove ? (next === 'closed' && needsApproval(tk) ? (canApprove(tk) ? `<button class="btn primary sm" data-approve="${i}">${t('tk.approve')}</button>` : `<span class="muted small">${t('tk.waitApprove')}</span>`) : `<button class="btn sm" data-next="${i}">${lbl('taskStatus', next)} →</button>`) : '';
+    const nextBtn = next && canMove ? (next === 'closed' && needsApproval(tk) ? (canApprove(tk) ? `<button class="btn primary sm" data-approve="${i}">${t('tk.approve')}</button>` : `<span class="muted small">${waitText(tk)}</span>`) : `<button class="btn sm" data-next="${i}">${lbl('taskStatus', next)} →</button>`) : '';
     return `<div class="kcard ${sev[tk.id] ? 'sev-' + sev[tk.id] : ''} ${tk.disp === 'hold' ? 'held' : ''}" draggable="${canMove}" data-kcard="${i}">
       <div class="kc-top">${prioDot(tk.priority)}<span class="tag k-${tk.kind}">${t('kind.' + tk.kind)}</span><span class="kc-st">${lbl('taskStatus', tk.status)}</span>${carryBadge(tk)}</div>
       <div class="kc-name">${esc(tk.name)}</div>
       ${isDone(tk) ? '' : returnedNote(tk)}
       ${issueBadges(tk)}
       ${tk.disp === 'hold' ? `<div class="kc-hold">⏸ ${esc(tk.dispNote || t('disp.hold'))}${tk.holdUntil ? ` ～${md(tk.holdUntil)}` : ''}</div>` : ''}
-      <div class="kc-foot">${p ? `<span class="avatar xs" style="background:${orgColor(p.org)}">${esc(p.name.slice(0, 1))}</span>` : ''}<span class="small">${esc(tk.owner || '—')}</span><span class="sp"></span><span class="small ${late ? 'red' : 'muted'}">${md(tk.end)}</span></div>
+      <div class="kc-foot">${p ? `<span class="avatar xs" style="background:${orgColor(p.org)}">${esc(p.name.slice(0, 1))}</span>` : ''}<span class="small">${esc(tk.owner || t('tk.unassigned'))}</span>${tk.approver && needsApproval(tk) && !isDone(tk) ? `<span class="small muted" title="${t('tk.approver')}">✓ ${esc(tk.approver)}</span>` : ''}<span class="sp"></span><span class="small ${late ? 'red' : 'muted'}">${md(tk.end)}</span></div>
       ${nextBtn ? `<div class="kc-act">${nextBtn}</div>` : ''}
     </div>`;
   };
@@ -2524,7 +2557,7 @@ function renderBacklog(el){
         <td><div class="tname">${prioDot(tk.priority)}${f(i, 'priority', {type: 'select', opts: prioOpts()})}</div></td>
         <td>${f(i, 'name', {cls: 'w-name'})}</td>
         <td>${f(i, 'kind', {type: 'select', opts: TASK_KINDS.map(k => [k, t('kind.' + k)])})}</td>
-        <td>${f(i, 'owner', {cls: 'w-s'})}</td>
+        <td>${ownerSel((k, o) => f(i, k, o), tk)}</td>
         <td class="muted small">${tk.phaseId ? esc(phaseName(tk.phaseId)) : '—'}</td>
         <td>${canDispose(tk) ? `<select data-assign="${i}"><option value="">${t('tk.assignPick')}</option>${state.phases.map(p => `<option value="${p.id}">${esc(p.code)} ${esc(p.name)}</option>`).join('')}</select>` : ''}</td>
         <td>${delBtn('tasks', i, tk.name)}</td></tr>`).join('')}
@@ -2553,7 +2586,8 @@ function drawTaskDrawer(v){
         ${isDone(tk) ? '' : returnedNote(tk)}<small class="muted">${flowOf(tk).map(s => s === tk.status ? `<b>${lbl('taskStatus', s)}</b>` : lbl('taskStatus', s)).join(' → ')}</small></label>
       <label>${t('tk.kind')}${f('kind', {type: 'select', opts: TASK_KINDS.map(k => [k, t('kind.' + k)])})}</label>
       <label>${t('tk.priority')}${f('priority', {type: 'select', opts: prioOpts()})}</label>
-      <label>${t('col.owner')}${f('owner')}</label>
+      <label>${t('col.owner')}${ownerSel(f, tk)}<small class="muted">${t('tk.ownerHint')}</small></label>
+      ${tk.milestone ? '' : `<label>${t('tk.approver')}${approverSel(f, tk)}${needsApproval(tk) ? `<small class="muted">${t('tk.approverHint')}</small>` : ''}</label>`}
       <label>${t('col.phase')}${f('phaseId', {type: 'select', opts: phaseOpts(), blank: true})}</label>
       <label>${t('col.start')}${f('start', {type: 'date'})}</label>
       <label>${t('col.end')}${f('end', {type: 'date'})}</label>
@@ -2581,7 +2615,7 @@ const AP_KINDS = ['tasks','raid','crs'];
 function approvalQueue(){
   const b = d2n(baseDate()), out = [];
   const add = (col, o, title, sub, since) => out.push({col, o, key: col + ':' + o.id, title, sub, owner: o.owner || '', phaseId: o.phaseId || '', wait: since && !isNaN(d2n(since)) ? Math.max(0, b - d2n(since)) : 0});
-  state.tasks.forEach(x => { if (x.status === 'approval' && activeTask(x) && canApprove(x)) add('tasks', x, x.name, t('kind.' + x.kind), x.updated); });
+  state.tasks.forEach(x => { if (x.status === 'approval' && activeTask(x) && canApprove(x)) add('tasks', x, x.name, [t('kind.' + x.kind), x.approver ? t('ap.named', x.approver) : ''].filter(Boolean).join(' · '), x.updated); });
   state.raid.forEach(x => { if (x.status === 'review' && canApproveRaid(x)) add('raid', x, x.title || x.id, `${lbl('raidType', x.type)}${x.mitigation ? ' · ' + x.mitigation : ''}`, x.reviewAt || x.raised); });
   state.crs.forEach((x, i) => { if (x.status === 'pending' && can('crs', i, 'status')) add('crs', x, `${x.id} ${x.title}`, [x.scope, x.schedule ? t('ap.crDays', x.schedule) : '', x.cost].filter(Boolean).join(' · '), x.pendingAt || x.raised); });
   return out.filter(x => inScope(x.o));
@@ -2990,7 +3024,7 @@ function renderRaidDetail(v, {b, alerts}, r){
 // 自分のロールで見られない画面のものは出さない。
 function searchAll(q){
   const s = q.trim().toLowerCase(); if (!s) return [];
-  const tabs = ROLE_TABS[myRole()] || [], out = [];
+  const tabs = tabsFor(), out = [];
   const hit = (...vals) => vals.some(v => String(v || '').toLowerCase().includes(s));
   const snip = (...vals) => { const v = vals.map(x => String(x || '')).find(x => x.toLowerCase().includes(s)) || ''; const k = v.toLowerCase().indexOf(s); return k < 0 ? '' : (k > 24 ? '…' : '') + v.slice(Math.max(0, k - 24), k + s.length + 40); };
   if (tabs.includes('tasks')) state.tasks.forEach(x => { if (hit(x.id, x.name, x.owner)) out.push({kind: 'tasks', id: x.id, title: `${x.id} ${x.name}`, sub: [x.owner, lbl('taskStatus', x.status), md(x.end)].filter(Boolean).join(' · '), go: () => openTaskById(x.id)}); });
@@ -4219,7 +4253,9 @@ function myTodos(b, alerts){
   const add = (sev, text, nav) => out.push({sev, text, nav});
   // 承認待ちで自分が承認できるもの
   // 承認できる人：1件ずつ並べると埋もれるので、件数をまとめて「承認」画面へ案内する
-  const apN = ROLE_TABS[r].includes('approvals') ? approvalQueue().length : 0;
+  const apN = hasApprovals() ? approvalQueue().length : 0;
+  // 新しく割り当てられたタスク（自分以外が割り当てたもの、7日以内、未着手）
+  state.tasks.filter(x => x.owner === nm && x.assignedAt && x.assignedBy && x.assignedBy !== nm && x.status === 'todo' && activeTask(x) && b - d2n(x.assignedAt) <= 7).forEach(x => add('M', t('mine.todo.assigned', x.name, x.assignedBy, md(x.end)), 'task:' + x.id));
   if (apN) add('M', t('mine.todo.approveN', apN), 'approvals');
   // 差し戻されたもの（理由つき）
   state.tasks.filter(x => x.owner === nm && !isDone(x) && x.returnedAt && x.status !== 'approval').forEach(x => add('H', t('mine.todo.returned', x.name, x.returnNote || '—'), 'tasks'));
@@ -4266,7 +4302,7 @@ function renderMine(v, {b, alerts}){
   </div>
   <div class="grid two" style="margin-top:16px">
     <div class="card"><h2>${t('mine.todo')}<span class="hint">${t('mine.todoHint')}</span></h2>
-      ${todos.length ? `<ul class="todo-list">${todos.map(x => `<li ${x.nav.startsWith('mtg:') ? `data-open-mtg="${x.nav.slice(4)}"` : x.nav.startsWith('raid:') ? `data-open-raid="${esc(x.nav.slice(5))}"` : `data-tab="${x.nav}"`}>${sevBadge(x.sev)}<span>${esc(x.text)}</span><span class="go">›</span></li>`).join('')}</ul>` : `<div class="empty">${t('mine.allClear')}</div>`}
+      ${todos.length ? `<ul class="todo-list">${todos.map(x => `<li ${x.nav.startsWith('mtg:') ? `data-open-mtg="${x.nav.slice(4)}"` : x.nav.startsWith('raid:') ? `data-open-raid="${esc(x.nav.slice(5))}"` : x.nav.startsWith('task:') ? `data-open-task="${esc(x.nav.slice(5))}"` : `data-tab="${x.nav}"`}>${sevBadge(x.sev)}<span>${esc(x.text)}</span><span class="go">›</span></li>`).join('')}</ul>` : `<div class="empty">${t('mine.allClear')}</div>`}
     </div>
     <div class="card"><h2>${t('mine.meetings')}</h2>
       ${mtgs.length ? `<ul class="alert-list">${mtgs.map(m => `<li><div class="date-chip">${md(m.date)}<small>${esc(m.time || '')}</small></div><div style="flex:1"><div class="t"><span class="link" data-open-mtg="${m.id}">${esc(m.title)}</span></div><div class="d">${m.organizer === nm ? t('mine.organizer') : m.agenda.filter(a => a.owner === nm).map(a => esc(a.topic)).join(' / ') || t('mine.attendee')}</div></div></li>`).join('')}</ul>` : `<div class="empty">${t('empty.upcoming')}</div>`}
@@ -4275,7 +4311,7 @@ function renderMine(v, {b, alerts}){
   <div class="card" style="margin-top:16px"><h2>${t('mine.tasks')}<span class="hint">${t('mine.tasksHint')}</span></h2>
     ${tasks.length ? `<div class="scroll-x"><table><tr><th>${t('col.task')}</th><th>${t('col.phase')}</th><th>${t('col.end')}</th><th class="num">${t('col.planPct')}</th><th>${t('col.progress')}</th><th>${t('col.status')}</th></tr>
       ${tasks.map(({x, i}) => `<tr><td>${esc(x.name)}</td><td>${phaseTag(x.phaseId)}</td><td class="${d2n(x.end) < b ? 'red' : ''}">${md(x.end)}</td><td class="num muted">${plannedPct(x, b)}</td>
-        <td><div class="prog">${fld('tasks', i, 'progress', x.progress, {type: 'range', cls: 'range'})}<span>${x.progress}%</span></div></td><td>${fld('tasks', i, 'status', x.status, {type: 'select', opts: flowOpts(x)})}${x.status === 'approval' ? `<div class="muted small">${t('tk.waitApprove')}</div>` : ''}</td></tr>`).join('')}
+        <td><div class="prog">${fld('tasks', i, 'progress', x.progress, {type: 'range', cls: 'range'})}<span>${x.progress}%</span></div></td><td>${fld('tasks', i, 'status', x.status, {type: 'select', opts: flowOpts(x)})}${x.status === 'approval' ? `<div class="muted small">${waitText(x)}</div>` : ''}</td></tr>`).join('')}
     </table></div>` : `<div class="empty">${t('empty.tasks')}</div>`}
   </div>
   <div class="grid two" style="margin-top:16px">
@@ -4522,7 +4558,7 @@ function render(animate){
   const lang = LANG(); document.documentElement.lang = lang;
   if (!me()) { renderLoginScreen(); return; }
   document.body.classList.remove('locked');
-  const role = myRole(), tabs = ROLE_TABS[role];
+  const role = myRole(), tabs = tabsFor();
   if (!tabs.includes(ui.tab)) ui.tab = ROLE_HOME[role];
   const b = d2n(baseDate()), alerts = computeAlerts(lang).filter(scopeAlert), m = metrics(scopedTasks(), b), rag = computeRag(m, alerts);
   const ctx = {b, m, alerts, rag, sev: sevMap(alerts), lang};
@@ -4628,6 +4664,8 @@ document.addEventListener('change', e => {
   if (col === 'org' && f === 'name' && obj.name && obj.name !== v) renameOwner(obj.name, v); // 体制図の名前変更を担当欄にも反映
   obj[f] = v;
   if (col === 'tasks') afterTaskChange(obj, f);
+  if (col === 'tasks' && f === 'owner' && v) { obj.assignedAt = todayStr(); obj.assignedBy = myName(); if (obj.approver === v) { obj.approver = defaultApprover(obj); toast(t('tk.approverReset', v)); } else toast(t('tk.assignedTo', v)); }
+  if (col === 'tasks' && f === 'approver' && v && v === obj.owner) { obj.approver = before; toast(t('tk.approverSelf')); }
   if (col === 'org' && f === 'access') { const got = applyRoleDefaults(obj); toast(got.length ? t('role.autoPhase', obj.name, got.join('、')) : t('role.assigned', obj.name, t('role.' + v))); }
   if (col === 'raid' && f === 'type' && v !== 'risk') obj.prob = '';
   if (col === 'raid' && f === 'owner') { obj.owners = [...new Set([v, ...raidOwners(obj).filter(o => o !== before)].filter(Boolean))]; obj.owner = obj.owners[0] || ''; }

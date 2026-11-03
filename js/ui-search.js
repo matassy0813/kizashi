@@ -7,7 +7,7 @@
 // 自分のロールで見られない画面のものは出さない。
 function searchAll(q){
   const s = q.trim().toLowerCase(); if (!s) return [];
-  const tabs = ROLE_TABS[myRole()] || [], out = [];
+  const tabs = tabsFor(), out = [];
   const hit = (...vals) => vals.some(v => String(v || '').toLowerCase().includes(s));
   const snip = (...vals) => { const v = vals.map(x => String(x || '')).find(x => x.toLowerCase().includes(s)) || ''; const k = v.toLowerCase().indexOf(s); return k < 0 ? '' : (k > 24 ? '…' : '') + v.slice(Math.max(0, k - 24), k + s.length + 40); };
   if (tabs.includes('tasks')) state.tasks.forEach(x => { if (hit(x.id, x.name, x.owner)) out.push({kind: 'tasks', id: x.id, title: `${x.id} ${x.name}`, sub: [x.owner, lbl('taskStatus', x.status), md(x.end)].filter(Boolean).join(' · '), go: () => openTaskById(x.id)}); });

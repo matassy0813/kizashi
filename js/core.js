@@ -62,6 +62,7 @@ function normalize(){
     if (!TASK_KINDS.includes(t.kind)) t.kind = 'general';
     if (!t.priority) t.priority = 'M';
     if (t.disp === undefined) t.disp = '';
+    if (t.approver == null) t.approver = '';
     if (t.status === 'done') t.status = 'closed';
     if (t.status === 'hold') { t.status = +t.progress > 0 ? 'doing' : 'todo'; t.disp = 'hold'; }
     if (!flowOf(t).includes(t.status)) { const lane = LANE_OF[t.status] || 'todo'; t.status = flowOf(t).find(s => LANE_OF[s] === lane) || (lane === 'todo' ? 'todo' : flowOf(t)[1]); }
@@ -198,7 +199,8 @@ function computeAlerts(lang){
     if (isDone(t) || !activeTask(t)) return;
     if (t.carryCount >= 2) add('M','carriedRepeat',t.name,t.owner,L('ad.carriedRepeat', t.carryCount),t.id,t.phaseId);
     if (t.disp === 'hold') { if (t.holdUntil && d2n(t.holdUntil) < b) add('M','holdOverdue',t.name,t.owner,L('ad.holdOverdue', md(t.holdUntil), b - d2n(t.holdUntil), t.dispNote || '—'),t.id,t.phaseId); return; }
-    if (t.status === 'approval' && t.updated && b - d2n(t.updated) >= S.staleDays) add('M','approvalStalled',t.name,t.owner,L('ad.approvalStalled', b - d2n(t.updated)),t.id,t.phaseId);
+    if (t.status === 'approval' && t.updated && b - d2n(t.updated) >= S.staleDays) add('M','approvalStalled',t.name,t.approver || t.owner,L('ad.approvalStalled', b - d2n(t.updated)),t.id,t.phaseId);
+    if (!t.owner && !t.milestone) add('M','taskNoOwner',t.name,'',L('ad.taskNoOwner'),t.id,t.phaseId);
     const s = d2n(t.start), e = d2n(t.end), be = d2n(t.baselineEnd), p = +t.progress || 0;
     if (isNaN(s) || isNaN(e)) return;
     if (e < b) add('H','overdue',t.name,t.owner,L('ad.overdue', md(t.end), b-e, p),t.id,t.phaseId);
@@ -416,14 +418,26 @@ function canApprove(t){
   const r = myRole(), nm = myName();
   // 自分のタスク：ほかに承認できる人がいない（PM が 1 人で回している）ときだけ PM 本人が承認できる
   if (!t || t.owner === nm) return r === 'pm' && !state.org.some(p => ['pm','pmo','lead'].includes(p.access) && p.name !== nm);
+  // 承認者が指名されていれば、その人（ロールを問わない：顧客の承認など）と PM・PMO
+  if (t.approver) return r !== 'none' && (t.approver === nm || r === 'pm' || r === 'pmo');
   if (r === 'pm' || r === 'pmo') return true;
   return r === 'lead' && !!t.phaseId && leadPhases().includes(t.phaseId);
 }
 // 課題・リスクの承認：承認者が決まっていればその人（と PM・PMO）、決まっていなければタスクと同じ
 function canApproveRaid(r){
-  const role = myRole(); if (!r || role === 'none' || role === 'viewer') return false;
+  const role = myRole(); if (!r || role === 'none') return false;
   if (r.approver) return r.approver === myName() || role === 'pm' || role === 'pmo';
+  if (role === 'viewer') return false;
   return canApprove(r);
+}
+// 承認画面を出すか：PM・PMO・リードは常に。メンバー・閲覧者は承認者に指名されたものがあるときだけ
+const hasApprovals = () => (ROLE_TABS[myRole()] || []).includes('approvals') || (myRole() !== 'none' && typeof approvalQueue === 'function' && approvalQueue().length > 0);
+const tabsFor = () => { const tabs = ROLE_TABS[myRole()] || []; return !tabs.includes('approvals') && hasApprovals() ? [...tabs, 'approvals'] : tabs; };
+// 新しいタスクの承認者の初期値：承認の段階がある種類なら、フェーズのリード（いなければ PM）。担当者本人は除く
+function defaultApprover(tk){
+  if (!needsApproval(tk)) return '';
+  const ph = phaseOf(tk.phaseId), lead = ph && ph.owner, pm = state.project.pm;
+  return [lead, pm].find(n => n && n !== tk.owner && state.org.some(p => p.name === n)) || '';
 }
 // 「次のフェーズへ」「Backlog」などの扱いを決められるのは PM・PMO・担当フェーズのリード（スコープの判断になるため）
 function canDispose(t){

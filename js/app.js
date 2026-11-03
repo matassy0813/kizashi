@@ -28,7 +28,7 @@ function render(animate){
   const lang = LANG(); document.documentElement.lang = lang;
   if (!me()) { renderLoginScreen(); return; }
   document.body.classList.remove('locked');
-  const role = myRole(), tabs = ROLE_TABS[role];
+  const role = myRole(), tabs = tabsFor();
   if (!tabs.includes(ui.tab)) ui.tab = ROLE_HOME[role];
   const b = d2n(baseDate()), alerts = computeAlerts(lang).filter(scopeAlert), m = metrics(scopedTasks(), b), rag = computeRag(m, alerts);
   const ctx = {b, m, alerts, rag, sev: sevMap(alerts), lang};
@@ -134,6 +134,8 @@ document.addEventListener('change', e => {
   if (col === 'org' && f === 'name' && obj.name && obj.name !== v) renameOwner(obj.name, v); // 体制図の名前変更を担当欄にも反映
   obj[f] = v;
   if (col === 'tasks') afterTaskChange(obj, f);
+  if (col === 'tasks' && f === 'owner' && v) { obj.assignedAt = todayStr(); obj.assignedBy = myName(); if (obj.approver === v) { obj.approver = defaultApprover(obj); toast(t('tk.approverReset', v)); } else toast(t('tk.assignedTo', v)); }
+  if (col === 'tasks' && f === 'approver' && v && v === obj.owner) { obj.approver = before; toast(t('tk.approverSelf')); }
   if (col === 'org' && f === 'access') { const got = applyRoleDefaults(obj); toast(got.length ? t('role.autoPhase', obj.name, got.join('、')) : t('role.assigned', obj.name, t('role.' + v))); }
   if (col === 'raid' && f === 'type' && v !== 'risk') obj.prob = '';
   if (col === 'raid' && f === 'owner') { obj.owners = [...new Set([v, ...raidOwners(obj).filter(o => o !== before)].filter(Boolean))]; obj.owner = obj.owners[0] || ''; }

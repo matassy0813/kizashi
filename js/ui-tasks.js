@@ -9,12 +9,19 @@ const flowOpts = t => flowOf(t).map(s => [s, lbl('taskStatus', s)]);
 const prioOpts = () => ['H','M','L'].map(v => [v, lbl('level', v)]);
 const prioDot = p => `<span class="prio ${p || 'M'}" title="${t('tk.priority')}：${lbl('level', p || 'M')}"></span>`;
 const PRIO_ORDER = {H: 0, M: 1, L: 2};
+// 担当者・承認者はプロジェクトのメンバー（体制図）から選ぶ
+const memberOpts = cur => { const ns = state.org.map(p => p.name).filter(Boolean); if (cur && !ns.includes(cur)) ns.push(cur); return ns.map(n => [n, n]); };
+const ownerSel = (f, tk) => f('owner', {type: 'select', opts: memberOpts(tk.owner), blank: t('tk.unassigned')});
+const approverSel = (f, tk) => needsApproval(tk) ? f('approver', {type: 'select', opts: memberOpts(tk.approver).filter(([n]) => n !== tk.owner), blank: t('tk.approverAny')}) : `<span class="muted small">${t('tk.noApprovalStep')}</span>`;
+const waitText = tk => tk.approver ? t('tk.waitApprover', esc(tk.approver)) : t('tk.waitApprove');
 
 function newTask(extra){
   const bd = baseDate(), last = state.tasks.filter(x => x.phaseId).pop();
   const r = myRole(), ph = ui.scope || (r === 'lead' && leadPhases()[0]) || (last ? last.phaseId : (state.phases[0] || {}).id || '');
   const t0 = {id: nextId('T', state.tasks), phaseId: ph, name: t('tk.newName'), owner: r === 'member' ? myName() : (ui.owner || ''), start: bd, end: n2d(d2n(bd) + 6), baselineEnd: n2d(d2n(bd) + 6),
-    progress: 0, status: 'todo', kind: 'general', priority: 'M', disp: '', milestone: false, updated: todayStr(), ...extra};
+    progress: 0, status: 'todo', kind: 'general', priority: 'M', disp: '', milestone: false, updated: todayStr(), approver: '', ...extra};
+  if (!t0.approver) t0.approver = defaultApprover(t0);
+  if (t0.owner) { t0.assignedAt = todayStr(); t0.assignedBy = myName(); }
   state.tasks.push(t0); return t0;
 }
 function afterTaskChange(tk, f){
@@ -22,6 +29,7 @@ function afterTaskChange(tk, f){
     const lane = LANE_OF[tk.status] || 'todo', fl = flowOf(tk);
     tk.status = fl.find(s => LANE_OF[s] === lane) || fl[Math.min(fl.length - 2, KANBAN_LANES.indexOf(lane))] || 'todo';
     tk.progress = TASK_PCT[tk.status];
+    if (!tk.approver) tk.approver = defaultApprover(tk);
   }
   if (f === 'status') tk.progress = TASK_PCT[tk.status] ?? tk.progress;
   if (f === 'progress') {
@@ -102,7 +110,7 @@ function renderTasks(v, ctx){
   v.querySelectorAll('[data-tview]').forEach(el => el.onclick = () => { ui.taskView = el.dataset.tview; ui.taskSel = ''; render(true); });
   $('#fOwner').onchange = e => { ui.owner = e.target.value; render(); };
   const fa = $('#fAlert'); if (fa) fa.onchange = e => { ui.alertOnly = e.target.checked; render(); };
-  $('#addTask').onclick = () => { newTask(view === 'backlog' ? {disp: 'backlog', phaseId: ''} : {}); save(); render(); };
+  $('#addTask').onclick = () => { const tk = newTask(view === 'backlog' ? {disp: 'backlog', phaseId: ''} : {}); save(); if (view !== 'backlog') ui.taskSel = String(state.tasks.indexOf(tk)); render(); setTimeout(() => { const n = document.querySelector('#taskDrawer textarea[data-f="name"]'); if (n) { n.focus(); n.select(); } }); };
   if (view === 'list') {
     const head = () => TASK_COLS.map(([k]) => t('csv.' + k));
     $('#tplCsv').onclick = () => download(t('tk.templateFile'), '﻿' + toCsv([head(), ['T01', (state.phases[0] || {}).name || 'Phase', 'Task A', 'Owner', '2026/10/01', '2026/10/15', '2026/10/15', '50', lbl('taskStatus', 'doing'), '', '2026/10/10'], ['T02', (state.phases[0] || {}).name || 'Phase', 'Milestone', 'PM', '2026/10/31', '2026/10/31', '2026/10/31', '0', lbl('taskStatus', 'todo'), '○', '']]), 'text/csv');
@@ -123,14 +131,15 @@ function renderTaskList(el, {b, alerts}){
   el.innerHTML = `<div class="card">
     <div class="muted small" style="margin-bottom:8px">${t('tk.hint2')}</div>
     <div class="scroll-x"><table class="tasks">
-      <tr><th>ID</th><th>${t('col.phase')}</th><th>${t('col.task')}</th><th>${t('tk.kind')}</th><th>${t('tk.priority')}</th><th>${t('col.owner')}</th><th>${t('col.start')}</th><th>${t('col.end')}</th><th>${t('col.baseline')}</th><th>${t('col.status')}</th><th class="num">${t('col.progress')}</th><th class="num">${t('col.planPct')}</th><th>${t('tk.disp')}</th><th>${t('col.alerts')}</th><th></th></tr>
+      <tr><th>ID</th><th>${t('col.phase')}</th><th>${t('col.task')}</th><th>${t('tk.kind')}</th><th>${t('tk.priority')}</th><th>${t('col.owner')}</th><th>${t('tk.approver')}</th><th>${t('col.start')}</th><th>${t('col.end')}</th><th>${t('col.baseline')}</th><th>${t('col.status')}</th><th class="num">${t('col.progress')}</th><th class="num">${t('col.planPct')}</th><th>${t('tk.disp')}</th><th>${t('col.alerts')}</th><th></th></tr>
       ${rows.map(({tk, i}) => `<tr class="${isDone(tk) ? 'closed' : ''} ${tk.disp === 'hold' ? 'held' : ''}">
         <td>${f(i, 'id', {cls: 'w-xs'})}</td>
         <td>${f(i, 'phaseId', {type: 'select', opts: phaseOpts(), blank: true})}</td>
         <td><div class="tname">${tk.milestone ? '<span class="ms">◆</span>' : ''}${f(i, 'name', {cls: 'w-name'})}${carryBadge(tk)}</div></td>
         <td>${tk.milestone ? '<span class="muted small">MS</span>' : f(i, 'kind', {type: 'select', opts: TASK_KINDS.map(k => [k, t('kind.' + k)])})}</td>
         <td><div class="tname">${prioDot(tk.priority)}${f(i, 'priority', {type: 'select', opts: prioOpts()})}</div></td>
-        <td>${f(i, 'owner', {cls: 'w-s'})}</td>
+        <td>${ownerSel((k, o) => f(i, k, o), tk)}</td>
+        <td>${tk.milestone ? '' : approverSel((k, o) => f(i, k, o), tk)}</td>
         <td>${f(i, 'start', {type: 'date'})}</td><td>${f(i, 'end', {type: 'date'})}</td><td>${f(i, 'baselineEnd', {type: 'date'})}</td>
         <td><div class="tname">${f(i, 'status', {type: 'select', opts: flowOpts(tk), cls: 'st-sel st-' + LANE_OF[tk.status]})}${tk.status === 'approval' && canApprove(tk) ? `<button class="btn primary sm" data-approve="${i}">${t('tk.approve')}</button>` : ''}</div>${tk.approvedBy && tk.status === 'closed' ? `<div class="muted small">${t('tk.approvedBy', esc(tk.approvedBy), md(tk.approvedAt))}</div>` : isDone(tk) ? '' : returnedNote(tk)}</td>
         <td>${f(i, 'progress', {type: 'number', cls: 'w-xs'})}</td>
@@ -158,14 +167,14 @@ function renderKanban(el, {b, alerts}){
   const card = ({tk, i}) => {
     const p = person(tk.owner), late = !isDone(tk) && d2n(tk.end) < b, fl = flowOf(tk), next = fl[fl.indexOf(tk.status) + 1];
     const canMove = can('tasks', i, 'status');
-    const nextBtn = next && canMove ? (next === 'closed' && needsApproval(tk) ? (canApprove(tk) ? `<button class="btn primary sm" data-approve="${i}">${t('tk.approve')}</button>` : `<span class="muted small">${t('tk.waitApprove')}</span>`) : `<button class="btn sm" data-next="${i}">${lbl('taskStatus', next)} →</button>`) : '';
+    const nextBtn = next && canMove ? (next === 'closed' && needsApproval(tk) ? (canApprove(tk) ? `<button class="btn primary sm" data-approve="${i}">${t('tk.approve')}</button>` : `<span class="muted small">${waitText(tk)}</span>`) : `<button class="btn sm" data-next="${i}">${lbl('taskStatus', next)} →</button>`) : '';
     return `<div class="kcard ${sev[tk.id] ? 'sev-' + sev[tk.id] : ''} ${tk.disp === 'hold' ? 'held' : ''}" draggable="${canMove}" data-kcard="${i}">
       <div class="kc-top">${prioDot(tk.priority)}<span class="tag k-${tk.kind}">${t('kind.' + tk.kind)}</span><span class="kc-st">${lbl('taskStatus', tk.status)}</span>${carryBadge(tk)}</div>
       <div class="kc-name">${esc(tk.name)}</div>
       ${isDone(tk) ? '' : returnedNote(tk)}
       ${issueBadges(tk)}
       ${tk.disp === 'hold' ? `<div class="kc-hold">⏸ ${esc(tk.dispNote || t('disp.hold'))}${tk.holdUntil ? ` ～${md(tk.holdUntil)}` : ''}</div>` : ''}
-      <div class="kc-foot">${p ? `<span class="avatar xs" style="background:${orgColor(p.org)}">${esc(p.name.slice(0, 1))}</span>` : ''}<span class="small">${esc(tk.owner || '—')}</span><span class="sp"></span><span class="small ${late ? 'red' : 'muted'}">${md(tk.end)}</span></div>
+      <div class="kc-foot">${p ? `<span class="avatar xs" style="background:${orgColor(p.org)}">${esc(p.name.slice(0, 1))}</span>` : ''}<span class="small">${esc(tk.owner || t('tk.unassigned'))}</span>${tk.approver && needsApproval(tk) && !isDone(tk) ? `<span class="small muted" title="${t('tk.approver')}">✓ ${esc(tk.approver)}</span>` : ''}<span class="sp"></span><span class="small ${late ? 'red' : 'muted'}">${md(tk.end)}</span></div>
       ${nextBtn ? `<div class="kc-act">${nextBtn}</div>` : ''}
     </div>`;
   };
@@ -215,7 +224,7 @@ function renderBacklog(el){
         <td><div class="tname">${prioDot(tk.priority)}${f(i, 'priority', {type: 'select', opts: prioOpts()})}</div></td>
         <td>${f(i, 'name', {cls: 'w-name'})}</td>
         <td>${f(i, 'kind', {type: 'select', opts: TASK_KINDS.map(k => [k, t('kind.' + k)])})}</td>
-        <td>${f(i, 'owner', {cls: 'w-s'})}</td>
+        <td>${ownerSel((k, o) => f(i, k, o), tk)}</td>
         <td class="muted small">${tk.phaseId ? esc(phaseName(tk.phaseId)) : '—'}</td>
         <td>${canDispose(tk) ? `<select data-assign="${i}"><option value="">${t('tk.assignPick')}</option>${state.phases.map(p => `<option value="${p.id}">${esc(p.code)} ${esc(p.name)}</option>`).join('')}</select>` : ''}</td>
         <td>${delBtn('tasks', i, tk.name)}</td></tr>`).join('')}
@@ -244,7 +253,8 @@ function drawTaskDrawer(v){
         ${isDone(tk) ? '' : returnedNote(tk)}<small class="muted">${flowOf(tk).map(s => s === tk.status ? `<b>${lbl('taskStatus', s)}</b>` : lbl('taskStatus', s)).join(' → ')}</small></label>
       <label>${t('tk.kind')}${f('kind', {type: 'select', opts: TASK_KINDS.map(k => [k, t('kind.' + k)])})}</label>
       <label>${t('tk.priority')}${f('priority', {type: 'select', opts: prioOpts()})}</label>
-      <label>${t('col.owner')}${f('owner')}</label>
+      <label>${t('col.owner')}${ownerSel(f, tk)}<small class="muted">${t('tk.ownerHint')}</small></label>
+      ${tk.milestone ? '' : `<label>${t('tk.approver')}${approverSel(f, tk)}${needsApproval(tk) ? `<small class="muted">${t('tk.approverHint')}</small>` : ''}</label>`}
       <label>${t('col.phase')}${f('phaseId', {type: 'select', opts: phaseOpts(), blank: true})}</label>
       <label>${t('col.start')}${f('start', {type: 'date'})}</label>
       <label>${t('col.end')}${f('end', {type: 'date'})}</label>
