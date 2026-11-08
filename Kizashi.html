@@ -767,6 +767,45 @@ function lbl(group, v, lang){ return v ? tl(lang || LANG(), `${group}.${v}`) : '
   ['ap.named','承認者：{0}','Approver: {0}'], ['mine.todo.assigned','新しく割り当てられました：{0}（{1}さんから、期限 {2}）','Newly assigned: {0} (from {1}, due {2})'],
   ['at.taskNoOwner','担当者なし','No owner'], ['ad.taskNoOwner','タスクに担当者が決まっていない','Nobody owns this task'], ['rule.taskNoOwner','未完了のタスクに担当者がいない','Open task without an owner'],
   ['set.dataHintCloud','このプロジェクトはチームで共有中です。データは暗号化してクラウドに置き、このPCのブラウザにも控えを持っています。JSONのバックアップは、念のための保存や別のツールへの移行に使えます。','This project is shared with your team. Data is encrypted in the cloud, with a copy in this browser. JSON backups are for safekeeping or moving to another tool.'],
+  ['cloud.v1Hint','以前の方式（リンクだけで共有）で共有中です','Shared with the old link-only method'],
+  ['cloud.v1Why','メンバーごとのログインに切り替えると、リンクを知っているだけでは開けなくなります。PMが自分のログインIDとパスワードを決めて切り替え、メンバーは体制図から招待し直してください。今のリンクは使えなくなります。','Switch to per-member sign-in so that knowing the link is no longer enough. Choose your own sign-in ID and password, then re-invite members from the org chart. The current link stops working.'],
+  ['cloud.upgrade','メンバーごとのログインに切り替える','Switch to per-member sign-in'],
+  ['cloud.step1b','自分（PM）のログインIDとパスワードを決めて「チームで共有を始める」を押す','Choose your (PM) sign-in ID and password, then press "Start sharing"'],
+  ['cloud.step2b','体制図で、メンバーごとにログインIDを決めて「招待を発行」を押し、案内文を送る','In the org chart, give each member a sign-in ID, press "Invite" and send the message'],
+  ['cloud.step3b','メンバーはリンクを開き、ログインIDと案内コードで入って、自分のパスワードを決める。インストールは要りません','Members open the link, sign in with their ID and invitation code, and choose their own password. Nothing to install'],
+  ['cloud.privacy2','データはブラウザの中で暗号化してから送ります。暗号の鍵は、メンバーそれぞれのパスワードで包んで預けるので、サーバーにも運営者（開発者）にも中身は読めません。パスワードはサーバーにも届かず、PMも知りません。パスワードを忘れたときは、PMが招待をやり直します。','Data is encrypted in the browser before it is sent. The key is wrapped with each member\'s own password, so neither the server nor its operator (the developer) can read the content. Passwords never reach the server and even the PM does not know them. If someone forgets theirs, the PM re-invites them.'],
+  ['cloud.loginId','ログインID','Sign-in ID'], ['cloud.loginIdHint','半角の英小文字・数字・「. _ -」（2〜40文字）','Lowercase letters, digits and . _ - (2–40)'],
+  ['cloud.pw','パスワード','Password'], ['cloud.newPw','新しいパスワード（{0}文字以上）','New password ({0}+ characters)'],
+  ['cloud.errLoginId','ログインIDは、半角の英小文字・数字・「. _ -」で2〜40文字にしてください','Use 2–40 lowercase letters, digits or . _ - for the sign-in ID'],
+  ['cloud.errPwShort','パスワードは{0}文字以上にしてください','Use at least {0} characters'], ['cloud.errLoginDup','ログインID「{0}」はほかの人が使っています','Sign-in ID "{0}" is already used'],
+  ['cloud.started2','共有を始めました。体制図からメンバーを招待してください','Sharing started. Invite members from the org chart'],
+  ['cloud.signedInAs','{0}（{1}）でログイン中','Signed in as {0} ({1})'],
+  ['cloud.linkHint2','このリンクだけでは開けません。ログインIDとパスワードが必要です','This link alone cannot open the project; a sign-in ID and password are required'],
+  ['cloud.inviteWhere','メンバーの招待・ログインの停止は、体制図の人ごとに行います','Invite members or stop their access per person in the org chart'],
+  ['cloud.loginTitle','チームで共有中のプロジェクトです。ログインIDとパスワードで入ってください','This project is shared. Sign in with your ID and password'],
+  ['cloud.sharedProject','共有されたプロジェクト','Shared project'],
+  ['cloud.firstTime','初めての方は、PMから届いた案内コードをパスワードの欄に入れてください。そのあと自分のパスワードを決めます。','First time? Enter the invitation code from your PM as the password, then choose your own.'],
+  ['cloud.checking','確認しています…','Checking…'],
+  ['cloud.setPwHelp','あなただけのパスワードを決めてください（{0}文字以上）。PMも知らず、サーバーにも届きません。','Choose your own password ({0}+ characters). Nobody else knows it, not even the PM, and it never reaches the server.'],
+  ['cloud.setPw','パスワードを決めて入る','Set password and continue'],
+  ['cloud.errLogin','ログインIDかパスワードが違います','Wrong sign-in ID or password'], ['cloud.errLocked','続けて間違えたため、15分ほどログインできません','Too many attempts. Try again in about 15 minutes'],
+  ['cloud.errGone','このプロジェクトは見つかりません（共有が終わった可能性があります）。PMに確認してください','Project not found (sharing may have ended). Please check with your PM'],
+  ['cloud.errNet','サーバーにつながりませんでした。通信状況を確かめて、もう一度お試しください','Could not reach the server. Check your connection and try again'],
+  ['cloud.errNotInOrg','ログインID「{0}」が体制図の誰にも結びついていません。PMに、体制図のあなたの欄にこのIDを入れてもらってください','Sign-in ID "{0}" is not linked to anyone in the org chart. Ask your PM to enter it on your entry'],
+  ['cloud.sessionLost','ログインの期限が切れたか、ログインが止められました。もう一度ログインしてください','Your session ended. Please sign in again'],
+  ['cloud.st.loggedOut','☁ ログインが必要です','☁ Sign-in required'],
+  ['cloud.mstate.noId','ログインIDを決めて「招待を発行」すると、この人がログインできるようになります','Set a sign-in ID and press "Invite" so this person can sign in'],
+  ['cloud.mstate.none','まだ招待していません','Not invited yet'], ['cloud.mstate.invited','招待済み（まだ初回ログインしていません）','Invited (has not signed in yet)'],
+  ['cloud.mstate.active','利用中','Active'], ['cloud.mstate.locked','間違いが続いたため一時停止中','Temporarily locked after failed attempts'],
+  ['cloud.invite','招待を発行（案内文をコピー）','Invite (copy message)'], ['cloud.reinvite','招待をやり直す（パスワードを忘れたとき）','Re-invite (forgotten password)'],
+  ['cloud.inviteHint','この人のログインIDで、1回限りの案内コードを発行します。案内文をコピーして送ってください','Issues a one-time code for this person\'s sign-in ID. Copy and send the message'],
+  ['cloud.needLoginId','先にこの人のログインIDを決めてください','Set this person\'s sign-in ID first'], ['cloud.invited','{0}さんの案内文をコピーしました','Copied the invitation for {0}'],
+  ['cloud.revoke','ログインを止める','Stop access'], ['cloud.revokeConfirm','{0}さん（{1}）のログインを止めます。この人はもうこのプロジェクトに入れません。よろしいですか？','Stop access for {0} ({1})? They will no longer be able to sign in.'],
+  ['cloud.revoked','{0}さんのログインを止めました','Stopped access for {0}'], ['cloud.errRole','サーバーの役割を変えられませんでした（{0}）','Could not update the role on the server ({0})'],
+  ['cloud.loginChanged','ログインIDを変えたので、この人の招待を出し直してください','Sign-in ID changed: please re-invite this person'],
+  ['inv.step2cloud','ログインID「{0}」と、案内コード {1} を入れて、自分のパスワードを決める','Sign in with ID "{0}" and invitation code {1}, then choose your own password'],
+  ['inv.step2cloudPw','ログインID「{0}」と、自分のパスワードで入る','Sign in with ID "{0}" and your own password'],
+  ['inv.codeNoteCloud','※ 案内コードは初回ログインだけに使えます。パスワードは本人しか知らず、PMもサーバーの運営者も知りません。','* The code works for your first sign-in only. Only you know your password: not the PM, not the server operator.'],
   ['cloud.title','チームで共有（クラウド）','Share with your team (cloud)'],
   ['cloud.offHint','今はこのPCのブラウザだけに保存しています','Saved in this browser only'],
   ['cloud.onHint','チーム全員が同じデータを見ています。保存するとすぐ全員に反映されます','Everyone sees the same data; changes reach everyone right away'],
@@ -1977,15 +2016,17 @@ const HELP = {
     ['alerts', '早期警戒', `期限超過・進捗遅延・期限延長の常態化・更新停滞・負荷集中・契約期間の超過・会議の結果未記録など、遅れの兆候を自動で判定します。判定ルールと しきい値は同じ画面に表示され、「設定・データ」で変えられます。`],
     ['phases', 'フェーズ', `フェーズごとに契約形態（準委任／請負）、契約終了日、成果物、完了基準、フェーズゲートを管理します。契約終了日を超える計画は警戒します。`],
     ['tasks', 'タスク（ステータス・カンバン・扱い）', `**種類**を選ぶとステータスの流れが決まります。\n- 一般：未着手 → 進行中 → クローズ\n- 検討：未着手 → 議論中 → 方針確定 → クローズ\n- 開発：未着手 → 実装中 → テスト中 → 承認待ち → クローズ\n- 成果物：未着手 → 作成中 → レビュー中 → 承認待ち → クローズ\n\n承認待ちは、承認者が「承認」すると自動でクローズします（自分のタスクは承認不可）。\n\n**担当者・承認者**はプロジェクトのメンバー（体制図）から選びます。担当者になった人の「自分の仕事」に入り、進捗はその人が更新します。承認者に指名された人には、承認待ちになった時点で「承認」画面に表示されます（メンバーや顧客の閲覧者でも指名できます）。承認者を空にすると、PM・PMO・担当リードが承認します。\n\n**扱い**：次のフェーズに回す／Backlog（時期未定）／保留／見送り。表示は「一覧」「カンバン」「Backlog」から選べます。`],
-    ['cloud', 'チームで共有（クラウド）', `「設定・データ」の「チームで共有を始める」を押すと、このプロジェクトがクラウドに置かれ、チーム全員が同じデータを見られるようになります（PMが操作）。
-1. 共有を始める
-2. 体制図でメンバーごとに「案内文をコピー」して送る（共有リンクが入ります）
-3. メンバーはリンクを開き、自分の名前とパスコードで入るだけ。インストールもアカウントも要りません
+    ['cloud', 'チームで共有（クラウド）', `チーム全員が同じデータを見られるようにします。メンバーはそれぞれ自分のログインIDとパスワードで入ります。
+1. PM：「設定・データ」で自分のログインIDとパスワードを決め、「チームで共有を始める」を押す
+2. PM：体制図で、メンバーごとにログインIDを決めて「招待を発行」を押し、案内文（リンク・ログインID・案内コード）を送る
+3. メンバー：リンクを開き、ログインIDと案内コードで入って、自分のパスワードを決める。インストールは要りません
 
 - 誰かが保存すると、すぐ全員の画面に反映されます。同時に直しても、項目ごとに合わせるので消えません（同じ欄を同時に直したときは、あとから保存した方が残ります）
-- データはブラウザの中で暗号化してから送ります。鍵は共有リンクの中だけにあり、サーバーも中身を読めません。リンクを知っている人は開けるので、メンバー以外には渡さないでください
-- 表示言語と基準日は人ごとに選べます
-- 画面右上に「☁ 共有済み」「☁ 送信待ち」「☁ オフライン」と出ます。通信が切れても変更は手元に残り、つながったら送ります`],
+- データはブラウザの中で暗号化してから送ります。暗号の鍵は、メンバーそれぞれのパスワードで包んで預けるので、サーバーにも運営者（開発者）にも中身は読めません。パスワードはサーバーに届かず、PMも知りません
+- パスワードを忘れたら、PMが体制図で「招待をやり直す」と、新しい案内コードで入り直せます
+- 抜けた人は、PMが「ログインを止める」と、もう入れなくなります。10回続けて間違えると15分ロックされます
+- ログアウトすると、そのPCから鍵とデータの控えが消えます（共用PCでも安心）
+- 表示言語と基準日は人ごとに選べます。画面右上に「☁ 共有済み」「☁ 送信待ち」「☁ オフライン」と出ます`],
     ['search', '全体検索', `画面右上の「検索」、またはどの画面でも「/」かCtrl+Kで開きます。タスク・課題（コメントも含む）・会議（議題・決定・宿題）・変更要求・ガバナンスのルールをまとめて探し、押すとその場所を開きます。自分のロールで見られない画面のものは出ません。`],
     ['approvals', '承認（まとめて承認）', `自分が承認できるものだけを1か所に集めた画面です（PM・PMO・リード）。
 - **タスク**：承認待ちのもの（自分のタスクは出ません）
@@ -2020,15 +2061,17 @@ const HELP = {
     ['tasks', 'Tasks (status, kanban, disposition)', `The **type** sets the status flow:\n- General: Not started → In progress → Closed\n- Decision: Not started → Discussing → Decided → Closed\n- Build: Not started → Building → Testing → Awaiting approval → Closed\n- Deliverable: Not started → Drafting → In review → Awaiting approval → Closed\n\nThe approver closes approval items with "Approve" (not your own).
 
 **Owner and approver** are picked from the project members (org chart). The owner gets the task in My work and updates its progress. The named approver sees it in Approvals once it reaches the approval step (members and client viewers can be named). Leave the approver empty and a PM, PMO or phase lead approves.\n\n**Disposition**: move to next phase / backlog / on hold / drop. Views: List, Kanban, Backlog.`],
-    ['cloud', 'Share with your team (cloud)', `In "Settings & data", the PM presses "Start sharing" to put the project in the cloud so the whole team sees the same data.
-1. Start sharing
-2. Copy each member's invitation from the org chart and send it (the share link is included)
-3. Members open the link and sign in with their name and passcode. No install, no account
+    ['cloud', 'Share with your team (cloud)', `Everyone sees the same data, and each member signs in with their own ID and password.
+1. PM: in "Settings & data", choose your sign-in ID and password and press "Start sharing"
+2. PM: in the org chart, give each member a sign-in ID, press "Invite" and send the message (link, ID and invitation code)
+3. Members: open the link, sign in with the ID and code, then choose their own password. Nothing to install
 
-- When anyone saves, everyone's screen updates right away. Simultaneous edits are merged item by item, so nothing is lost (if two people change the same field, the later save wins)
-- Data is encrypted in the browser before it is sent. The key lives only in the share link, so the server cannot read it. Anyone with the link can open the project: share it with members only
-- Display language and base date stay per person
-- The top right shows "☁ Synced", "☁ Waiting" or "☁ Offline". Offline changes stay on your PC and are sent when you reconnect`],
+- When anyone saves, everyone's screen updates right away. Simultaneous edits are merged item by item (if two people change the same field, the later save wins)
+- Data is encrypted in the browser. The key is wrapped with each member's password, so neither the server nor its operator (the developer) can read it. Passwords never reach the server and the PM does not know them
+- Forgot your password? The PM presses "Re-invite" and you sign in again with a new code
+- When someone leaves, the PM presses "Stop access". Ten wrong attempts lock the ID for 15 minutes
+- Signing out removes the key and the local copy from that PC (safe on shared PCs)
+- Display language and base date are per person. The top right shows "☁ Synced", "☁ Waiting" or "☁ Offline"`],
     ['search', 'Search', `Use "Search" at the top right, or press / or Ctrl+K anywhere. Finds tasks, issues (including comments), meetings (agenda, decisions, actions), change requests and governance rules, and opens the one you pick. Items on screens your role cannot see are not shown.`],
     ['approvals', 'Approvals (bulk)', `Everything you can approve, in one place (PM, PMO, lead).
 - **Tasks** awaiting approval (never your own)
@@ -3200,16 +3243,22 @@ function mergeById(base, local, remote){
 // 商用ライセンス（改変の非公開・組み込み・SaaS 提供）は COMMERCIAL.md を参照 / Commercial licensing: see COMMERCIAL.md
 'use strict';
 // ============ クラウド共有（チーム全員で同じデータを見る） ============
-// 導入の手間をなくすため、アカウント作成もインストールも要らない作りにする。
-//  1. PM が「チームで共有」を押す → このプロジェクトがクラウドに置かれ、共有リンクができる
-//  2. 招待の文面にリンクが入る → メンバーはリンクを開いて、自分の名前とパスコードで入るだけ
-//  3. 以後、誰かが保存するとすぐ全員の画面に反映される（同時に直しても、項目ごとに合わせて消さない）
-// データはブラウザの中で暗号化してから送る。鍵はリンクの # の後ろにあり、サーバーには届かない（サーバーは中身を読めない）。
+// 導入の手間をなくすため、インストールも外部サービスのアカウント作成も要らない作りにする。
+//  1. PM が自分のログインIDとパスワードを決めて「チームで共有を始める」を押す
+//  2. PM が体制図でメンバーごとにログインIDを決め、「招待を発行」→ 案内文（リンク・ID・案内コード）を送る
+//  3. メンバーはリンクを開き、ID と案内コードで入って、自分のパスワードを決める（PM も知らない）
+//  4. 以後、誰かが保存するとすぐ全員の画面に反映される（同時に直しても、項目ごとに合わせて消さない）
+// 顧客の情報を守るため、サーバーにも運営者（開発者）にも中身が読めない作りにする：
+//  - データはブラウザの中で「プロジェクト鍵」を使って暗号化してから送る
+//  - プロジェクト鍵は、メンバーごとに「本人のパスワードから作った鍵」で包んで預ける。パスワードそのものはサーバーに届かない
+// 以前の「リンクの鍵だけで共有する方式（v1）」で共有中のプロジェクトは、PM が新しい方式に切り替えられる。
 const CLOUD_DEFAULT = 'https://kizashi-cloud.kizashipm.workers.dev'; // 公開している同期サーバー（自社で立てたサーバーは設定画面で入れる）
-const CLOUD_APP_URL = 'https://matassy0813.github.io/kizashi/Kizashi.html'; // ファイルで開いているときの共有リンクの行き先
+const CLOUD_APP_URL = 'https://matassy0813.github.io/kizashi/Kizashi.html'; // ファイルで開いているときのリンクの行き先
 const CLOUD_SRV_KEY = 'kizashi-cloud-server';
 const LOCAL_ONLY = [['project', 'lang'], ['project', 'baseDate']]; // 人ごとに違ってよいもの（表示言語・基準日）は共有しない
-const cloud = {status: '', ws: null, timer: null, poll: null, busy: false, again: false, applying: false, retry: 0};
+const PBKDF2_ITER = 600000, MIN_PW = 8;
+const LOGIN_RE = /^[a-z0-9][a-z0-9._-]{1,39}$/;
+const cloud = {status: '', ws: null, timer: null, poll: null, busy: false, again: false, applying: false, retry: 0, members: null, membersAt: 0};
 
 // ---- 暗号・符号化 ----
 const b64u = bytes => btoa(String.fromCharCode(...new Uint8Array(bytes))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -3217,13 +3266,24 @@ const unb64u = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')
 const rand = n => crypto.getRandomValues(new Uint8Array(n));
 const toB64 = bytes => { let s = ''; const u = new Uint8Array(bytes); for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode(...u.subarray(i, i + 0x8000)); return btoa(s); };
 const fromB64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const normLogin = s => String(s || '').trim().toLowerCase();
 async function streamBytes(bytes, T){ const s = new Blob([bytes]).stream().pipeThrough(new T('gzip')); return new Uint8Array(await new Response(s).arrayBuffer()); }
+// v1：リンクの鍵からデータ鍵と合言葉を作る
 async function cloudKeys(secret){
   const raw = unb64u(secret);
   const key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt', 'decrypt']);
   const token = b64u(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('kizashi-auth:' + secret)));
   return {key, token};
 }
+// v2：パスワードから「サーバーに見せる確認用の値」と「プロジェクト鍵を包む鍵」を作る（時間のかかる計算で、総当たりを難しくする）
+async function deriveLogin(password, salt){
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = new Uint8Array(await crypto.subtle.deriveBits({name: 'PBKDF2', hash: 'SHA-256', salt: unb64u(salt), iterations: PBKDF2_ITER}, base, 512));
+  return {authKey: b64u(bits.slice(0, 32)), wrapKey: await crypto.subtle.importKey('raw', bits.slice(32), 'AES-GCM', false, ['encrypt', 'decrypt'])};
+}
+async function wrapPdk(pdk, wrapKey){ const iv = rand(12), ct = await crypto.subtle.encrypt({name: 'AES-GCM', iv}, wrapKey, unb64u(pdk)); return `w1.${toB64(iv)}.${toB64(ct)}`; }
+async function unwrapPdk(wrapped, wrapKey){ const [v, iv, ct] = String(wrapped).split('.'); if (v !== 'w1') throw new Error('format'); return b64u(await crypto.subtle.decrypt({name: 'AES-GCM', iv: fromB64(iv)}, wrapKey, fromB64(ct))); }
+async function dataKey(meta){ return meta.v === 2 ? crypto.subtle.importKey('raw', unb64u(meta.pdk), 'AES-GCM', false, ['encrypt', 'decrypt']) : (await cloudKeys(meta.secret)).key; }
 async function seal(obj, key){
   let bytes = new TextEncoder().encode(JSON.stringify(obj)), z = 0;
   if (typeof CompressionStream === 'function') { bytes = await streamBytes(bytes, CompressionStream); z = 1; }
@@ -3240,12 +3300,15 @@ async function unseal(blob, key){
 // ---- 保存先・リンク ----
 const cloudServer = () => { try { return (localStorage.getItem(CLOUD_SRV_KEY) || CLOUD_DEFAULT).replace(/\/+$/, ''); } catch (e) { return CLOUD_DEFAULT; } };
 const cloudMeta = () => { const p = ws && wsCurrent(); return p && p.cloud ? p.cloud : null; };
+const cloudV2 = () => { const m = cloudMeta(); return !!m && m.v === 2; };
+const cloudSignedIn = () => { const m = cloudMeta(); return !!m && (m.v !== 2 || (!!m.token && !!m.pdk)); };
 const baseKey = p => 'pmo-cloudbase-' + p.id;
 const readBase = p => { try { return JSON.parse(localStorage.getItem(baseKey(p)) || 'null'); } catch (e) { return null; } };
 const writeBase = (p, s) => { try { localStorage.setItem(baseKey(p), JSON.stringify(s)); } catch (e) {} };
 function shareLink(meta){
   const here = /^https?:/.test(location.protocol) ? location.origin + location.pathname : CLOUD_APP_URL;
-  return `${here}#join=${meta.id}.${meta.secret}${meta.server && meta.server !== CLOUD_DEFAULT ? '&srv=' + encodeURIComponent(meta.server) : ''}`;
+  const srv = meta.server && meta.server !== CLOUD_DEFAULT ? '&srv=' + encodeURIComponent(meta.server) : '';
+  return meta.v === 2 ? `${here}#p=${meta.id}${srv}` : `${here}#join=${meta.id}.${meta.secret}${srv}`;
 }
 // 共有する内容（人ごとの設定を除いたもの）
 function sharedOf(s){
@@ -3258,33 +3321,59 @@ function withLocal(shared, mine){
   LOCAL_ONLY.forEach(path => { let a = mine, o = c; for (let i = 0; i < path.length - 1; i++) { a = a && a[path[i]]; o = o && o[path[i]]; } const k = path[path.length - 1]; if (o && a && k in a) o[k] = a[k]; });
   return c;
 }
-async function api(meta, method, body){
+// ログインする前（中身をまだ受け取っていない）プロジェクトの仮の中身
+const cloudBlank = (name, lang) => ({version: 2, project: {name: name || '', lang: lang || LANG(), uid: ''}, settings: {}, phases: [], tasks: [], raid: [], meetings: [], meetingTypes: [], governance: [], crs: [], snapshots: [], org: [], flows: [], charts: [], report: {topics: '', requests: ''}, cloudPending: true});
+
+// ---- サーバーとのやり取り ----
+async function api(meta, method, body){ // v1
   const {token} = await cloudKeys(meta.secret);
   const r = await fetch(`${meta.server}/api/p/${meta.id}`, {method, headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'}, body: body ? JSON.stringify(body) : undefined, cache: 'no-store'});
   let data = {}; try { data = await r.json(); } catch (e) {}
   return {status: r.status, data};
 }
+async function api2(server, id, method, action, body, token, query){ // v2
+  const headers = {'Content-Type': 'application/json'}; if (token) headers.Authorization = 'Bearer ' + token;
+  const r = await fetch(`${server}/api/v2/p/${id}/${action}${query || ''}`, {method, headers, body: body ? JSON.stringify(body) : undefined, cache: 'no-store'});
+  let data = {}; try { data = await r.json(); } catch (e) {}
+  return {status: r.status, data};
+}
+const apiMe = (meta, method, action, body, query) => api2(meta.server, meta.id, method, action, body, meta.token, query);
+const getDoc = meta => meta.v === 2 ? apiMe(meta, 'GET', 'doc') : api(meta, 'GET');
+const putDoc = (meta, body) => meta.v === 2 ? apiMe(meta, 'PUT', 'doc', body) : api(meta, 'PUT', body);
 
 // ---- 状態の表示（画面右上の保存表示を「クラウド」用にする） ----
 function cloudSetStatus(s){
   cloud.status = s;
   const el = document.querySelector('#saveInd'); if (!el || !cloudMeta()) return;
-  el.classList.toggle('cloud', true); el.classList.toggle('offline', s === 'offline');
+  el.classList.toggle('cloud', true); el.classList.toggle('offline', s === 'offline' || s === 'loggedOut');
   el.innerHTML = `<span class="dot"></span>${t('cloud.st.' + s)}`; el.title = t('cloud.stHint');
   const pill = document.querySelector('.cloud-card .pill'); if (pill) { pill.textContent = t('cloud.st.' + s); pill.classList.toggle('ok', s === 'synced'); }
 }
 
-// ---- 共有を始める（PM） ----
-async function cloudShare(server){
-  const p = wsCurrent(); if (p.cloud) return p.cloud;
-  server = (server || cloudServer()).replace(/\/+$/, '');
-  if (!server) throw new Error('no_server');
-  const meta = {id: b64u(rand(16)), secret: b64u(rand(32)), server, ver: 0, since: todayStr(), by: myName()};
-  const shared = sharedOf(state), {key} = await cloudKeys(meta.secret);
-  const res = await api(meta, 'PUT', {ver: 0, blob: await seal(shared, key)});
-  if (res.status !== 201 && res.status !== 200) throw new Error('server_' + res.status);
-  meta.ver = res.data.ver; p.cloud = meta; wsWrite(); writeBase(p, shared);
+// ---- 共有を始める（PM）：自分のログインIDとパスワードを決める。リンク共有（v1）からの切り替えも同じ ----
+function checkNewLogin(login, password, password2){
+  if (!LOGIN_RE.test(login)) return t('cloud.errLoginId');
+  if (String(password || '').length < MIN_PW) return t('cloud.errPwShort', MIN_PW);
+  if (password2 != null && password !== password2) return t('login.errMatch');
+  return '';
+}
+async function cloudShare(server, login, password){
+  const p = wsCurrent(), old = p.cloud && p.cloud.v !== 2 ? p.cloud : null;
+  if (p.cloud && !old) return p.cloud;
+  login = normLogin(login); const err = checkNewLogin(login, password); if (err) throw new Error(err);
+  server = (server || cloudServer()).replace(/\/+$/, ''); if (!server) throw new Error('no_server');
+  const mine = me(); if (mine) mine.login = login; // 体制図の自分にログインIDを結びつける
+  if (state.org.some(x => x !== mine && normLogin(x.login) === login)) throw new Error(t('cloud.errLoginDup', login));
+  const meta = {v: 2, id: b64u(rand(16)), server, login, role: 'pm', pdk: b64u(rand(32)), ver: 0, since: todayStr(), by: myName()};
+  const salt = b64u(rand(16)), {authKey, wrapKey} = await deriveLogin(password, salt);
+  const shared = sharedOf(state);
+  const res = await api2(server, meta.id, 'POST', 'create', {login, salt, authKey, wrapped: await wrapPdk(meta.pdk, wrapKey), blob: await seal(shared, await dataKey(meta))});
+  if (res.status !== 201) throw new Error('server_' + res.status);
+  meta.token = res.data.token; meta.ver = res.data.ver;
+  cloudDisconnect(); p.cloud = meta; wsWrite(); writeBase(p, shared);
+  cloud.applying = true; save(); cloud.applying = false;
   try { localStorage.setItem(CLOUD_SRV_KEY, server); } catch (e) {}
+  if (old) { try { await api(old, 'DELETE'); } catch (e) {} } // 以前のリンク共有の箱は消す（リンクを知っている人も開けなくなる）
   cloudConnect(); cloudSetStatus('synced');
   return meta;
 }
@@ -3292,27 +3381,132 @@ async function cloudShare(server){
 function cloudLeave(){
   const p = wsCurrent(); if (!p.cloud) return;
   cloudDisconnect(); delete p.cloud; wsWrite(); try { localStorage.removeItem(baseKey(p)); } catch (e) {}
-  const el = document.querySelector('#saveInd'); if (el) el.classList.remove('cloud', 'offline');
+  resetSaveInd();
 }
+// 共有していないプロジェクトでは、画面右上の表示を「保存済み」に戻す
+function resetSaveInd(){ const el = document.querySelector('#saveInd'); if (!el) return; el.classList.remove('cloud', 'offline'); el.title = ''; if (el.textContent.includes('☁')) el.innerHTML = `<span class="dot"></span>${t('save.saved')}`; }
 
-// ---- リンクから参加する（メンバー） ----
+// ---- ログイン（v2） ----
+const looksLikeCode = s => /^[A-Za-z0-9]{4}-?[A-Za-z0-9]{4}$/.test(String(s || '').trim());
+const canonCode = s => { const c = String(s || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, ''); return c.slice(0, 4) + '-' + c.slice(4); };
+async function loginRaw(server, id, login, password){
+  login = normLogin(login);
+  const pre = await api2(server, id, 'POST', 'prelogin', {login});
+  if (pre.status === 404) throw new Error('gone'); if (pre.status !== 200) throw new Error('server_' + pre.status);
+  const tryOne = async pw => {
+    const {authKey, wrapKey} = await deriveLogin(pw, pre.data.salt);
+    const res = await api2(server, id, 'POST', 'login', {login, authKey});
+    if (res.status === 200) return {...res.data, login, pdk: await unwrapPdk(res.data.wrapped, wrapKey)};
+    if (res.status === 429) throw new Error('locked');
+    if (res.status === 401) return null;
+    throw new Error('server_' + res.status);
+  };
+  // 案内コードは、大文字・小文字やハイフンの有無が違っても通す
+  const r = await tryOne(password) || (looksLikeCode(password) && canonCode(password) !== password ? await tryOne(canonCode(password)) : null);
+  if (!r) throw new Error('invalid');
+  return r;
+}
+async function setPasswordRaw(server, id, token, pdk, password){
+  const salt = b64u(rand(16)), {authKey, wrapKey} = await deriveLogin(password, salt);
+  const res = await api2(server, id, 'POST', 'password', {salt, authKey, wrapped: await wrapPdk(pdk, wrapKey)}, token);
+  if (res.status !== 200) throw new Error('server_' + res.status);
+}
+async function cloudLogin(login, password){
+  const meta = cloudMeta(), r = await loginRaw(meta.server, meta.id, login, password);
+  Object.assign(meta, {login: r.login, token: r.token, role: r.role, pdk: r.pdk, mustChange: !!r.mustChange}); wsWrite();
+  return meta;
+}
+async function cloudSetPassword(password){
+  const meta = cloudMeta(); await setPasswordRaw(meta.server, meta.id, meta.token, meta.pdk, password);
+  meta.mustChange = false; wsWrite();
+}
+// ログインできたら中身を受け取り、体制図の中の自分（ログインIDが同じ人）として入る
+async function cloudOpen(){
+  const meta = cloudMeta(), p = wsCurrent();
+  const res = await getDoc(meta); if (res.status === 401) return cloudSessionLost(); if (res.status !== 200) throw new Error('server_' + res.status);
+  const remote = await unseal(res.data.blob, await dataKey(meta));
+  state = withLocal(remote, state); delete state.cloudPending; normalize();
+  meta.ver = res.data.ver; wsWrite(); writeBase(p, remote);
+  const mine = state.org.find(x => normLogin(x.login) === meta.login);
+  ui.me = mine ? mine.id : ''; ui.login = {id: '', err: mine ? '' : t('cloud.errNotInOrg', meta.login)};
+  if (mine) ui.tab = ROLE_HOME[mine.access || 'member']; // ロールの最初の画面から（ローカルのログインと同じ）
+  cloud.applying = true; save(); cloud.applying = false;
+  cloudConnect(); cloudSetStatus('synced'); render(true);
+  if (mine) toast(t('login.welcome', mine.name));
+}
+// ログアウト：この PC からプロジェクト鍵とデータの控えを消す（次に開くときはログインして受け取り直す）
+function cloudForget(){
+  const meta = cloudMeta(), p = wsCurrent(); if (!meta) return;
+  cloudDisconnect();
+  ['token', 'pdk', 'role', 'mustChange'].forEach(k => delete meta[k]);
+  try { localStorage.removeItem(p.key); localStorage.removeItem(baseKey(p)); } catch (e) {}
+  state = cloudBlank(state.project.name, state.project.lang); normalize(); ui.me = '';
+  cloud.applying = true; save(); cloud.applying = false; wsWrite();
+}
+async function cloudLogout(){ const meta = cloudMeta(); if (meta && meta.token) { try { await apiMe(meta, 'POST', 'logout'); } catch (e) {} } cloudForget(); render(true); }
+function cloudSessionLost(){ cloudForget(); cloudSetStatus('loggedOut'); render(true); toast(t('cloud.sessionLost')); }
+
+// ---- メンバーの招待・役割・削除（PM・PMO） ----
+async function cloudInvite(person){
+  const meta = cloudMeta(), login = normLogin(person.login);
+  if (!LOGIN_RE.test(login)) throw new Error(t('cloud.errLoginId'));
+  if (state.org.some(x => x !== person && normLogin(x.login) === login)) throw new Error(t('cloud.errLoginDup', login));
+  const code = newInviteCode(), salt = b64u(rand(16)), {authKey, wrapKey} = await deriveLogin(code, salt);
+  const res = await apiMe(meta, 'PUT', 'member', {login, role: person.access || 'member', salt, authKey, wrapped: await wrapPdk(meta.pdk, wrapKey)});
+  if (res.status === 401) { cloudSessionLost(); throw new Error(t('cloud.sessionLost')); }
+  if (res.status !== 200) throw new Error(res.data.error === 'forbidden' ? t('perm.denied') : 'server_' + res.status);
+  person.login = login; person.invitedAt = todayStr(); cloud.membersAt = 0; save();
+  return code;
+}
+async function cloudSetRole(person){
+  const meta = cloudMeta(); if (!meta || meta.v !== 2 || !person.login) return;
+  const res = await apiMe(meta, 'PATCH', 'member', {login: normLogin(person.login), role: person.access || 'member'});
+  if (res.status !== 200 && res.status !== 404) toast(t('cloud.errRole', res.data.error || res.status));
+  cloud.membersAt = 0;
+}
+async function cloudRemoveMember(login){
+  const meta = cloudMeta(); if (!meta || meta.v !== 2 || !login) return false;
+  const res = await apiMe(meta, 'DELETE', 'member', null, '?login=' + encodeURIComponent(normLogin(login)));
+  cloud.membersAt = 0; return res.status === 200;
+}
+// サーバーにあるメンバーの状態（招待中・利用中など）。体制図の表示に使う
+async function cloudMembers(force){
+  const meta = cloudMeta(); if (!meta || meta.v !== 2 || !meta.token) return null;
+  if (!force && cloud.members && Date.now() - cloud.membersAt < 30000) return cloud.members;
+  const res = await apiMe(meta, 'GET', 'members'); if (res.status !== 200) return cloud.members;
+  cloud.members = res.data.members; cloud.membersAt = Date.now(); return cloud.members;
+}
+const memberState = login => { const m = (cloud.members || []).find(x => x.login === normLogin(login)); return !m ? 'none' : m.locked ? 'locked' : m.invited ? 'invited' : 'active'; };
+
+// ---- リンクから開く ----
 function parseJoin(hash){
-  const h = new URLSearchParams(String(hash || '').replace(/^#/, '')), j = h.get('join'); if (!j) return null;
+  const h = new URLSearchParams(String(hash || '').replace(/^#/, ''));
+  const srv = (h.get('srv') || cloudServer()).replace(/\/+$/, '');
+  if (h.get('p')) return {v: 2, id: h.get('p'), server: srv};
+  const j = h.get('join'); if (!j) return null;
   const [id, secret] = j.split('.'); if (!id || !secret) return null;
-  return {id, secret, server: (h.get('srv') || cloudServer()).replace(/\/+$/, '')};
+  return {v: 1, id, secret, server: srv};
+}
+function cloudOpenSlot(){ // 新しいプロジェクトの枠（初めて開いた人は、最初に入っているサンプルの代わりに使う）
+  if (ws.projects.length === 1 && state && state.isSample && !wsCurrent().cloud) return;
+  if (state) save(); wsBeginNewProject();
 }
 async function cloudJoin(j){
   const hit = ws.projects.find(p => p.cloud && p.cloud.id === j.id);
-  if (hit) { if (hit.id !== ws.current) switchProject(hit.id); await cloudPull(); return 'opened'; }
+  if (hit) { if (hit.id !== ws.current) switchProject(hit.id); if (cloudSignedIn()) await cloudPull(); else render(true); return 'opened'; }
   if (!j.server) throw new Error('no_server');
+  if (j.v === 2) { // ログインしてから中身を受け取る
+    cloudOpenSlot(); state = cloudBlank('', state && state.project.lang); normalize();
+    wsCurrent().cloud = {v: 2, id: j.id, server: j.server, ver: 0, since: todayStr()}; ui.me = '';
+    cloud.applying = true; save(); cloud.applying = false; wsWrite(); render(true);
+    return 'joined';
+  }
   const meta = {id: j.id, secret: j.secret, server: j.server, ver: 0, since: todayStr()};
   const res = await api(meta, 'GET'); if (res.status !== 200) throw new Error('server_' + res.status);
-  const {key} = await cloudKeys(meta.secret), remote = await unseal(res.data.blob, key);
-  // 同じプロジェクト（JSON で受け取っていたもの）があれば、それをクラウドにつなぐ。なければ新しく加える
+  const remote = await unseal(res.data.blob, (await cloudKeys(meta.secret)).key);
   const same = ws.projects.find(p => p.uid && remote.project && p.uid === remote.project.uid && !p.cloud);
   if (same) { if (same.id !== ws.current) { save(); ws.current = same.id; wsWrite(); resetUi(); state = null; load(); } }
-  else if (ws.projects.length === 1 && state && state.isSample && !wsCurrent().cloud) { /* 初めて開いた人：最初に入っているサンプルの代わりに使う */ }
-  else { if (state) save(); wsBeginNewProject(); }
+  else cloudOpenSlot();
   const lang = state && state.project ? state.project.lang : '';
   state = withLocal(remote, {project: {lang: lang || remote.project.lang}}); normalize();
   meta.ver = res.data.ver; wsCurrent().cloud = meta; ui.me = ''; cloud.applying = true; save(); cloud.applying = false; wsWrite(); writeBase(wsCurrent(), sharedOf(state));
@@ -3323,7 +3517,7 @@ async function cloudJoin(j){
 // ---- 送る・受け取る ----
 // 保存のたびに呼ばれる。少し待ってまとめて送る（入力中に何度も送らない）
 function cloudAfterSave(){
-  if (cloud.applying || !cloudMeta()) return;
+  if (cloud.applying || !cloudMeta() || !cloudSignedIn() || state.cloudPending) return;
   cloudSetStatus('pending');
   clearTimeout(cloud.timer); cloud.timer = setTimeout(cloudPush, 700);
 }
@@ -3331,7 +3525,7 @@ function cloudAfterSave(){
 const cloudPush = () => cloudRun(false);
 const cloudPull = () => cloudRun(true);
 async function cloudRun(pull){
-  if (!cloudMeta()) return;
+  if (!cloudMeta() || !cloudSignedIn() || state.cloudPending) return;
   if (cloud.busy) { cloud.again = cloud.again || (pull ? 'pull' : 'push'); return; }
   cloud.busy = true;
   try { await (pull ? syncPull() : syncPush()); cloud.retry = 0; }
@@ -3339,28 +3533,30 @@ async function cloudRun(pull){
   finally {
     cloud.busy = false;
     const next = cloud.again; cloud.again = false;
-    if (next) cloudRun(next === 'pull');
+    if (next && cloudSignedIn()) cloudRun(next === 'pull');
   }
 }
 async function syncPush(){
   const meta = cloudMeta(), p = wsCurrent(), shared = sharedOf(state), base = readBase(p);
   if (base && deq(shared, base)) { cloudSetStatus('synced'); return; }
   cloudSetStatus('syncing');
-  const {key} = await cloudKeys(meta.secret);
-  const res = await api(meta, 'PUT', {ver: meta.ver, blob: await seal(shared, key)});
+  const res = await putDoc(meta, {ver: meta.ver, blob: await seal(shared, await dataKey(meta))});
   if (res.status === 200 || res.status === 201) { meta.ver = res.data.ver; wsWrite(); writeBase(p, shared); cloudSetStatus(deq(sharedOf(state), shared) ? 'synced' : 'pending'); if (!deq(sharedOf(state), shared)) cloud.again = 'push'; return; }
   if (res.status === 409) return syncPull(); // 先に誰かが保存していた：合わせてから送り直す
+  if (res.status === 401 && meta.v === 2) return cloudSessionLost();
+  if (res.status === 403 && res.data.error === 'must_change') { cloudSetStatus('loggedOut'); return; }
   if (res.status === 413) { cloudSetStatus('tooLarge'); return; }
   throw new Error('server_' + res.status);
 }
 // クラウドの最新を受け取り、自分のまだ送っていない変更と合わせる
 async function syncPull(){
   const meta = cloudMeta(), p = wsCurrent();
-  const res = await api(meta, 'GET');
+  const res = await getDoc(meta);
+  if (res.status === 401 && meta.v === 2) return cloudSessionLost();
   if (res.status === 404 || res.status === 403) { cloudSetStatus('gone'); return; }
   if (res.status !== 200) throw new Error('server_' + res.status);
   let remote = null;
-  if (res.data.ver !== meta.ver) { const {key} = await cloudKeys(meta.secret); remote = await unseal(res.data.blob, key); }
+  if (res.data.ver !== meta.ver) remote = await unseal(res.data.blob, await dataKey(meta));
   // ここから先は待ち時間なし（受け取っている間に入力された分も、取りこぼさず合わせる）
   const base = readBase(p) || {}, local = sharedOf(state);
   if (!remote) { if (!deq(local, base)) return syncPush(); cloudSetStatus('synced'); return; }
@@ -3380,12 +3576,13 @@ function cloudOffline(){
 
 // ---- 知らせを受け取る（誰かが保存したら、すぐ取りに行く） ----
 function cloudConnect(){
-  cloudDisconnect(); const meta = cloudMeta(); if (!meta) return;
+  cloudDisconnect(); const meta = cloudMeta(); if (!meta || !cloudSignedIn()) return;
+  const url = meta.v === 2 ? `${meta.server.replace(/^http/, 'ws')}/api/v2/p/${meta.id}/ws?t=${encodeURIComponent(meta.token)}` : `${meta.server.replace(/^http/, 'ws')}/api/p/${meta.id}/ws`;
   const open = () => {
-    let sock; try { sock = new WebSocket(meta.server.replace(/^http/, 'ws') + `/api/p/${meta.id}/ws`); } catch (e) { return; }
+    let sock; try { sock = new WebSocket(url); } catch (e) { return; }
     cloud.ws = sock;
     sock.onmessage = e => { let d = {}; try { d = JSON.parse(e.data); } catch (x) {} const m = cloudMeta(); if (m && m.id === meta.id && d.ver > m.ver) cloudPull(); };
-    sock.onclose = () => { if (cloud.ws === sock) { cloud.ws = null; setTimeout(() => { if (cloudMeta() && cloudMeta().id === meta.id && !cloud.ws) open(); }, 3000); } };
+    sock.onclose = () => { if (cloud.ws === sock) { cloud.ws = null; setTimeout(() => { const m = cloudMeta(); if (m && m.id === meta.id && cloudSignedIn() && !cloud.ws) open(); }, 3000); } };
   };
   open();
   cloud.poll = setInterval(() => { if (!document.hidden) cloudPull(); }, 30000); // 知らせが届かない環境の予備
@@ -3394,43 +3591,99 @@ function cloudDisconnect(){ if (cloud.ws) { const s = cloud.ws; cloud.ws = null;
 window.addEventListener('focus', () => { if (cloudMeta()) cloudPull(); });
 window.addEventListener('online', () => { if (cloudMeta()) cloudPull(); });
 
-// ---- 起動時：共有リンクで開かれたら参加し、共有中のプロジェクトならつなぐ ----
+// ---- 起動時：リンクで開かれたら参加し、共有中のプロジェクトならつなぐ ----
 async function cloudBoot(){
   const j = parseJoin(location.hash);
   if (j) {
-    history.replaceState(null, '', location.pathname + location.search); // 鍵をアドレス欄に残さない
-    try { const r = await cloudJoin(j); toast(t(r === 'joined' ? 'cloud.joined' : 'cloud.opened', state.project.name)); }
+    history.replaceState(null, '', location.pathname + location.search); // リンクの情報をアドレス欄に残さない
+    try { const r = await cloudJoin(j); if (j.v === 1) toast(t(r === 'joined' ? 'cloud.joined' : 'cloud.opened', state.project.name)); }
     catch (e) { alert(t(String(e.message).startsWith('server_4') ? 'cloud.errLink' : 'cloud.errJoin')); }
     return;
   }
-  if (cloudMeta()) { cloudConnect(); cloudSetStatus('syncing'); cloudPull(); }
+  if (cloudMeta()) { if (!cloudSignedIn()) { if (ui.me) { ui.me = ''; render(true); } return; } cloudConnect(); cloudSetStatus('syncing'); cloudPull(); }
 }
 // プロジェクトを切り替えたら、つなぎ先も切り替える
-function cloudOnSwitch(){ cloudDisconnect(); const el = document.querySelector('#saveInd'); if (el) el.classList.remove('cloud', 'offline'); if (cloudMeta()) { cloudConnect(); cloudSetStatus('syncing'); cloudPull(); } }
+function cloudOnSwitch(){ cloudDisconnect(); cloud.members = null; resetSaveInd(); if (cloudMeta() && cloudSignedIn()) { cloudConnect(); cloudSetStatus('syncing'); cloudPull(); } }
+
+// ---- ログイン画面（共有中のプロジェクト） ----
+function renderCloudLogin(){
+  const meta = cloudMeta(), L = ui.login || (ui.login = {id: '', err: ''});
+  const step = meta.token && meta.pdk && meta.mustChange ? 'setpw' : meta.token && meta.pdk ? 'notInOrg' : 'login';
+  const body = step === 'setpw' ? `<p class="muted small">${t('cloud.setPwHelp', MIN_PW)}</p><form id="clForm" class="lg-form" autocomplete="off">
+      <label class="lbl-block">${t('cloud.newPw', MIN_PW)}<input type="password" id="clPw1" autocomplete="new-password" autofocus></label>
+      <label class="lbl-block">${t('login.newPin2')}<input type="password" id="clPw2" autocomplete="new-password"></label>
+      ${L.err ? `<p class="red small">${esc(L.err)}</p>` : ''}<div class="bar" style="margin:6px 0 0"><span class="sp"></span><button class="btn primary" type="submit" id="clGo">${t('cloud.setPw')}</button></div></form>`
+    : step === 'notInOrg' ? `<p class="need">${esc(L.err || t('cloud.errNotInOrg', meta.login))}</p><div class="bar"><span class="sp"></span><button class="btn" id="clOut">${t('login.logout')}</button></div>`
+    : `<form id="clForm" class="lg-form">
+      <label class="lbl-block">${t('cloud.loginId')}<input id="clId" autocomplete="username" autocapitalize="off" spellcheck="false" value="${esc(L.loginId || '')}" autofocus></label>
+      <label class="lbl-block">${t('cloud.pw')}<input type="password" id="clPw" autocomplete="current-password"></label>
+      <p class="muted small">${t('cloud.firstTime')}</p>
+      ${L.err ? `<p class="red small">${esc(L.err)}</p>` : ''}<div class="bar" style="margin:6px 0 0"><span class="sp"></span><button class="btn primary" type="submit" id="clGo">${t('login.go')}</button></div></form>`;
+  $('#view').innerHTML = `<div class="login-wrap"><div class="card login">
+    <div class="login-logo">${brandLogo()}</div>
+    <h1 class="large-title" style="text-align:center">${esc(state.project.name || t('cloud.sharedProject'))}</h1>
+    <p class="lead" style="text-align:center;margin-bottom:18px">☁ ${t('cloud.loginTitle')}</p>
+    ${body}
+    <div class="login-foot">${ws && ws.projects.length > 1 ? `<button class="btn ghost" id="lgOther">${t('ws.openOther')}</button>` : ''}</div>
+  </div></div>`;
+  const other = $('#lgOther'); if (other) other.onclick = () => openProjectSwitcher(other);
+  const out = $('#clOut'); if (out) out.onclick = () => cloudLogout();
+  const form = $('#clForm'); if (!form) return;
+  const busy = on => { const b = form.querySelector('#clGo'); if (b && document.body.contains(form)) { b.disabled = on; b.textContent = on ? t('cloud.checking') : (step === 'setpw' ? t('cloud.setPw') : t('login.go')); } }; // 画面が次の段階に変わっていたら触らない
+  form.onsubmit = async e => {
+    e.preventDefault(); busy(true);
+    try {
+      if (step === 'setpw') {
+        const a = $('#clPw1').value, b = $('#clPw2').value, err = a.length < MIN_PW ? t('cloud.errPwShort', MIN_PW) : a !== b ? t('login.errMatch') : '';
+        if (err) { L.err = err; return renderCloudLogin(); }
+        await cloudSetPassword(a); L.err = ''; await cloudOpen(); return;
+      }
+      L.loginId = normLogin($('#clId').value);
+      await cloudLogin(L.loginId, $('#clPw').value); L.err = '';
+      if (cloudMeta().mustChange) return renderCloudLogin();
+      await cloudOpen();
+    } catch (x) {
+      const m = String(x.message);
+      L.err = m === 'invalid' ? t('cloud.errLogin') : m === 'locked' ? t('cloud.errLocked') : m === 'gone' ? t('cloud.errGone') : t('cloud.errNet');
+      renderCloudLogin();
+    } finally { busy(false); }
+  };
+}
 
 // ---- 設定画面の「チームで共有」 ----
+const accountFields = (id) => `<div class="form-grid">
+    <label>${t('cloud.loginId')}<input id="${id}Id" autocapitalize="off" spellcheck="false" placeholder="yamamoto" value="${esc((me() || {}).login || '')}"><small class="muted">${t('cloud.loginIdHint')}</small></label>
+    <label>${t('cloud.newPw', MIN_PW)}<input type="password" id="${id}Pw1" autocomplete="new-password"></label>
+    <label>${t('login.newPin2')}<input type="password" id="${id}Pw2" autocomplete="new-password"></label></div>`;
 function cloudCard(){
   const meta = cloudMeta(), pm = canCreate('admin');
-  if (meta) return `<div class="card cloud-card" style="margin-top:14px"><h2>☁ ${t('cloud.title')}<span class="hint">${t('cloud.onHint')}</span></h2>
-    <div class="cloud-state"><span class="pill ok">${t('cloud.st.' + (cloud.status || 'synced'))}</span><span class="muted small">${t('cloud.since', md(meta.since), esc(meta.by || '—'))}</span></div>
-    <label class="lbl-block" style="margin-top:10px">${t('cloud.link')}<div class="cloud-link"><input readonly value="${esc(shareLink(meta))}" id="cloudLinkTxt"><button class="btn primary" id="cloudCopy">${t('cloud.copy')}</button></div><small class="muted">${t('cloud.linkHint')}</small></label>
-    <div class="bar" style="margin-top:10px"><span class="sp"></span><button class="btn" id="cloudLeave">${t('cloud.leave')}</button></div></div>`;
+  if (meta && meta.v === 2) return `<div class="card cloud-card" style="margin-top:14px"><h2>☁ ${t('cloud.title')}<span class="hint">${t('cloud.onHint')}</span></h2>
+    <div class="cloud-state"><span class="pill ok">${t('cloud.st.' + (cloud.status || 'synced'))}</span><span class="muted small">${t('cloud.signedInAs', esc(meta.login || '—'), t('role.' + (meta.role || 'member')))}</span><span class="muted small">${t('cloud.since', md(meta.since), esc(meta.by || '—'))}</span></div>
+    <label class="lbl-block" style="margin-top:10px">${t('cloud.link')}<div class="cloud-link"><input readonly value="${esc(shareLink(meta))}" id="cloudLinkTxt"><button class="btn" id="cloudCopy">${t('cloud.copy')}</button></div><small class="muted">${t('cloud.linkHint2')}</small></label>
+    <p class="muted small">${t('cloud.privacy2')}</p>
+    <div class="bar" style="margin-top:6px"><span class="muted small">${t('cloud.inviteWhere')}</span><span class="sp"></span><button class="btn" id="cloudLeave">${t('cloud.leave')}</button></div></div>`;
+  if (meta) return `<div class="card cloud-card" style="margin-top:14px"><h2>☁ ${t('cloud.title')}<span class="hint">${t('cloud.v1Hint')}</span></h2>
+    <p class="muted small">${t('cloud.v1Why')}</p>
+    ${pm ? `${accountFields('cu')}<div class="bar" style="margin-top:10px"><span class="sp"></span><button class="btn primary" id="cloudUpgrade">${t('cloud.upgrade')}</button></div>` : `<p class="muted small">${t('cloud.pmOnly')}</p>`}</div>`;
   return `<div class="card cloud-card" style="margin-top:14px"><h2>☁ ${t('cloud.title')}<span class="hint">${t('cloud.offHint')}</span></h2>
-    <ol class="cloud-steps"><li>${t('cloud.step1')}</li><li>${t('cloud.step2')}</li><li>${t('cloud.step3')}</li></ol>
-    <p class="muted small">${t('cloud.privacy')}</p>
-    ${pm ? `<details class="cloud-adv" ${cloudServer() ? '' : 'open'}><summary>${t('cloud.server')}</summary><input id="cloudSrv" placeholder="https://kizashi-cloud.example.workers.dev" value="${esc(cloudServer())}"><small class="muted">${t('cloud.serverHint')}</small></details>
+    <ol class="cloud-steps"><li>${t('cloud.step1b')}</li><li>${t('cloud.step2b')}</li><li>${t('cloud.step3b')}</li></ol>
+    <p class="muted small">${t('cloud.privacy2')}</p>
+    ${pm ? `${accountFields('cs')}<details class="cloud-adv"><summary>${t('cloud.server')}</summary><input id="cloudSrv" placeholder="https://kizashi-cloud.example.workers.dev" value="${esc(cloudServer())}"><small class="muted">${t('cloud.serverHint')}</small></details>
     <div class="bar" style="margin-top:10px"><span class="sp"></span><button class="btn primary" id="cloudStart">☁ ${t('cloud.start')}</button></div>` : `<p class="muted small">${t('cloud.pmOnly')}</p>`}</div>`;
 }
 function bindCloudCard(root){
   const cp = root.querySelector('#cloudCopy'); if (cp) cp.onclick = () => copyText(shareLink(cloudMeta()));
   const lv = root.querySelector('#cloudLeave'); if (lv) lv.onclick = () => { if (confirm(t('cloud.leaveConfirm'))) { cloudLeave(); render(); toast(t('cloud.left')); } };
-  const st = root.querySelector('#cloudStart'); if (st) st.onclick = async () => {
+  const start = (btn, pre, label) => btn.onclick = async () => {
+    const v = k => (root.querySelector('#' + pre + k) || {}).value || '';
+    const err = checkNewLogin(normLogin(v('Id')), v('Pw1'), v('Pw2')); if (err) { alert(err); return; }
     const srv = (root.querySelector('#cloudSrv') || {}).value || cloudServer();
-    if (!srv) { toast(t('cloud.needServer')); return; }
-    st.disabled = true; st.textContent = t('cloud.starting');
-    try { await cloudShare(srv); render(); toast(t('cloud.started')); }
-    catch (e) { st.disabled = false; st.textContent = '☁ ' + t('cloud.start'); alert(t('cloud.errStart', String(e.message))); }
+    btn.disabled = true; btn.textContent = t('cloud.starting');
+    try { await cloudShare(srv, v('Id'), v('Pw1')); render(); toast(t('cloud.started2')); }
+    catch (e) { btn.disabled = false; btn.textContent = label; alert(t('cloud.errStart', String(e.message))); }
   };
+  const st = root.querySelector('#cloudStart'); if (st) start(st, 'cs', '☁ ' + t('cloud.start'));
+  const up = root.querySelector('#cloudUpgrade'); if (up) start(up, 'cu', t('cloud.upgrade'));
 }
 
 </script>
@@ -4272,9 +4525,20 @@ function bindPersonDrawer(root, sel){
   const addChild = root.querySelector('#addChild'); if (addChild) addChild.onclick = () => { const n = blank(t('org.newName'), sel.org, sel.id); state.org.push(n); ui.orgSel = n.id; save(); render(); };
   // 案内コードは本人の初回ログインにだけ使える。本人が自分でパスコードを決めた時点で無効になる
   const inv = root.querySelector('#copyInvite'); if (inv) inv.onclick = async () => {
+    if (cloudV2()) { // 共有中：サーバーにメンバーを登録し、案内コードで初回ログインできるようにする
+      if (!sel.login) { toast(t('cloud.needLoginId')); const el = root.querySelector('[data-f="login"]'); if (el) el.focus(); return; }
+      inv.disabled = true; inv.textContent = t('cloud.starting');
+      try { const code = await cloudInvite(sel); copyText(inviteText(sel, code)); toast(t('cloud.invited', sel.name)); }
+      catch (e) { alert(String(e.message)); }
+      render(); return;
+    }
     let code = '';
     if (!sel.pin) { code = newInviteCode(); sel.invite = await makeSecret(code); save(); }
     copyText(inviteText(sel, code)); render();
+  };
+  const rv = root.querySelector('#cloudRevoke'); if (rv) rv.onclick = async () => {
+    if (!confirm(t('cloud.revokeConfirm', sel.name, sel.login))) return;
+    const ok = await cloudRemoveMember(sel.login); await cloudMembers(true); render(); toast(ok ? t('cloud.revoked', sel.name) : t('perm.denied'));
   };
   root.querySelectorAll('[data-phase-owner]').forEach(el => el.onchange = () => {
     if (!canCreate('phases')) return;
@@ -4290,6 +4554,7 @@ function bindPersonDrawer(root, sel){
   });
 }
 function personPanel(p, b, alerts){
+  if (cloudV2() && Date.now() - cloud.membersAt > 30000) { cloud.membersAt = Date.now(); cloudMembers(true).then(m => { if (m && ui.orgSel) render(); }); } // サーバーの招待状況を取りに行く
   const f = (k, o) => fld('org', p.id, k, p[k], o);
   const ld = personLoad(p.name, b, alerts);
   const desc = new Set(); const walk = id => state.org.filter(x => x.parentId === id).forEach(x => { if (!desc.has(x.id)) { desc.add(x.id); walk(x.id); } }); walk(p.id);
@@ -4302,6 +4567,7 @@ function personPanel(p, b, alerts){
       <label>${t('org.name')}${f('name')}</label>
       <label>${t('org.access')}${f('access', {type: 'select', opts: ROLES.map(r => [r, t('role.' + r)])})}<small class="muted">${t('roleDesc.' + (p.access || 'member'))}</small></label>
       ${p.access === 'lead' ? `<div class="lbl-block">${t('org.leadPhases')}<div class="phase-checks">${state.phases.map(ph => `<label class="chk"><input type="checkbox" data-phase-owner="${ph.id}" ${ph.owner === p.name ? 'checked' : ''} ${canCreate('phases') ? '' : 'disabled'}> ${esc(ph.code)} ${esc(ph.name)}</label>`).join('')}</div></div>` : ''}
+      ${cloudV2() ? `<label>${t('cloud.loginId')}${f('login', {ph: 'tanaka'})}<small class="muted">${t('cloud.mstate.' + (p.login ? memberState(p.login) : 'noId'))}</small></label>` : ''}
       <label>${t('org.role')}${f('role', {ph: t('org.rolePh')})}</label>
       <label>${t('org.type')}${f('org', {type: 'select', opts: ORG_LANES.map(o => [o, t('orgType.' + o)])})}</label>
       <label>${t('org.parent')}${f('parentId', {type: 'select', opts: parents, blank: t('org.top')})}</label>
@@ -4309,8 +4575,9 @@ function personPanel(p, b, alerts){
       <label>${t('org.note')}${f('note', {type: 'textarea', rows: 2, ph: t('org.notePh')})}</label>
     </div>
     <div class="bar" style="margin-top:10px"><button class="btn" id="addChild">＋ ${t('org.addChild')}</button>
-      ${myRole() === 'pm' && p.id !== myId() ? `<button class="btn primary" id="copyInvite" title="${t('org.inviteHint')}">${p.pin ? t('org.inviteAgain') : t('org.invite')}</button>` : ''}</div>
-    <div class="login-state ${loginStatus(p)}">${t('org.login.' + loginStatus(p))}</div>
+      ${cloudV2() ? (['pm', 'pmo'].includes(myRole()) && p.id !== myId() ? `<button class="btn primary" id="copyInvite" title="${t('cloud.inviteHint')}">${p.login && memberState(p.login) !== 'none' ? t('cloud.reinvite') : t('cloud.invite')}</button>${myRole() === 'pm' && p.login && memberState(p.login) !== 'none' ? `<button class="btn danger" id="cloudRevoke">${t('cloud.revoke')}</button>` : ''}` : '')
+        : myRole() === 'pm' && p.id !== myId() ? `<button class="btn primary" id="copyInvite" title="${t('org.inviteHint')}">${p.pin ? t('org.inviteAgain') : t('org.invite')}</button>` : ''}</div>
+    ${cloudV2() ? '' : `<div class="login-state ${loginStatus(p)}">${t('org.login.' + loginStatus(p))}</div>`}
     <h3>${t('org.holding')}</h3>
     ${ld.tasks.length + ld.acts.length + ld.raid.length ? `<ul class="hold-list">
       ${ld.tasks.map(x => row(t('org.kTask'), x.name, x.end, d2n(x.end) < b)).join('')}
@@ -4696,12 +4963,13 @@ function inviteText(p, code){
   const next = state.meetings.filter(m => m.status === 'planned' && d2n(m.date) >= b && (m.organizer === nm || m.agenda.some(a => a.owner === nm) || String(m.attendees || '').includes(nm))).sort((x, y) => x.date < y.date ? -1 : 1)[0];
   const phases = r === 'lead' ? state.phases.filter(ph => ph.owner === nm).map(ph => ph.name) : [];
   const L = [t('inv.title', state.project.name, nm), '', `${t('inv.role')}：${t('role.' + r)}${phases.length ? `（${t('inv.phases')}：${phases.join('、')}）` : ''}`, `${t('inv.can')}：${t('roleDesc.' + r)}`, '', t('inv.first')];
-  L.push(`1. ${cloudMeta() ? t('inv.step1cloud', shareLink(cloudMeta())) : t('inv.step1')}`);
-  L.push(`2. ${code ? t('inv.step2code', nm, code) : t('inv.step2pin', nm)}`);
+  const cm = cloudMeta();
+  L.push(`1. ${cm ? t('inv.step1cloud', shareLink(cm)) : t('inv.step1')}`);
+  L.push(`2. ${cm && cm.v === 2 ? (code ? t('inv.step2cloud', p.login || '—', code) : t('inv.step2cloudPw', p.login || '—')) : code ? t('inv.step2code', nm, code) : t('inv.step2pin', nm)}`);
   if (r === 'viewer') L.push(`3. ${t('inv.stepView')}`);
   else L.push(`3. ${t('inv.step3', tasks, acts)}`);
   if (next) L.push(`4. ${t('inv.step4', ymd(next.date), next.time || '', next.title)}`);
-  if (code) L.push('', t('inv.codeNote'));
+  if (code) L.push('', t(cm && cm.v === 2 ? 'inv.codeNoteCloud' : 'inv.codeNote'));
   L.push('', t('inv.footer', state.project.pm || 'PM'));
   return L.join('\n');
 }
@@ -4732,6 +5000,11 @@ const MIN_PIN = 4;
 
 function renderLoginScreen(){
   document.body.classList.add('locked');
+  if (typeof cloudV2 === 'function' && cloudV2()) { // チームで共有中：ログインIDとパスワードで入る（サーバーが本人を確かめる）
+    $('#pjName').textContent = state.project.name || 'Kizashi'; $('#pjSub').textContent = ''; document.title = state.project.name ? `${state.project.name} | Kizashi` : 'Kizashi';
+    $('#tabs').innerHTML = ''; $('#pageHead').innerHTML = ''; $('#hdrRag').innerHTML = ''; $('#meBox').innerHTML = ''; $('#view').classList.add('animate');
+    renderCloudLogin(); return;
+  }
   const L = ui.login || (ui.login = {id: '', err: ''});
   const sel = state.org.find(p => p.id === L.id);
   const bootstrap = !state.org.some(p => p.pin); // まだ誰もパスコードを持っていない＝PMが最初に入る
@@ -4795,7 +5068,7 @@ async function doLogin(p){
   save(); go({tab: ROLE_HOME[p.access || 'member']});
   toast(t('login.welcome', p.name));
 }
-function logout(){ ui.me = ''; ui.login = {id: '', err: ''}; save(); render(); }
+function logout(){ ui.login = {id: '', err: ''}; if (typeof cloudV2 === 'function' && cloudV2()) { cloudLogout(); return; } ui.me = ''; save(); render(); }
 
 </script>
 <script>
@@ -5024,12 +5297,15 @@ document.addEventListener('change', e => {
   if (col === 'tasks' && f === 'status' && v === 'closed' && needsApproval(obj) && !canApprove(obj)) { toast(t('tk.needApprover')); scheduleRender(); return; }
   if (col === 'tasks' && f === 'status' && v === 'closed' && needsApproval(obj)) { obj.approvedBy = myName(); obj.approvedAt = todayStr(); }
   if (el.type === 'number') { const n = parseFloat(v); v = isNaN(n) ? 0 : n; }
+  if (col === 'org' && f === 'login') v = normLogin(v);
   const before = obj[f];
   if (col === 'org' && f === 'name' && obj.name && obj.name !== v) renameOwner(obj.name, v); // 体制図の名前変更を担当欄にも反映
   obj[f] = v;
   if (col === 'tasks') afterTaskChange(obj, f);
   if (col === 'tasks' && f === 'owner' && v) { obj.assignedAt = todayStr(); obj.assignedBy = myName(); if (obj.approver === v) { obj.approver = defaultApprover(obj); toast(t('tk.approverReset', v)); } else toast(t('tk.assignedTo', v)); }
   if (col === 'tasks' && f === 'approver' && v && v === obj.owner) { obj.approver = before; toast(t('tk.approverSelf')); }
+  if (col === 'org' && f === 'access' && cloudV2()) cloudSetRole(obj); // 共有中：サーバー側の役割（メンバー管理の権限）も合わせる
+  if (col === 'org' && f === 'login' && before && before !== v && cloudV2()) toast(t('cloud.loginChanged'));
   if (col === 'org' && f === 'access') { const got = applyRoleDefaults(obj); toast(got.length ? t('role.autoPhase', obj.name, got.join('、')) : t('role.assigned', obj.name, t('role.' + v))); }
   if (col === 'raid' && f === 'type' && v !== 'risk') obj.prob = '';
   if (col === 'raid' && f === 'owner') { obj.owners = [...new Set([v, ...raidOwners(obj).filter(o => o !== before)].filter(Boolean))]; obj.owner = obj.owners[0] || ''; }
@@ -5075,7 +5351,7 @@ document.addEventListener('click', e => {
       [...state.tasks, ...state.raid, ...state.meetings, ...state.crs].forEach(x => { if (x.phaseId === key) x.phaseId = ''; });
       if (ui.scope === key) ui.scope = '';
     }
-    else if (col === 'org') { const p = state.org.find(x => x.id === key); state.org.forEach(x => { if (x.parentId === key) x.parentId = p ? p.parentId : ''; }); state.org = state.org.filter(x => x.id !== key); ui.orgSel = ''; }
+    else if (col === 'org') { const p = state.org.find(x => x.id === key); if (p && p.login && cloudV2() && myRole() === 'pm') cloudRemoveMember(p.login); /* 体制図から外した人は、ログインも止める */ state.org.forEach(x => { if (x.parentId === key) x.parentId = p ? p.parentId : ''; }); state.org = state.org.filter(x => x.id !== key); ui.orgSel = ''; }
     else if (['meetings','governance','meetingTypes'].includes(col)) { state[col] = state[col].filter(x => x.id !== key); if (col === 'meetings' && ui.meetingId === key) ui.meetingId = ''; }
     else { const [mid, i] = key.split(':'), m = state.meetings.find(x => x.id === mid); if (m) m[col].splice(+i, 1); }
     save(); render();

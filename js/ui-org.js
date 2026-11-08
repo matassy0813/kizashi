@@ -209,9 +209,20 @@ function bindPersonDrawer(root, sel){
   const addChild = root.querySelector('#addChild'); if (addChild) addChild.onclick = () => { const n = blank(t('org.newName'), sel.org, sel.id); state.org.push(n); ui.orgSel = n.id; save(); render(); };
   // 案内コードは本人の初回ログインにだけ使える。本人が自分でパスコードを決めた時点で無効になる
   const inv = root.querySelector('#copyInvite'); if (inv) inv.onclick = async () => {
+    if (cloudV2()) { // 共有中：サーバーにメンバーを登録し、案内コードで初回ログインできるようにする
+      if (!sel.login) { toast(t('cloud.needLoginId')); const el = root.querySelector('[data-f="login"]'); if (el) el.focus(); return; }
+      inv.disabled = true; inv.textContent = t('cloud.starting');
+      try { const code = await cloudInvite(sel); copyText(inviteText(sel, code)); toast(t('cloud.invited', sel.name)); }
+      catch (e) { alert(String(e.message)); }
+      render(); return;
+    }
     let code = '';
     if (!sel.pin) { code = newInviteCode(); sel.invite = await makeSecret(code); save(); }
     copyText(inviteText(sel, code)); render();
+  };
+  const rv = root.querySelector('#cloudRevoke'); if (rv) rv.onclick = async () => {
+    if (!confirm(t('cloud.revokeConfirm', sel.name, sel.login))) return;
+    const ok = await cloudRemoveMember(sel.login); await cloudMembers(true); render(); toast(ok ? t('cloud.revoked', sel.name) : t('perm.denied'));
   };
   root.querySelectorAll('[data-phase-owner]').forEach(el => el.onchange = () => {
     if (!canCreate('phases')) return;
@@ -227,6 +238,7 @@ function bindPersonDrawer(root, sel){
   });
 }
 function personPanel(p, b, alerts){
+  if (cloudV2() && Date.now() - cloud.membersAt > 30000) { cloud.membersAt = Date.now(); cloudMembers(true).then(m => { if (m && ui.orgSel) render(); }); } // サーバーの招待状況を取りに行く
   const f = (k, o) => fld('org', p.id, k, p[k], o);
   const ld = personLoad(p.name, b, alerts);
   const desc = new Set(); const walk = id => state.org.filter(x => x.parentId === id).forEach(x => { if (!desc.has(x.id)) { desc.add(x.id); walk(x.id); } }); walk(p.id);
@@ -239,6 +251,7 @@ function personPanel(p, b, alerts){
       <label>${t('org.name')}${f('name')}</label>
       <label>${t('org.access')}${f('access', {type: 'select', opts: ROLES.map(r => [r, t('role.' + r)])})}<small class="muted">${t('roleDesc.' + (p.access || 'member'))}</small></label>
       ${p.access === 'lead' ? `<div class="lbl-block">${t('org.leadPhases')}<div class="phase-checks">${state.phases.map(ph => `<label class="chk"><input type="checkbox" data-phase-owner="${ph.id}" ${ph.owner === p.name ? 'checked' : ''} ${canCreate('phases') ? '' : 'disabled'}> ${esc(ph.code)} ${esc(ph.name)}</label>`).join('')}</div></div>` : ''}
+      ${cloudV2() ? `<label>${t('cloud.loginId')}${f('login', {ph: 'tanaka'})}<small class="muted">${t('cloud.mstate.' + (p.login ? memberState(p.login) : 'noId'))}</small></label>` : ''}
       <label>${t('org.role')}${f('role', {ph: t('org.rolePh')})}</label>
       <label>${t('org.type')}${f('org', {type: 'select', opts: ORG_LANES.map(o => [o, t('orgType.' + o)])})}</label>
       <label>${t('org.parent')}${f('parentId', {type: 'select', opts: parents, blank: t('org.top')})}</label>
@@ -246,8 +259,9 @@ function personPanel(p, b, alerts){
       <label>${t('org.note')}${f('note', {type: 'textarea', rows: 2, ph: t('org.notePh')})}</label>
     </div>
     <div class="bar" style="margin-top:10px"><button class="btn" id="addChild">＋ ${t('org.addChild')}</button>
-      ${myRole() === 'pm' && p.id !== myId() ? `<button class="btn primary" id="copyInvite" title="${t('org.inviteHint')}">${p.pin ? t('org.inviteAgain') : t('org.invite')}</button>` : ''}</div>
-    <div class="login-state ${loginStatus(p)}">${t('org.login.' + loginStatus(p))}</div>
+      ${cloudV2() ? (['pm', 'pmo'].includes(myRole()) && p.id !== myId() ? `<button class="btn primary" id="copyInvite" title="${t('cloud.inviteHint')}">${p.login && memberState(p.login) !== 'none' ? t('cloud.reinvite') : t('cloud.invite')}</button>${myRole() === 'pm' && p.login && memberState(p.login) !== 'none' ? `<button class="btn danger" id="cloudRevoke">${t('cloud.revoke')}</button>` : ''}` : '')
+        : myRole() === 'pm' && p.id !== myId() ? `<button class="btn primary" id="copyInvite" title="${t('org.inviteHint')}">${p.pin ? t('org.inviteAgain') : t('org.invite')}</button>` : ''}</div>
+    ${cloudV2() ? '' : `<div class="login-state ${loginStatus(p)}">${t('org.login.' + loginStatus(p))}</div>`}
     <h3>${t('org.holding')}</h3>
     ${ld.tasks.length + ld.acts.length + ld.raid.length ? `<ul class="hold-list">
       ${ld.tasks.map(x => row(t('org.kTask'), x.name, x.end, d2n(x.end) < b)).join('')}

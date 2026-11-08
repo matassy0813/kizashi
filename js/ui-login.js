@@ -22,6 +22,11 @@ const MIN_PIN = 4;
 
 function renderLoginScreen(){
   document.body.classList.add('locked');
+  if (typeof cloudV2 === 'function' && cloudV2()) { // チームで共有中：ログインIDとパスワードで入る（サーバーが本人を確かめる）
+    $('#pjName').textContent = state.project.name || 'Kizashi'; $('#pjSub').textContent = ''; document.title = state.project.name ? `${state.project.name} | Kizashi` : 'Kizashi';
+    $('#tabs').innerHTML = ''; $('#pageHead').innerHTML = ''; $('#hdrRag').innerHTML = ''; $('#meBox').innerHTML = ''; $('#view').classList.add('animate');
+    renderCloudLogin(); return;
+  }
   const L = ui.login || (ui.login = {id: '', err: ''});
   const sel = state.org.find(p => p.id === L.id);
   const bootstrap = !state.org.some(p => p.pin); // まだ誰もパスコードを持っていない＝PMが最初に入る
@@ -85,4 +90,4 @@ async function doLogin(p){
   save(); go({tab: ROLE_HOME[p.access || 'member']});
   toast(t('login.welcome', p.name));
 }
-function logout(){ ui.me = ''; ui.login = {id: '', err: ''}; save(); render(); }
+function logout(){ ui.login = {id: '', err: ''}; if (typeof cloudV2 === 'function' && cloudV2()) { cloudLogout(); return; } ui.me = ''; save(); render(); }

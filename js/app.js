@@ -130,12 +130,15 @@ document.addEventListener('change', e => {
   if (col === 'tasks' && f === 'status' && v === 'closed' && needsApproval(obj) && !canApprove(obj)) { toast(t('tk.needApprover')); scheduleRender(); return; }
   if (col === 'tasks' && f === 'status' && v === 'closed' && needsApproval(obj)) { obj.approvedBy = myName(); obj.approvedAt = todayStr(); }
   if (el.type === 'number') { const n = parseFloat(v); v = isNaN(n) ? 0 : n; }
+  if (col === 'org' && f === 'login') v = normLogin(v);
   const before = obj[f];
   if (col === 'org' && f === 'name' && obj.name && obj.name !== v) renameOwner(obj.name, v); // 体制図の名前変更を担当欄にも反映
   obj[f] = v;
   if (col === 'tasks') afterTaskChange(obj, f);
   if (col === 'tasks' && f === 'owner' && v) { obj.assignedAt = todayStr(); obj.assignedBy = myName(); if (obj.approver === v) { obj.approver = defaultApprover(obj); toast(t('tk.approverReset', v)); } else toast(t('tk.assignedTo', v)); }
   if (col === 'tasks' && f === 'approver' && v && v === obj.owner) { obj.approver = before; toast(t('tk.approverSelf')); }
+  if (col === 'org' && f === 'access' && cloudV2()) cloudSetRole(obj); // 共有中：サーバー側の役割（メンバー管理の権限）も合わせる
+  if (col === 'org' && f === 'login' && before && before !== v && cloudV2()) toast(t('cloud.loginChanged'));
   if (col === 'org' && f === 'access') { const got = applyRoleDefaults(obj); toast(got.length ? t('role.autoPhase', obj.name, got.join('、')) : t('role.assigned', obj.name, t('role.' + v))); }
   if (col === 'raid' && f === 'type' && v !== 'risk') obj.prob = '';
   if (col === 'raid' && f === 'owner') { obj.owners = [...new Set([v, ...raidOwners(obj).filter(o => o !== before)].filter(Boolean))]; obj.owner = obj.owners[0] || ''; }
@@ -181,7 +184,7 @@ document.addEventListener('click', e => {
       [...state.tasks, ...state.raid, ...state.meetings, ...state.crs].forEach(x => { if (x.phaseId === key) x.phaseId = ''; });
       if (ui.scope === key) ui.scope = '';
     }
-    else if (col === 'org') { const p = state.org.find(x => x.id === key); state.org.forEach(x => { if (x.parentId === key) x.parentId = p ? p.parentId : ''; }); state.org = state.org.filter(x => x.id !== key); ui.orgSel = ''; }
+    else if (col === 'org') { const p = state.org.find(x => x.id === key); if (p && p.login && cloudV2() && myRole() === 'pm') cloudRemoveMember(p.login); /* 体制図から外した人は、ログインも止める */ state.org.forEach(x => { if (x.parentId === key) x.parentId = p ? p.parentId : ''; }); state.org = state.org.filter(x => x.id !== key); ui.orgSel = ''; }
     else if (['meetings','governance','meetingTypes'].includes(col)) { state[col] = state[col].filter(x => x.id !== key); if (col === 'meetings' && ui.meetingId === key) ui.meetingId = ''; }
     else { const [mid, i] = key.split(':'), m = state.meetings.find(x => x.id === mid); if (m) m[col].splice(+i, 1); }
     save(); render();
