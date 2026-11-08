@@ -5,7 +5,7 @@
   </picture>
 </p>
 
-<p align="center"><b>遅れの「兆し」を先に見つけ、報告ではなく対応に時間を使うための、1ファイルで動くPMOツール。</b><br>
+<p align="center"><b>遅れの「兆し」を先に見つけ、報告ではなく対応に時間を使うためのPMOツール。インストール不要、チームで共有しても中身は運営者にも読めません。</b><br>
 A free, zero-install PMO tool that spots the early signs of delay. (English below)</p>
 
 <p align="center">
@@ -18,8 +18,10 @@ A free, zero-install PMO tool that spots the early signs of delay. (English belo
 
 ## 特長
 
-- **インストール不要**：`Kizashi.html` をダブルクリックするだけで動きます（約370KB、起動は約0.2秒）
-- **データは外に出ない**：すべてのデータはあなたのブラウザの中だけに保存され、サーバーには送信されません
+- **インストール不要**：URLを開くか、`Kizashi.html`（約570KBの1ファイル）を開くだけで動きます
+- **チームで共有（クラウド）**：最初の画面で新規登録・ログインするだけ。PMがメンバーをIDで招待し、全員が同じデータをその場で見られます。同時に直しても、項目ごとに合わせるので消えません
+- **顧客の情報を守る**：データはブラウザの中で暗号化してから送ります（エンドツーエンド暗号化）。鍵は本人のパスワードから作った鍵で包んで預けるので、サーバーにも運営者（開発者）にも中身は読めません
+- **アカウントなしでも使える**：「このPCだけで使う」を選べば、データはそのブラウザの中だけに保存されます
 - **日本語／English**：画面右上で切り替え。週次報告は画面とは別に言語を選べます
 - **導入の手間が小さい**：3ステップの「はじめかた」で、フェーズ・マイルストーン・ガバナンスの雛形・定例会議・体制図まで自動で作成。ExcelのWBSはCSVで取り込めます
 
@@ -28,44 +30,61 @@ A free, zero-install PMO tool that spots the early signs of delay. (English belo
 | 機能 | 内容 |
 |---|---|
 | ダッシュボード | 全体ステータス（Red/Amber/Green）、進捗と計画、SPI、ガント、警戒、会議・ガバナンスの状況 |
-| 早期警戒 | 期限超過・進捗遅延・リスケの常態化・更新停滞・負荷集中・契約期間超過など20種類以上を自動判定 |
-| タスク | 種類別のステータス（一般／検討／開発／成果物）、承認で自動クローズ、カンバン、Backlog、次フェーズへの繰越・保留・見送り、優先度 |
+| 早期警戒 | 期限超過・進捗遅延・リスケの常態化・更新停滞・負荷集中・契約期間超過・担当者なし・判断の期限超過など29種類を自動判定 |
+| タスク | 種類別のステータス（一般／検討／開発／成果物）、担当者と承認者をメンバーから選択、承認で自動クローズ、カンバン、Backlog、次フェーズへの繰越・保留・見送り、優先度 |
+| 承認 | 自分が承認できるタスク・課題・CRを1か所に集め、まとめて承認・差し戻し（元に戻せる） |
 | フェーズ | 契約形態・契約終了日・成果物・完了基準・フェーズゲート |
-| リスク・課題（RAID） | フェーズ・カテゴリ別の管理、対策のない高リスクを警戒 |
+| リスク・課題（RAID） | 課題ごとの詳細画面（起きていること／影響／次の一手）、作成者・承認者・担当者（複数）、親子の構造図、判断の依頼、関連タスク、経緯とコメント、影響×発生確率の表と件数の推移 |
+| 全体検索 | `/` または Ctrl+K で、タスク・課題・会議・CR・ルールをまとめて探す |
 | 会議 | 目的と担当付きアジェンダ → 結論・決定事項・アクションの記録、招集案内・議事録のコピー |
 | 体制図とフロー | 木構造／所属の列の組織図、CR・承認・エスカレーションのフロー（分岐・差し戻し可）、ノーコードで線とノードを編集 |
 | ガバナンス | フォルダ構成・命名規則・承認ステップ・CR基準など全フェーズ共通のルール、命名ルールツール |
 | 週次レポート | 数値・警戒・リスク・会議の決定事項から自動作成（日英）、Markdown・印刷/PDF |
-| ロールとログイン | PM／PMO／リード／メンバー／閲覧者。各自の画面は独立（PMも他人の画面には入れない） |
+| アカウントとログイン | 最初の画面でログイン／新規登録。PM／PMO／リード／メンバー／閲覧者のロール。各自の画面は独立（PMも他人の画面には入れない） |
 | 複数プロジェクト | 会社コード › チームコード › PJコードで区分けして切り替え |
 | ヘルプ | 画面右上の「？」または `?` キーで、今いる画面の説明をすぐ表示 |
 
 ## 使い方
 
-1. **ブラウザで開く**：[今すぐ試す](https://matassy0813.github.io/kizashi/Kizashi.html)（データはそのブラウザの中だけに保存されます）
-   - または、このリポジトリの `Kizashi.html` をダウンロードしてダブルクリックで開く（オフラインでも動きます）
-2. 最初はサンプルデータが入っています。パスコードなしで、どの立場（PM・メンバーなど）でも試せます
-3. 自分のプロジェクトは、左上のプロジェクト名 →「新しいプロジェクト」から3ステップで作れます
+1. **ブラウザで開く**：[今すぐ試す](https://matassy0813.github.io/kizashi/Kizashi.html)
+2. **最初の画面**で選びます
+   - **新規登録／ログイン**：チームで共有するとき（おすすめ）。ログインIDとパスワードを決めるだけです
+   - **サンプルで体験する**：サンプルデータで、どの立場（PM・メンバーなど）でも試せます
+   - **アカウントなしで、このPCだけで使う**：データはそのブラウザの中だけに保存されます。`Kizashi.html` をダウンロードすれば、オフラインでも動きます
+3. 自分のプロジェクトは「新しいプロジェクト」から3ステップで作れます。ログイン中なら、そのままチームで共有されます
 
-### チームで使う（ローカル版）
+### チームで使う（クラウド）
 
-PMが「設定・データ」→「JSONでバックアップ」で書き出したファイルを共有し、受け取った人はログイン画面の「受け取ったデータ（JSON）を読み込む」で読み込みます。同じプロジェクトなら最新に更新、違えば新しいプロジェクトとして追加されます。
+1. **PM**：新規登録して、新しいプロジェクトを作る（今あるプロジェクトは「設定・データ」→「チームで共有を始める」）
+2. **PM**：体制図でメンバーごとにログインIDを決めて「招待を発行」を押し、案内文（リンク・ログインID・案内コード）を送る
+3. **メンバー**：リンクを開き、ログイン（初めてならそのIDで新規登録）して、案内コードを入れて参加する
 
-> ローカル版のパスコードは「誤操作を防ぐ」ための仕組みです。サーバー側での本人確認・権限管理が必要な場合はクラウド版（計画中）を利用してください。
+誰かが保存すると、すぐ全員の画面に反映されます。抜けた人は、PMが「ログインを止める」ともう入れません。仕組みとサーバーについては [cloud/README.md](cloud/README.md) を見てください。
+
+> アカウントのパスワードを忘れると、運営者も復旧できません（鍵を持っていないためです）。新しいアカウントを作り、PMに招待し直してもらってください。PMは2人以上（またはPMO）を置くことをおすすめします。
+
+### チームで使う（アカウントなし）
+
+PMが「設定・データ」→「JSONでバックアップ」で書き出したファイルを共有し、受け取った人はログイン画面の「受け取ったデータ（JSON）を読み込む」で読み込みます。このときのパスコードは「誤操作を防ぐ」ための仕組みで、サーバーでの本人確認はありません。
 
 ## 開発者向け
 
 ```
-index.html        開発用（js/・assets/ を読み込む）
-js/               機能ごとのファイル（core.js：データ・警戒ルール、diagram.js：図の編集部品 ほか）
-assets/app.css    スタイル
-build.py          配布用の1ファイル版 Kizashi.html を作る
-tests/smoke.js    機能チェック（既存機能が消えていないかを確認）
-LICENSE           AGPL-3.0 本文 / COMMERCIAL.md 商用ライセンス / CONTRIBUTING.md・CLA.md 貢献のルール
+index.html          開発用（js/・assets/ を読み込む）
+js/                 機能ごとのファイル（core.js：データ・警戒ルール、cloud.js・account.js：共有とアカウント、merge.js：同時編集の合わせ込み ほか）
+assets/app.css      スタイル
+build.py            配布用の1ファイル版 Kizashi.html を作る
+cloud/              同期サーバー（Cloudflare Workers + Durable Objects）。公開手順は cloud/README.md
+tests/smoke.js      機能チェック（既存機能が消えていないかを確認）
+tests/ut.js         要件ごとの単体テスト（想定プロジェクトを使う）
+tests/cloud-it.js   クラウドの結合テスト（同期サーバーを実際に使う）
+tests/TESTCASES.md  テストケースと結果の一覧
+LICENSE             AGPL-3.0 本文 / COMMERCIAL.md 商用ライセンス / CONTRIBUTING.md・CLA.md 貢献のルール
 ```
 
 - 1ファイル版の作成：`python build.py`
-- 機能チェック：ツールを開いてブラウザのコンソールに `tests/smoke.js` の内容を貼り付け、`runSmoke()` を実行（全項目OKを確認してから変更を取り込む）
+- テスト：ツールを開いてブラウザのコンソールで `tests/smoke.js` と `tests/ut.js` を読み込み、`runSmoke()` と `runUT()` を実行。クラウドに関わる変更は、同期サーバーを起動して `await runCloudIT('http://127.0.0.1:8787')` も実行（全件合格を確認してから変更を取り込む）
+- 同期サーバーを直したら、アプリより先にサーバーを公開し直す（`npx wrangler@4.157.0 deploy --config cloud/wrangler.toml`）
 - 設計の心得：機能は独立させる／既存機能は消さずに追加して切り替える／やむを得ず変えるときは理由を記録する
 
 ## ロゴ
@@ -89,20 +108,22 @@ Copyright (C) 2026 0kaka
 
 **Kizashi** ("sign / early indication" in Japanese) is a zero-install, single-file project-management-office tool that spots the early signs of delay.
 
-- **No install**: open `Kizashi.html` (≈370 KB, starts in ≈0.2 s)
-- **Your data never leaves your browser**: nothing is sent to a server
+- **No install**: open the URL, or the single file `Kizashi.html` (≈570 KB)
+- **Team sharing (cloud)**: sign up or log in on the first screen; the PM invites members by ID and everyone sees the same data live. Simultaneous edits are merged item by item
+- **End-to-end encrypted**: data is encrypted in the browser and the key is wrapped with a key made from each user's password, so neither the server nor its operator can read it
+- **No account needed for solo use**: "Use on this PC only" keeps everything in your browser
 - **Japanese / English** UI; status reports can be generated in either language
-- **Early warning** (20+ rules), **kanban with typed status flows and approvals**, **phases & contracts**, **RAID**, **meetings with outcomes and actions**, **org charts and no-code flow editor**, **governance rules**, **auto-generated weekly reports**, **roles with independent sign-in**, **multiple projects grouped by company › team › project code**, and built-in **help** (press `?`)
+- **Early warning** (29 rules), **kanban with typed status flows, owners and approvers**, **bulk approvals**, **phases & contracts**, **issue detail pages with parent/child charts, decisions, history and comments**, **global search**, **meetings with outcomes and actions**, **org charts and no-code flow editor**, **governance rules**, **auto-generated weekly reports**, **roles**, **multiple projects**, and built-in **help** (press `?`)
 
 ### Quick start
 
-1. Open it in your browser: [Try it now](https://matassy0813.github.io/kizashi/Kizashi.html) — or download `Kizashi.html` and open it locally (works offline)
-2. Sample data is loaded — sign in as any role without a passcode to explore
-3. Create your own project from the project menu (top left) → "New project" (3 steps)
+1. Open it in your browser: [Try it now](https://matassy0813.github.io/kizashi/Kizashi.html)
+2. On the first screen, **sign up / log in** to share with your team, **try the sample**, or **use on this PC only** (download `Kizashi.html` to work offline)
+3. Create a project with "New project" (3 steps). When logged in it is shared right away; invite members from the org chart
 
 ### Development
 
-`index.html` loads `js/` and `assets/` for development. Run `python build.py` to produce the single-file `Kizashi.html`. Run `runSmoke()` from `tests/smoke.js` in the browser console before merging changes — every check must pass.
+`index.html` loads `js/` and `assets/` for development. Run `python build.py` to produce the single-file `Kizashi.html`. Before merging, run `runSmoke()` (`tests/smoke.js`) and `runUT()` (`tests/ut.js`) in the browser console, and `runCloudIT(server)` (`tests/cloud-it.js`) for cloud changes — every check must pass. The sync server lives in `cloud/` (see `cloud/README.md`); deploy server changes before the app.
 
 ### License
 

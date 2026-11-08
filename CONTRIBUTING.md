@@ -15,12 +15,14 @@
 
 1. **既存の機能を消さない**：新しい見せ方・方式は追加して切り替えられるようにします。やむを得ず変える場合は、理由と代わりの手段を説明してください
 2. **機能は独立させる**：画面・機能ごとにファイルを分け、ある機能の変更が他の機能を壊さないようにします
-3. **機能チェックを通す**：ツールを開き、ブラウザのコンソールに `tests/smoke.js` の内容を貼り付けて `runSmoke()` を実行し、全項目が OK であることを確認してください。新しい機能には確認項目を追加してください
+3. **テストを通す**：ツールを開き、ブラウザのコンソールで `tests/smoke.js`（`runSmoke()`）と `tests/ut.js`（`runUT()`）を実行し、全件が合格することを確認してください。クラウドに関わる変更は、同期サーバーを起動して `tests/cloud-it.js`（`runCloudIT(server)`）も実行します。新しい機能には確認項目とテストケース（`tests/TESTCASES.md`）を追加してください
 4. **画面でも確かめる**：表示の不具合はデータの確認だけでは見つかりません
 5. **日本語と英語の両方**の文言を `js/i18n.js` に追加してください
 6. 1 ファイル版は `python build.py` で作り直します
 7. **見たままが正しい表示（WYSIWYG）にする**：文字や選択した値が欄からはみ出したり、途中で切れたりしないようにします。広がりそうなときは同じセルの中で折り返して表示します。IT に詳しくない人でも迷わず使えることを最優先にします
 8. **更新はその場で見せる**：変更したらすぐに保存・反映し、変更した場所を光らせるなどして「今反映された」ことが分かるようにします
+9. **顧客の情報をサーバーに読ませない**：プロジェクトのデータ・パスワード・鍵は、ブラウザの中で暗号化してから送ります。サーバー（`cloud/`）に平文で届く変更は受け付けません
+10. **サーバーを先に公開する**：同期サーバーを変えたときは、アプリより先にサーバーを公開し直します
 
 ---
 
@@ -28,4 +30,4 @@
 
 Issues and suggestions are welcome from everyone. **Pull requests require agreeing to the [Contributor License Agreement](CLA.md)** because this project is dual-licensed (AGPL-3.0-only and a commercial license). Tick the CLA checkbox in the pull request template. If you contribute on behalf of your employer, you need its approval.
 
-When changing code: never silently remove existing features (add alongside and explain any removal), keep features independent, run `runSmoke()` from `tests/smoke.js` until every check passes, verify on screen, add both Japanese and English strings, and rebuild with `python build.py`.
+When changing code: never silently remove existing features (add alongside and explain any removal), keep features independent, run `runSmoke()` and `runUT()` (and `runCloudIT(server)` for cloud changes) until every check passes, verify on screen, add both Japanese and English strings, rebuild with `python build.py`, never send customer data, passwords or keys to the server unencrypted, and deploy server changes before the app.
