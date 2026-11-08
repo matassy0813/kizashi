@@ -64,6 +64,8 @@ export default {
     if (req.method === 'OPTIONS') return new Response(null, {status: 204, headers: CORS});
     const url = new URL(req.url), m = url.pathname.match(/^\/api\/p\/([^/]+)(\/ws)?$/);
     if (url.pathname === '/api/health') return json({ok: true, service: 'kizashi-cloud'});
+    // 人がこの URL を直接開いたときは、アプリ本体へ案内する（ここはアプリが裏で使う同期サーバー）
+    if (url.pathname === '/' || url.pathname === '/index.html') return Response.redirect(env.APP_URL || 'https://matassy0813.github.io/kizashi/Kizashi.html', 302);
     if (!m || !ID_RE.test(m[1])) return json({error: 'not_found'}, 404);
     const stub = env.ROOMS.get(env.ROOMS.idFromName(m[1]), {locationHint: env.LOCATION_HINT || 'apac'});
     if (m[2]) { // 版番号の知らせだけを流す（データは流さない）ので、合言葉は不要

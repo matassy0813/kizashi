@@ -6,6 +6,7 @@ compatibility_date = "2025-06-01"
 
 [vars]
 LOCATION_HINT = "apac" # データを置く地域の希望（アジア太平洋）
+APP_URL = "https://matassy0813.github.io/kizashi/Kizashi.html" # このサーバーの URL を直接開いた人の案内先
 
 [[durable_objects.bindings]]
 name = "ROOMS"
