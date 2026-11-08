@@ -542,6 +542,14 @@ body.locked .nav-toggle{display:none} body.locked.nav-collapsed{grid-template-co
 .gs-main{display:flex;flex-direction:column;min-width:0} .gs-main small{color:var(--muted);font-size:12px;white-space:normal}
 .gs-foot{padding:8px 14px;border-top:1px solid var(--line)}
 .rd-side select,.rd-side label,.rd-main label{max-width:100%;min-width:0} .rd-side .card{min-width:0;overflow-wrap:anywhere}
+/* クラウド共有 */
+.save-ind.cloud .dot{background:var(--accent)} .save-ind.offline{color:var(--amber)} .save-ind.offline .dot{background:var(--amber)}
+.cloud-card h2{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cloud-steps{margin:6px 0 8px;padding-left:20px;font-size:13px;display:flex;flex-direction:column;gap:4px}
+.cloud-state{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pill{display:inline-block;font-size:12px;font-weight:600;border-radius:999px;padding:2px 10px;background:var(--soft)} .pill.ok{background:rgba(52,199,89,.15);color:#1f8a3b}
+.cloud-link{display:flex;gap:8px;margin-top:4px} .cloud-link input{flex:1;min-width:0;font-family:ui-monospace,monospace;font-size:12px}
+.cloud-adv summary{cursor:pointer;font-size:13px;color:var(--muted)} .cloud-adv input{width:100%;margin-top:6px}
 
 </style>
 </head>
@@ -758,6 +766,30 @@ function lbl(group, v, lang){ return v ? tl(lang || LANG(), `${group}.${v}`) : '
   ['tk.approverReset','{0}さんが担当者になったため、承認者を初期値に戻しました','{0} is now the owner, so the approver was reset'],
   ['ap.named','承認者：{0}','Approver: {0}'], ['mine.todo.assigned','新しく割り当てられました：{0}（{1}さんから、期限 {2}）','Newly assigned: {0} (from {1}, due {2})'],
   ['at.taskNoOwner','担当者なし','No owner'], ['ad.taskNoOwner','タスクに担当者が決まっていない','Nobody owns this task'], ['rule.taskNoOwner','未完了のタスクに担当者がいない','Open task without an owner'],
+  ['set.dataHintCloud','このプロジェクトはチームで共有中です。データは暗号化してクラウドに置き、このPCのブラウザにも控えを持っています。JSONのバックアップは、念のための保存や別のツールへの移行に使えます。','This project is shared with your team. Data is encrypted in the cloud, with a copy in this browser. JSON backups are for safekeeping or moving to another tool.'],
+  ['cloud.title','チームで共有（クラウド）','Share with your team (cloud)'],
+  ['cloud.offHint','今はこのPCのブラウザだけに保存しています','Saved in this browser only'],
+  ['cloud.onHint','チーム全員が同じデータを見ています。保存するとすぐ全員に反映されます','Everyone sees the same data; changes reach everyone right away'],
+  ['cloud.step1','下の「チームで共有を始める」を押す','Press "Start sharing" below'],
+  ['cloud.step2','体制図でメンバーごとに「案内文をコピー」して送る（共有リンクが自動で入ります）','Copy each member\'s invitation from the org chart and send it (the link is included)'],
+  ['cloud.step3','メンバーはリンクを開いて、自分の名前とパスコードで入るだけ。インストールもアカウントも要りません','Members just open the link and sign in with their name and passcode. No install, no account'],
+  ['cloud.privacy','データはこのブラウザの中で暗号化してから送ります。鍵は共有リンクの中だけにあり、サーバーも中身を読めません。リンクを知っている人だけが開けるので、リンクはメンバー以外に渡さないでください','Data is encrypted in your browser before it is sent. The key lives only in the share link, so the server cannot read it. Anyone with the link can open the project: share it with members only'],
+  ['cloud.server','同期サーバー','Sync server'], ['cloud.serverHint','通常は変更不要です。自社でサーバーを立てる場合だけ入力します','Leave as is unless you run your own server'],
+  ['cloud.start','チームで共有を始める','Start sharing'], ['cloud.starting','共有を始めています…','Starting…'], ['cloud.started','共有を始めました。案内文にリンクが入ります','Sharing started. Invitations now include the link'],
+  ['cloud.needServer','同期サーバーが設定されていません','No sync server set'], ['cloud.errStart','共有を始められませんでした（{0}）。通信状況を確かめて、もう一度お試しください','Could not start sharing ({0}). Check your connection and try again'],
+  ['cloud.pmOnly','共有を始められるのはPMです','Only the PM can start sharing'],
+  ['cloud.link','共有リンク','Share link'], ['cloud.copy','リンクをコピー','Copy link'], ['cloud.linkHint','案内文には自動で入ります。メンバー以外には渡さないでください','Included in invitations automatically. Do not share it outside the team'],
+  ['cloud.since','{0} から共有中（{1}）','Shared since {0} ({1})'],
+  ['cloud.leave','このPCでの共有をやめる','Stop sharing on this PC'], ['cloud.leaveConfirm','このPCでは共有をやめ、今の内容をこのブラウザだけで使います。クラウドのデータは残り、ほかのメンバーは使い続けられます。よろしいですか？','Stop syncing on this PC and keep a local copy? The cloud data stays and others can keep using it.'],
+  ['cloud.left','このPCでの共有をやめました','Stopped sharing on this PC'],
+  ['cloud.importWarn','このプロジェクトはチームで共有中です。読み込んだ内容で、チーム全員のデータが置き換わります。','This project is shared. Loading will replace the data for the whole team.'],
+  ['cloud.joined','「{0}」に参加しました。自分の名前を選んでログインしてください','Joined "{0}". Pick your name to sign in'], ['cloud.opened','「{0}」を開きました','Opened "{0}"'],
+  ['cloud.errLink','共有リンクが無効です（期限切れか、共有がやめられた可能性があります）。PMに確認してください','This share link is not valid. Please check with your PM'],
+  ['cloud.errJoin','共有されたプロジェクトを開けませんでした。通信状況を確かめて、リンクを開き直してください','Could not open the shared project. Check your connection and open the link again'],
+  ['cloud.stHint','チームで共有中（クラウド）','Shared with the team (cloud)'],
+  ['cloud.st.synced','☁ 共有済み','☁ Synced'], ['cloud.st.pending','☁ 送信待ち','☁ Waiting'], ['cloud.st.syncing','☁ 同期中…','☁ Syncing…'],
+  ['cloud.st.offline','☁ オフライン（あとで送ります）','☁ Offline (will retry)'], ['cloud.st.gone','☁ 共有が終了しています','☁ Sharing ended'], ['cloud.st.tooLarge','☁ データが大きすぎて送れません','☁ Too large to sync'],
+  ['inv.step1cloud','このリンクを開く（インストール不要）：{0}','Open this link (nothing to install): {0}'],
   ['tab.approvals','承認','Approvals'], ['tabd.approvals','あなたが承認できるものを集めています。チェックしてまとめて承認・差し戻しできます','Everything you can approve. Tick items to approve or send back in one go'],
   ['ap.kind.all','すべて','All'], ['ap.kind.tasks','タスク','Tasks'], ['ap.kind.raid','課題・リスク','Issues / risks'], ['ap.kind.crs','変更要求（CR）','Change requests'],
   ['ap.selected','{0}件を選択中','{0} selected'], ['ap.selectAll','表示中をすべて選択','Select all shown'], ['ap.approveSel','選択を承認（{0}件）','Approve selected ({0})'],
@@ -1125,6 +1157,7 @@ function save(){
   if (typeof onSaved === 'function') onSaved();
   try { localStorage.setItem(uiKeyOf(cur), JSON.stringify({tab:ui.tab, scope:ui.scope, mtgFilter:ui.mtgFilter, me:ui.me})); } catch(e) {}
   wsSync();
+  if (typeof cloudAfterSave === 'function') cloudAfterSave(); // チームで共有中なら、クラウドにも送る
 }
 // v1（日本語の値・フェーズ名文字列）→ v2
 function migrateV1(old){
@@ -1514,6 +1547,7 @@ function wsSync(){
 function switchProject(id){
   if (!ws.projects.some(p => p.id === id) || id === ws.current) return;
   save(); ws.current = id; wsWrite(); resetUi(); state = null; load(); render(true);
+  if (typeof cloudOnSwitch === 'function') cloudOnSwitch();
   toast(t('ws.switched', state.project.name));
 }
 // 新しいプロジェクトの枠を作って切り替える（はじめかた・読み込みから使う）。現在のプロジェクトは保存して残す
@@ -1522,6 +1556,7 @@ function wsBeginNewProject(){
   const id = 'p' + Date.now().toString(36);
   ws.projects.push({id, key: 'pmo-project-' + id, name: '', co: '', team: '', pj: '', updated: todayStr()});
   ws.current = id; wsWrite(); resetUi();
+  if (typeof cloudOnSwitch === 'function') cloudOnSwitch();
   return id;
 }
 function deleteProject(id){
@@ -1530,7 +1565,7 @@ function deleteProject(id){
   if (!confirm(t('ws.deleteConfirm', p.name || '—'))) return;
   try { localStorage.removeItem(p.key); localStorage.removeItem(uiKeyOf(p)); } catch(e) {}
   ws.projects = ws.projects.filter(x => x.id !== id);
-  if (ws.current === id) { ws.current = ws.projects[0].id; wsWrite(); resetUi(); state = null; load(); }
+  if (ws.current === id) { ws.current = ws.projects[0].id; wsWrite(); resetUi(); state = null; load(); if (typeof cloudOnSwitch === 'function') cloudOnSwitch(); }
   else wsWrite();
   render(true); toast(t('ws.deleted'));
 }
@@ -1539,6 +1574,7 @@ function importProjectData(d){
   const data = d.version === 2 ? d : migrateV1(d);
   const uid = data.project && data.project.uid, hit = uid && ws.projects.find(p => p.uid === uid);
   if (hit) {
+    if (hit.cloud && !confirm(t('cloud.importWarn'))) return 'cancelled'; // 共有中のプロジェクトに古いデータを読み込むと、チーム全員の内容が置き換わる
     if (hit.id === ws.current) { state = data; normalize(); ui.me = ''; save(); render(true); }
     else { try { localStorage.setItem(hit.key, JSON.stringify(data)); } catch(e) {} save(); ws.current = hit.id; wsWrite(); resetUi(); state = null; load(); render(true); }
     toast(t('ws.updated', data.project.name)); return 'updated';
@@ -1925,7 +1961,8 @@ const cell = s => String(s ?? '').replace(/\|/g, '／').replace(/\n/g, ' ');
 const HELP_FOR_TAB = {mine: 'mine', dash: 'dash', alerts: 'alerts', phases: 'phases', tasks: 'tasks', approvals: 'approvals', raid: 'raid', meetings: 'meetings', org: 'org', governance: 'governance', report: 'report', settings: 'data'};
 const HELP = {
   ja: [
-    ['intro', 'このツールでできること', `**Kizashi（兆し）** は、PMO（プロジェクト管理）の「見える化」「早期警戒」「報告の自動化」を、1つのファイルで行うツールです。遅れの「兆し」を先に見つけるのが名前の由来です。\n- インストール不要。Kizashi.html を開くだけで動きます\n- データはこのPCのブラウザの中だけに保存され、外部には送信されません\n- 日本語と英語を画面右上で切り替えられます（週次報告は画面とは別に言語を選べます）`],
+    ['intro', 'このツールでできること', `**Kizashi（兆し）** は、PMO（プロジェクト管理）の「見える化」「早期警戒」「報告の自動化」を、1つのファイルで行うツールです。遅れの「兆し」を先に見つけるのが名前の由来です。\n- インストール不要。Kizashi.html を開くだけで動きます\n- データはこのPCのブラウザの中だけに保存され、外部には送信されません\n- 日本語と英語を画面右上で切り替えられます（週次報告は画面とは別に言語を選べます）
+- ソースコード：https://github.com/matassy0813/kizashi （AGPL-3.0。商用ライセンスは COMMERCIAL.md）`],
     ['start', 'はじめかた（3ステップ）', `1. 「新しいプロジェクト」→ 名前・期間・自分のパスコードを入力\n2. フェーズの型（システム開発／業務改革・コンサル／アジャイル）を選ぶ\n3. 確認して作成。フェーズ・マイルストーン・ガバナンスの雛形・週次定例・体制図が自動でできます\n\nExcelのWBSがあれば、作成と同時にCSVで取り込めます。`],
     ['codes', '会社・チーム・PJコード', `1つのブラウザで複数のプロジェクトを持てます。画面左上のプロジェクト名を押すと切り替えメニューが開き、**会社コード › チームコード** ごとにまとめて表示されます。\n- コードは「設定・データ」または「はじめかた」で設定します\n- ファイル命名規則で {CO}（会社）{TEAM}（チーム）{PJ}（PJ）を使えます\n- ログインはプロジェクトごとに別です`],
     ['login', 'ログインとロール', `自分の名前を選び、自分で決めたパスコードで入ります。PMも他の人の画面には入れません。\n- **PM**：すべての操作とロールの付与\n- **PMO**：ロール付与とデータ初期化以外の管理\n- **リード**：担当フェーズの管理、承認\n- **メンバー**：自分のタスク・宿題の更新、課題の起票\n- **閲覧者**：見るだけ\n\nPMが体制図で「案内文をコピー」すると、案内コード付きの文面ができます。本人は初回ログインで自分のパスコードを決めます。`],
@@ -1940,6 +1977,15 @@ const HELP = {
     ['alerts', '早期警戒', `期限超過・進捗遅延・期限延長の常態化・更新停滞・負荷集中・契約期間の超過・会議の結果未記録など、遅れの兆候を自動で判定します。判定ルールと しきい値は同じ画面に表示され、「設定・データ」で変えられます。`],
     ['phases', 'フェーズ', `フェーズごとに契約形態（準委任／請負）、契約終了日、成果物、完了基準、フェーズゲートを管理します。契約終了日を超える計画は警戒します。`],
     ['tasks', 'タスク（ステータス・カンバン・扱い）', `**種類**を選ぶとステータスの流れが決まります。\n- 一般：未着手 → 進行中 → クローズ\n- 検討：未着手 → 議論中 → 方針確定 → クローズ\n- 開発：未着手 → 実装中 → テスト中 → 承認待ち → クローズ\n- 成果物：未着手 → 作成中 → レビュー中 → 承認待ち → クローズ\n\n承認待ちは、承認者が「承認」すると自動でクローズします（自分のタスクは承認不可）。\n\n**担当者・承認者**はプロジェクトのメンバー（体制図）から選びます。担当者になった人の「自分の仕事」に入り、進捗はその人が更新します。承認者に指名された人には、承認待ちになった時点で「承認」画面に表示されます（メンバーや顧客の閲覧者でも指名できます）。承認者を空にすると、PM・PMO・担当リードが承認します。\n\n**扱い**：次のフェーズに回す／Backlog（時期未定）／保留／見送り。表示は「一覧」「カンバン」「Backlog」から選べます。`],
+    ['cloud', 'チームで共有（クラウド）', `「設定・データ」の「チームで共有を始める」を押すと、このプロジェクトがクラウドに置かれ、チーム全員が同じデータを見られるようになります（PMが操作）。
+1. 共有を始める
+2. 体制図でメンバーごとに「案内文をコピー」して送る（共有リンクが入ります）
+3. メンバーはリンクを開き、自分の名前とパスコードで入るだけ。インストールもアカウントも要りません
+
+- 誰かが保存すると、すぐ全員の画面に反映されます。同時に直しても、項目ごとに合わせるので消えません（同じ欄を同時に直したときは、あとから保存した方が残ります）
+- データはブラウザの中で暗号化してから送ります。鍵は共有リンクの中だけにあり、サーバーも中身を読めません。リンクを知っている人は開けるので、メンバー以外には渡さないでください
+- 表示言語と基準日は人ごとに選べます
+- 画面右上に「☁ 共有済み」「☁ 送信待ち」「☁ オフライン」と出ます。通信が切れても変更は手元に残り、つながったら送ります`],
     ['search', '全体検索', `画面右上の「検索」、またはどの画面でも「/」かCtrl+Kで開きます。タスク・課題（コメントも含む）・会議（議題・決定・宿題）・変更要求・ガバナンスのルールをまとめて探し、押すとその場所を開きます。自分のロールで見られない画面のものは出ません。`],
     ['approvals', '承認（まとめて承認）', `自分が承認できるものだけを1か所に集めた画面です（PM・PMO・リード）。
 - **タスク**：承認待ちのもの（自分のタスクは出ません）
@@ -1956,7 +2002,8 @@ const HELP = {
     ['faq', 'よくある質問', `**Q. 友だちや同僚に見せたい**\nA. Kizashi.html を渡すだけで動きます。サンプルデータの間は、パスコードなしで誰の立場でも試せます。\n\n**Q. 入力したのに表示が変わらない**\nA. 入力欄からフォーカスを外す（Enter または別の場所をクリック）と保存・反映されます。\n\n**Q. 動作が遅い**\nA. 開発用の index.html ではなく、1ファイル版の Kizashi.html を使ってください。起動時間は「設定・データ」に表示されます。`],
   ],
   en: [
-    ['intro', 'What this tool does', `**Kizashi** ("early sign") is a single-file PMO tool for visibility, early warning and automated status reporting — it spots the early signs of delay.\n- No installation: just open Kizashi.html\n- Data stays in this browser on this PC and is never sent anywhere\n- Switch Japanese / English at the top right (the status report language can be chosen separately)`],
+    ['intro', 'What this tool does', `**Kizashi** ("early sign") is a single-file PMO tool for visibility, early warning and automated status reporting — it spots the early signs of delay.\n- No installation: just open Kizashi.html\n- Data stays in this browser on this PC and is never sent anywhere\n- Switch Japanese / English at the top right (the status report language can be chosen separately)
+- Source code: https://github.com/matassy0813/kizashi (AGPL-3.0; commercial license: COMMERCIAL.md)`],
     ['start', 'Getting started (3 steps)', `1. "New project" → name, dates and your passcode\n2. Pick a phase template (System delivery / Transformation / Agile)\n3. Confirm. Phases, milestones, governance templates, weekly meetings and an org chart are created for you\n\nYou can import an Excel WBS (CSV) at the same time.`],
     ['codes', 'Company, team and project codes', `Keep several projects in one browser. Click the project name at the top left to open the switcher, grouped by **company › team**.\n- Set codes in Settings or in Get started\n- Naming conventions can use {CO}, {TEAM} and {PJ}\n- Sign-in is separate for each project`],
     ['login', 'Sign-in and roles', `Pick your name and enter your own passcode. Not even the PM can open someone else's screen.\n- **PM**: everything, including roles\n- **PMO**: all management except roles and data reset\n- **Lead**: manage own phases, approve\n- **Member**: update own tasks and actions, raise issues\n- **Viewer**: read-only\n\n"Copy invite" on the org chart creates a message with a one-time invitation code; the person chooses their passcode on first sign-in.`],
@@ -1973,6 +2020,15 @@ const HELP = {
     ['tasks', 'Tasks (status, kanban, disposition)', `The **type** sets the status flow:\n- General: Not started → In progress → Closed\n- Decision: Not started → Discussing → Decided → Closed\n- Build: Not started → Building → Testing → Awaiting approval → Closed\n- Deliverable: Not started → Drafting → In review → Awaiting approval → Closed\n\nThe approver closes approval items with "Approve" (not your own).
 
 **Owner and approver** are picked from the project members (org chart). The owner gets the task in My work and updates its progress. The named approver sees it in Approvals once it reaches the approval step (members and client viewers can be named). Leave the approver empty and a PM, PMO or phase lead approves.\n\n**Disposition**: move to next phase / backlog / on hold / drop. Views: List, Kanban, Backlog.`],
+    ['cloud', 'Share with your team (cloud)', `In "Settings & data", the PM presses "Start sharing" to put the project in the cloud so the whole team sees the same data.
+1. Start sharing
+2. Copy each member's invitation from the org chart and send it (the share link is included)
+3. Members open the link and sign in with their name and passcode. No install, no account
+
+- When anyone saves, everyone's screen updates right away. Simultaneous edits are merged item by item, so nothing is lost (if two people change the same field, the later save wins)
+- Data is encrypted in the browser before it is sent. The key lives only in the share link, so the server cannot read it. Anyone with the link can open the project: share it with members only
+- Display language and base date stay per person
+- The top right shows "☁ Synced", "☁ Waiting" or "☁ Offline". Offline changes stay on your PC and are sent when you reconnect`],
     ['search', 'Search', `Use "Search" at the top right, or press / or Ctrl+K anywhere. Finds tasks, issues (including comments), meetings (agenda, decisions, actions), change requests and governance rules, and opens the one you pick. Items on screens your role cannot see are not shown.`],
     ['approvals', 'Approvals (bulk)', `Everything you can approve, in one place (PM, PMO, lead).
 - **Tasks** awaiting approval (never your own)
@@ -3079,6 +3135,310 @@ document.addEventListener('keydown', e => {
 // Copyright (C) 2026 0kaka
 // 商用ライセンス（改変の非公開・組み込み・SaaS 提供）は COMMERCIAL.md を参照 / Commercial licensing: see COMMERCIAL.md
 'use strict';
+// ============ 変更の合わせ込み（3方向マージ） ============
+// base＝最後に同期した内容、local＝自分の画面の今、remote＝クラウドの今。
+// 片方だけが変えたところはその変更を採り、両方が変えたところは項目（id）ごと・欄ごとに合わせる。
+// 同じ欄を両方が変えたときは、あとから保存した自分（local）を採る。
+// 経緯（log）や記録（snapshots）のように「足していくだけ」の並びは、両方の分を残す。
+const deq = (a, b) => a === b || JSON.stringify(a) === JSON.stringify(b);
+const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
+const hasIds = arr => Array.isArray(arr) && arr.length > 0 && arr.every(x => isObj(x) && x.id != null && x.id !== '');
+const APPEND_ONLY = new Set(['log', 'snapshots']);
+function merge3(base, local, remote, key){
+  if (deq(local, remote)) return local;
+  if (deq(base, local)) return remote;
+  if (deq(base, remote)) return local;
+  if (Array.isArray(local) && Array.isArray(remote)) {
+    if (APPEND_ONLY.has(key)) return mergeAppend(local, remote);
+    if ((hasIds(local) || !local.length) && (hasIds(remote) || !remote.length) && (local.length || remote.length)) return mergeById(Array.isArray(base) ? base : [], local, remote);
+    return local; // id のない並び（議題など）を両方が変えたときは、自分の変更を採る
+  }
+  if (isObj(local) && isObj(remote)) {
+    const b = isObj(base) ? base : {}, out = {};
+    for (const k of new Set([...Object.keys(remote), ...Object.keys(local)])) {
+      const inL = k in local, inR = k in remote, inB = k in b;
+      if (inL && inR) out[k] = merge3(b[k], local[k], remote[k], k);
+      else if (inL) { if (!inB || !deq(b[k], local[k])) out[k] = local[k]; } // 相手が消した欄：自分が変えていなければ消す
+      else if (inR) { if (!inB || !deq(b[k], remote[k])) out[k] = remote[k]; }
+    }
+    return out;
+  }
+  return local;
+}
+function mergeAppend(local, remote){
+  const seen = new Set(), out = [];
+  [...remote, ...local].forEach(x => { const k = JSON.stringify(x); if (!seen.has(k)) { seen.add(k); out.push(x); } });
+  return out.sort((a, c) => String(a && (a.at || a.date) || '').localeCompare(String(c && (c.at || c.date) || '')));
+}
+// id のある並び（タスク・課題・会議・メンバーなど）を項目ごとに合わせる。並び順はクラウド側を基本に、自分が足したものを後ろへ
+function mergeById(base, local, remote){
+  const B = new Map(base.filter(isObj).map(x => [String(x.id), x])), L = new Map(local.map(x => [String(x.id), x])), R = new Map(remote.map(x => [String(x.id), x]));
+  const out = [], renamed = [];
+  const order = [...remote.map(x => String(x.id)), ...local.map(x => String(x.id)).filter(id => !R.has(id))];
+  for (const id of order) {
+    const b = B.get(id), l = L.get(id), r = R.get(id);
+    if (l && r) {
+      if (!b && !deq(l, r)) { out.push(r); renamed.push(l); continue; } // 二人が同時に同じ ID で別のものを作った：両方残す
+      out.push(merge3(b, l, r));
+    }
+    else if (l) { if (!b || !deq(b, l)) out.push(l); } // 相手が消したもの：自分が変えていれば残す
+    else if (r) { if (!b || !deq(b, r)) out.push(r); }
+  }
+  // 同じ ID で作られた自分の分は、空いている番号に付け直す（例：T25 が重なったら T26 に）
+  renamed.forEach(x => {
+    const m = String(x.id).match(/^(.*?)(\d+)$/), pre = m ? m[1] : String(x.id) + '-', width = m ? m[2].length : 2;
+    let n = Math.max(0, ...out.map(y => { const k = String(y.id); return k.startsWith(pre) ? parseInt(k.slice(pre.length)) || 0 : 0; })) + 1;
+    out.push({...x, id: pre + String(n).padStart(width, '0')});
+  });
+  return out;
+}
+
+</script>
+<script>
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 0kaka
+// 商用ライセンス（改変の非公開・組み込み・SaaS 提供）は COMMERCIAL.md を参照 / Commercial licensing: see COMMERCIAL.md
+'use strict';
+// ============ クラウド共有（チーム全員で同じデータを見る） ============
+// 導入の手間をなくすため、アカウント作成もインストールも要らない作りにする。
+//  1. PM が「チームで共有」を押す → このプロジェクトがクラウドに置かれ、共有リンクができる
+//  2. 招待の文面にリンクが入る → メンバーはリンクを開いて、自分の名前とパスコードで入るだけ
+//  3. 以後、誰かが保存するとすぐ全員の画面に反映される（同時に直しても、項目ごとに合わせて消さない）
+// データはブラウザの中で暗号化してから送る。鍵はリンクの # の後ろにあり、サーバーには届かない（サーバーは中身を読めない）。
+const CLOUD_DEFAULT = 'https://kizashi-cloud.kizashipm.workers.dev'; // 公開している同期サーバー（自社で立てたサーバーは設定画面で入れる）
+const CLOUD_APP_URL = 'https://matassy0813.github.io/kizashi/Kizashi.html'; // ファイルで開いているときの共有リンクの行き先
+const CLOUD_SRV_KEY = 'kizashi-cloud-server';
+const LOCAL_ONLY = [['project', 'lang'], ['project', 'baseDate']]; // 人ごとに違ってよいもの（表示言語・基準日）は共有しない
+const cloud = {status: '', ws: null, timer: null, poll: null, busy: false, again: false, applying: false, retry: 0};
+
+// ---- 暗号・符号化 ----
+const b64u = bytes => btoa(String.fromCharCode(...new Uint8Array(bytes))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64u = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
+const rand = n => crypto.getRandomValues(new Uint8Array(n));
+const toB64 = bytes => { let s = ''; const u = new Uint8Array(bytes); for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode(...u.subarray(i, i + 0x8000)); return btoa(s); };
+const fromB64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function streamBytes(bytes, T){ const s = new Blob([bytes]).stream().pipeThrough(new T('gzip')); return new Uint8Array(await new Response(s).arrayBuffer()); }
+async function cloudKeys(secret){
+  const raw = unb64u(secret);
+  const key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt', 'decrypt']);
+  const token = b64u(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('kizashi-auth:' + secret)));
+  return {key, token};
+}
+async function seal(obj, key){
+  let bytes = new TextEncoder().encode(JSON.stringify(obj)), z = 0;
+  if (typeof CompressionStream === 'function') { bytes = await streamBytes(bytes, CompressionStream); z = 1; }
+  const iv = rand(12), ct = new Uint8Array(await crypto.subtle.encrypt({name: 'AES-GCM', iv}, key, bytes));
+  return `k1.${z}.${toB64(iv)}.${toB64(ct)}`;
+}
+async function unseal(blob, key){
+  const [v, z, iv, ct] = String(blob).split('.'); if (v !== 'k1') throw new Error('format');
+  let bytes = new Uint8Array(await crypto.subtle.decrypt({name: 'AES-GCM', iv: fromB64(iv)}, key, fromB64(ct)));
+  if (z === '1') bytes = await streamBytes(bytes, DecompressionStream);
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+
+// ---- 保存先・リンク ----
+const cloudServer = () => { try { return (localStorage.getItem(CLOUD_SRV_KEY) || CLOUD_DEFAULT).replace(/\/+$/, ''); } catch (e) { return CLOUD_DEFAULT; } };
+const cloudMeta = () => { const p = ws && wsCurrent(); return p && p.cloud ? p.cloud : null; };
+const baseKey = p => 'pmo-cloudbase-' + p.id;
+const readBase = p => { try { return JSON.parse(localStorage.getItem(baseKey(p)) || 'null'); } catch (e) { return null; } };
+const writeBase = (p, s) => { try { localStorage.setItem(baseKey(p), JSON.stringify(s)); } catch (e) {} };
+function shareLink(meta){
+  const here = /^https?:/.test(location.protocol) ? location.origin + location.pathname : CLOUD_APP_URL;
+  return `${here}#join=${meta.id}.${meta.secret}${meta.server && meta.server !== CLOUD_DEFAULT ? '&srv=' + encodeURIComponent(meta.server) : ''}`;
+}
+// 共有する内容（人ごとの設定を除いたもの）
+function sharedOf(s){
+  const c = JSON.parse(JSON.stringify(s));
+  LOCAL_ONLY.forEach(path => { let o = c; for (let i = 0; i < path.length - 1; i++) o = o && o[path[i]]; if (o) delete o[path[path.length - 1]]; });
+  return c;
+}
+function withLocal(shared, mine){
+  const c = JSON.parse(JSON.stringify(shared));
+  LOCAL_ONLY.forEach(path => { let a = mine, o = c; for (let i = 0; i < path.length - 1; i++) { a = a && a[path[i]]; o = o && o[path[i]]; } const k = path[path.length - 1]; if (o && a && k in a) o[k] = a[k]; });
+  return c;
+}
+async function api(meta, method, body){
+  const {token} = await cloudKeys(meta.secret);
+  const r = await fetch(`${meta.server}/api/p/${meta.id}`, {method, headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json'}, body: body ? JSON.stringify(body) : undefined, cache: 'no-store'});
+  let data = {}; try { data = await r.json(); } catch (e) {}
+  return {status: r.status, data};
+}
+
+// ---- 状態の表示（画面右上の保存表示を「クラウド」用にする） ----
+function cloudSetStatus(s){
+  cloud.status = s;
+  const el = document.querySelector('#saveInd'); if (!el || !cloudMeta()) return;
+  el.classList.toggle('cloud', true); el.classList.toggle('offline', s === 'offline');
+  el.innerHTML = `<span class="dot"></span>${t('cloud.st.' + s)}`; el.title = t('cloud.stHint');
+  const pill = document.querySelector('.cloud-card .pill'); if (pill) { pill.textContent = t('cloud.st.' + s); pill.classList.toggle('ok', s === 'synced'); }
+}
+
+// ---- 共有を始める（PM） ----
+async function cloudShare(server){
+  const p = wsCurrent(); if (p.cloud) return p.cloud;
+  server = (server || cloudServer()).replace(/\/+$/, '');
+  if (!server) throw new Error('no_server');
+  const meta = {id: b64u(rand(16)), secret: b64u(rand(32)), server, ver: 0, since: todayStr(), by: myName()};
+  const shared = sharedOf(state), {key} = await cloudKeys(meta.secret);
+  const res = await api(meta, 'PUT', {ver: 0, blob: await seal(shared, key)});
+  if (res.status !== 201 && res.status !== 200) throw new Error('server_' + res.status);
+  meta.ver = res.data.ver; p.cloud = meta; wsWrite(); writeBase(p, shared);
+  try { localStorage.setItem(CLOUD_SRV_KEY, server); } catch (e) {}
+  cloudConnect(); cloudSetStatus('synced');
+  return meta;
+}
+// 共有をやめる（このブラウザだけで使う。クラウドのデータは残る：ほかの人は使い続けられる）
+function cloudLeave(){
+  const p = wsCurrent(); if (!p.cloud) return;
+  cloudDisconnect(); delete p.cloud; wsWrite(); try { localStorage.removeItem(baseKey(p)); } catch (e) {}
+  const el = document.querySelector('#saveInd'); if (el) el.classList.remove('cloud', 'offline');
+}
+
+// ---- リンクから参加する（メンバー） ----
+function parseJoin(hash){
+  const h = new URLSearchParams(String(hash || '').replace(/^#/, '')), j = h.get('join'); if (!j) return null;
+  const [id, secret] = j.split('.'); if (!id || !secret) return null;
+  return {id, secret, server: (h.get('srv') || cloudServer()).replace(/\/+$/, '')};
+}
+async function cloudJoin(j){
+  const hit = ws.projects.find(p => p.cloud && p.cloud.id === j.id);
+  if (hit) { if (hit.id !== ws.current) switchProject(hit.id); await cloudPull(); return 'opened'; }
+  if (!j.server) throw new Error('no_server');
+  const meta = {id: j.id, secret: j.secret, server: j.server, ver: 0, since: todayStr()};
+  const res = await api(meta, 'GET'); if (res.status !== 200) throw new Error('server_' + res.status);
+  const {key} = await cloudKeys(meta.secret), remote = await unseal(res.data.blob, key);
+  // 同じプロジェクト（JSON で受け取っていたもの）があれば、それをクラウドにつなぐ。なければ新しく加える
+  const same = ws.projects.find(p => p.uid && remote.project && p.uid === remote.project.uid && !p.cloud);
+  if (same) { if (same.id !== ws.current) { save(); ws.current = same.id; wsWrite(); resetUi(); state = null; load(); } }
+  else if (ws.projects.length === 1 && state && state.isSample && !wsCurrent().cloud) { /* 初めて開いた人：最初に入っているサンプルの代わりに使う */ }
+  else { if (state) save(); wsBeginNewProject(); }
+  const lang = state && state.project ? state.project.lang : '';
+  state = withLocal(remote, {project: {lang: lang || remote.project.lang}}); normalize();
+  meta.ver = res.data.ver; wsCurrent().cloud = meta; ui.me = ''; cloud.applying = true; save(); cloud.applying = false; wsWrite(); writeBase(wsCurrent(), sharedOf(state));
+  cloudConnect(); render(true); cloudSetStatus('synced');
+  return 'joined';
+}
+
+// ---- 送る・受け取る ----
+// 保存のたびに呼ばれる。少し待ってまとめて送る（入力中に何度も送らない）
+function cloudAfterSave(){
+  if (cloud.applying || !cloudMeta()) return;
+  cloudSetStatus('pending');
+  clearTimeout(cloud.timer); cloud.timer = setTimeout(cloudPush, 700);
+}
+// 送受信は 1 本ずつ順番に行う（途中で次の依頼が来たら、終わってからもう一度回す）
+const cloudPush = () => cloudRun(false);
+const cloudPull = () => cloudRun(true);
+async function cloudRun(pull){
+  if (!cloudMeta()) return;
+  if (cloud.busy) { cloud.again = cloud.again || (pull ? 'pull' : 'push'); return; }
+  cloud.busy = true;
+  try { await (pull ? syncPull() : syncPush()); cloud.retry = 0; }
+  catch (e) { cloudOffline(); }
+  finally {
+    cloud.busy = false;
+    const next = cloud.again; cloud.again = false;
+    if (next) cloudRun(next === 'pull');
+  }
+}
+async function syncPush(){
+  const meta = cloudMeta(), p = wsCurrent(), shared = sharedOf(state), base = readBase(p);
+  if (base && deq(shared, base)) { cloudSetStatus('synced'); return; }
+  cloudSetStatus('syncing');
+  const {key} = await cloudKeys(meta.secret);
+  const res = await api(meta, 'PUT', {ver: meta.ver, blob: await seal(shared, key)});
+  if (res.status === 200 || res.status === 201) { meta.ver = res.data.ver; wsWrite(); writeBase(p, shared); cloudSetStatus(deq(sharedOf(state), shared) ? 'synced' : 'pending'); if (!deq(sharedOf(state), shared)) cloud.again = 'push'; return; }
+  if (res.status === 409) return syncPull(); // 先に誰かが保存していた：合わせてから送り直す
+  if (res.status === 413) { cloudSetStatus('tooLarge'); return; }
+  throw new Error('server_' + res.status);
+}
+// クラウドの最新を受け取り、自分のまだ送っていない変更と合わせる
+async function syncPull(){
+  const meta = cloudMeta(), p = wsCurrent();
+  const res = await api(meta, 'GET');
+  if (res.status === 404 || res.status === 403) { cloudSetStatus('gone'); return; }
+  if (res.status !== 200) throw new Error('server_' + res.status);
+  let remote = null;
+  if (res.data.ver !== meta.ver) { const {key} = await cloudKeys(meta.secret); remote = await unseal(res.data.blob, key); }
+  // ここから先は待ち時間なし（受け取っている間に入力された分も、取りこぼさず合わせる）
+  const base = readBase(p) || {}, local = sharedOf(state);
+  if (!remote) { if (!deq(local, base)) return syncPush(); cloudSetStatus('synced'); return; }
+  const merged = merge3(base, local, remote), changed = !deq(merged, local);
+  if (changed) { state = withLocal(merged, state); normalize(); cloud.applying = true; save(); cloud.applying = false; render(false); }
+  meta.ver = res.data.ver; wsWrite(); writeBase(p, remote);
+  if (!deq(sharedOf(state), remote)) return syncPush(); // 自分の分（と補った欄）がまだ載っていない
+  cloudSetStatus('synced');
+  if (changed) flashCloud();
+}
+function flashCloud(){ const el = document.querySelector('#saveInd'); if (el) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); } }
+function cloudOffline(){
+  cloudSetStatus('offline');
+  cloud.retry = Math.min(6, cloud.retry + 1);
+  clearTimeout(cloud.timer); cloud.timer = setTimeout(() => cloudPull(), 2000 * 2 ** cloud.retry);
+}
+
+// ---- 知らせを受け取る（誰かが保存したら、すぐ取りに行く） ----
+function cloudConnect(){
+  cloudDisconnect(); const meta = cloudMeta(); if (!meta) return;
+  const open = () => {
+    let sock; try { sock = new WebSocket(meta.server.replace(/^http/, 'ws') + `/api/p/${meta.id}/ws`); } catch (e) { return; }
+    cloud.ws = sock;
+    sock.onmessage = e => { let d = {}; try { d = JSON.parse(e.data); } catch (x) {} const m = cloudMeta(); if (m && m.id === meta.id && d.ver > m.ver) cloudPull(); };
+    sock.onclose = () => { if (cloud.ws === sock) { cloud.ws = null; setTimeout(() => { if (cloudMeta() && cloudMeta().id === meta.id && !cloud.ws) open(); }, 3000); } };
+  };
+  open();
+  cloud.poll = setInterval(() => { if (!document.hidden) cloudPull(); }, 30000); // 知らせが届かない環境の予備
+}
+function cloudDisconnect(){ if (cloud.ws) { const s = cloud.ws; cloud.ws = null; try { s.close(); } catch (e) {} } clearInterval(cloud.poll); clearTimeout(cloud.timer); }
+window.addEventListener('focus', () => { if (cloudMeta()) cloudPull(); });
+window.addEventListener('online', () => { if (cloudMeta()) cloudPull(); });
+
+// ---- 起動時：共有リンクで開かれたら参加し、共有中のプロジェクトならつなぐ ----
+async function cloudBoot(){
+  const j = parseJoin(location.hash);
+  if (j) {
+    history.replaceState(null, '', location.pathname + location.search); // 鍵をアドレス欄に残さない
+    try { const r = await cloudJoin(j); toast(t(r === 'joined' ? 'cloud.joined' : 'cloud.opened', state.project.name)); }
+    catch (e) { alert(t(String(e.message).startsWith('server_4') ? 'cloud.errLink' : 'cloud.errJoin')); }
+    return;
+  }
+  if (cloudMeta()) { cloudConnect(); cloudSetStatus('syncing'); cloudPull(); }
+}
+// プロジェクトを切り替えたら、つなぎ先も切り替える
+function cloudOnSwitch(){ cloudDisconnect(); const el = document.querySelector('#saveInd'); if (el) el.classList.remove('cloud', 'offline'); if (cloudMeta()) { cloudConnect(); cloudSetStatus('syncing'); cloudPull(); } }
+
+// ---- 設定画面の「チームで共有」 ----
+function cloudCard(){
+  const meta = cloudMeta(), pm = canCreate('admin');
+  if (meta) return `<div class="card cloud-card" style="margin-top:14px"><h2>☁ ${t('cloud.title')}<span class="hint">${t('cloud.onHint')}</span></h2>
+    <div class="cloud-state"><span class="pill ok">${t('cloud.st.' + (cloud.status || 'synced'))}</span><span class="muted small">${t('cloud.since', md(meta.since), esc(meta.by || '—'))}</span></div>
+    <label class="lbl-block" style="margin-top:10px">${t('cloud.link')}<div class="cloud-link"><input readonly value="${esc(shareLink(meta))}" id="cloudLinkTxt"><button class="btn primary" id="cloudCopy">${t('cloud.copy')}</button></div><small class="muted">${t('cloud.linkHint')}</small></label>
+    <div class="bar" style="margin-top:10px"><span class="sp"></span><button class="btn" id="cloudLeave">${t('cloud.leave')}</button></div></div>`;
+  return `<div class="card cloud-card" style="margin-top:14px"><h2>☁ ${t('cloud.title')}<span class="hint">${t('cloud.offHint')}</span></h2>
+    <ol class="cloud-steps"><li>${t('cloud.step1')}</li><li>${t('cloud.step2')}</li><li>${t('cloud.step3')}</li></ol>
+    <p class="muted small">${t('cloud.privacy')}</p>
+    ${pm ? `<details class="cloud-adv" ${cloudServer() ? '' : 'open'}><summary>${t('cloud.server')}</summary><input id="cloudSrv" placeholder="https://kizashi-cloud.example.workers.dev" value="${esc(cloudServer())}"><small class="muted">${t('cloud.serverHint')}</small></details>
+    <div class="bar" style="margin-top:10px"><span class="sp"></span><button class="btn primary" id="cloudStart">☁ ${t('cloud.start')}</button></div>` : `<p class="muted small">${t('cloud.pmOnly')}</p>`}</div>`;
+}
+function bindCloudCard(root){
+  const cp = root.querySelector('#cloudCopy'); if (cp) cp.onclick = () => copyText(shareLink(cloudMeta()));
+  const lv = root.querySelector('#cloudLeave'); if (lv) lv.onclick = () => { if (confirm(t('cloud.leaveConfirm'))) { cloudLeave(); render(); toast(t('cloud.left')); } };
+  const st = root.querySelector('#cloudStart'); if (st) st.onclick = async () => {
+    const srv = (root.querySelector('#cloudSrv') || {}).value || cloudServer();
+    if (!srv) { toast(t('cloud.needServer')); return; }
+    st.disabled = true; st.textContent = t('cloud.starting');
+    try { await cloudShare(srv); render(); toast(t('cloud.started')); }
+    catch (e) { st.disabled = false; st.textContent = '☁ ' + t('cloud.start'); alert(t('cloud.errStart', String(e.message))); }
+  };
+}
+
+</script>
+<script>
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 0kaka
+// 商用ライセンス（改変の非公開・組み込み・SaaS 提供）は COMMERCIAL.md を参照 / Commercial licensing: see COMMERCIAL.md
+'use strict';
 // ============ 会議管理 ============
 function renderMeetings(v, {b, alerts}){
   const st = meetingStats(b);
@@ -3552,7 +3912,7 @@ function renderSettings(v){
     ${sf('lagWarn')}${sf('lagHigh')}${sf('extendDays')}${sf('staleDays')}${sf('lookahead')}${sf('overloadCount')}${sf('issueAgeDays')}${sf('meetingLead')}${sf('crStallDays')}${sf('spiAmber', 0.01)}${sf('spiRed', 0.01)}
   </div></div>
   <div class="card" style="margin-top:14px"><h2>${t('set.data')}</h2>
-    <p class="muted" style="margin-top:0">${t('set.dataHint')}</p>
+    <p class="muted" style="margin-top:0">${t(cloudMeta() ? 'set.dataHintCloud' : 'set.dataHint')}</p>
     <p class="muted small">${t('set.boot', ui.bootMs || '—')}</p>
     <div class="bar">
       <button class="btn primary" id="expJson">${t('set.backup')}</button>
@@ -3564,14 +3924,16 @@ function renderSettings(v){
       <button class="btn danger" id="clearAll">${t('set.blank')}</button>
       <button class="btn danger" id="delProject">${t('ws.deleteThis')}</button>
     </div>
-  </div>`;
+  </div>
+  ${cloudCard()}`;
+  bindCloudCard(v);
   $('#expJson').onclick = () => download(`PMO_${safeName(P.code || P.name)}_${todayStr()}.json`, JSON.stringify(state, null, 2), 'application/json');
   $('#impJson').onclick = () => $('#jsonFile').click();
-  $('#jsonFile').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const d = JSON.parse(r.result); if (!d.tasks) throw 0; if (!confirm(t('set.restoreConfirm'))) return; state = d.version === 2 ? d : migrateV1(d); normalize(); save(); render(); toast(t('set.restored')); } catch(err) { alert(t('set.restoreFail')); } }; r.readAsText(f); e.target.value = ''; };
+  $('#jsonFile').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const d = JSON.parse(r.result); if (!d.tasks) throw 0; if (!confirm(t('set.restoreConfirm') + (cloudMeta() ? '\n\n' + t('cloud.importWarn') : ''))) return; state = d.version === 2 ? d : migrateV1(d); normalize(); save(); render(); toast(t('set.restored')); } catch(err) { alert(t('set.restoreFail')); } }; r.readAsText(f); e.target.value = ''; };
   $('#impAsProject').onclick = () => $('#jsonFile2').click();
   $('#jsonFile2').onchange = e => { const f = e.target.files[0]; if (f) readJsonFile(f, importProjectData); e.target.value = ''; };
   $('#delProject').onclick = () => deleteProject(ws.current);
-  $('#resetSample').onclick = () => { if (confirm(t('set.sampleConfirm'))) { state = sample(LANG()); ui.scope = ''; ui.meetingId = ''; normalize(); save(); render(); } };
+  $('#resetSample').onclick = () => { if (confirm(t('set.sampleConfirm') + (cloudMeta() ? '\n\n' + t('cloud.importWarn') : ''))) { state = sample(LANG()); ui.scope = ''; ui.meetingId = ''; normalize(); save(); render(); } };
   $('#clearAll').onclick = () => openWizard();
 }
 
@@ -4334,7 +4696,7 @@ function inviteText(p, code){
   const next = state.meetings.filter(m => m.status === 'planned' && d2n(m.date) >= b && (m.organizer === nm || m.agenda.some(a => a.owner === nm) || String(m.attendees || '').includes(nm))).sort((x, y) => x.date < y.date ? -1 : 1)[0];
   const phases = r === 'lead' ? state.phases.filter(ph => ph.owner === nm).map(ph => ph.name) : [];
   const L = [t('inv.title', state.project.name, nm), '', `${t('inv.role')}：${t('role.' + r)}${phases.length ? `（${t('inv.phases')}：${phases.join('、')}）` : ''}`, `${t('inv.can')}：${t('roleDesc.' + r)}`, '', t('inv.first')];
-  L.push(`1. ${t('inv.step1')}`);
+  L.push(`1. ${cloudMeta() ? t('inv.step1cloud', shareLink(cloudMeta())) : t('inv.step1')}`);
   L.push(`2. ${code ? t('inv.step2code', nm, code) : t('inv.step2pin', nm)}`);
   if (r === 'viewer') L.push(`3. ${t('inv.stepView')}`);
   else L.push(`3. ${t('inv.step3', tasks, acts)}`);
@@ -4733,6 +5095,7 @@ $('#scopeSel').addEventListener('change', e => { ui.meetingId = ''; go({scope: e
 $('#baseDate').addEventListener('change', e => { state.project.baseDate = e.target.value; save(); render(true); });
 
 load(); render(true);
+cloudBoot(); // 共有リンクで開かれたら参加し、共有中のプロジェクトならクラウドとつなぐ
 ui.bootMs = Math.round(performance.now()); // ページを開いてから最初の画面が出るまで
 
 </script>

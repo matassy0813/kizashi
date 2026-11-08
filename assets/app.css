@@ -533,3 +533,11 @@ body.locked .nav-toggle{display:none} body.locked.nav-collapsed{grid-template-co
 .gs-main{display:flex;flex-direction:column;min-width:0} .gs-main small{color:var(--muted);font-size:12px;white-space:normal}
 .gs-foot{padding:8px 14px;border-top:1px solid var(--line)}
 .rd-side select,.rd-side label,.rd-main label{max-width:100%;min-width:0} .rd-side .card{min-width:0;overflow-wrap:anywhere}
+/* クラウド共有 */
+.save-ind.cloud .dot{background:var(--accent)} .save-ind.offline{color:var(--amber)} .save-ind.offline .dot{background:var(--amber)}
+.cloud-card h2{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cloud-steps{margin:6px 0 8px;padding-left:20px;font-size:13px;display:flex;flex-direction:column;gap:4px}
+.cloud-state{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pill{display:inline-block;font-size:12px;font-weight:600;border-radius:999px;padding:2px 10px;background:var(--soft)} .pill.ok{background:rgba(52,199,89,.15);color:#1f8a3b}
+.cloud-link{display:flex;gap:8px;margin-top:4px} .cloud-link input{flex:1;min-width:0;font-family:ui-monospace,monospace;font-size:12px}
+.cloud-adv summary{cursor:pointer;font-size:13px;color:var(--muted)} .cloud-adv input{width:100%;margin-top:6px}

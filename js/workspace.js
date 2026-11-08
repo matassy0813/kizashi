@@ -28,6 +28,7 @@ function wsSync(){
 function switchProject(id){
   if (!ws.projects.some(p => p.id === id) || id === ws.current) return;
   save(); ws.current = id; wsWrite(); resetUi(); state = null; load(); render(true);
+  if (typeof cloudOnSwitch === 'function') cloudOnSwitch();
   toast(t('ws.switched', state.project.name));
 }
 // 新しいプロジェクトの枠を作って切り替える（はじめかた・読み込みから使う）。現在のプロジェクトは保存して残す
@@ -36,6 +37,7 @@ function wsBeginNewProject(){
   const id = 'p' + Date.now().toString(36);
   ws.projects.push({id, key: 'pmo-project-' + id, name: '', co: '', team: '', pj: '', updated: todayStr()});
   ws.current = id; wsWrite(); resetUi();
+  if (typeof cloudOnSwitch === 'function') cloudOnSwitch();
   return id;
 }
 function deleteProject(id){
@@ -44,7 +46,7 @@ function deleteProject(id){
   if (!confirm(t('ws.deleteConfirm', p.name || '—'))) return;
   try { localStorage.removeItem(p.key); localStorage.removeItem(uiKeyOf(p)); } catch(e) {}
   ws.projects = ws.projects.filter(x => x.id !== id);
-  if (ws.current === id) { ws.current = ws.projects[0].id; wsWrite(); resetUi(); state = null; load(); }
+  if (ws.current === id) { ws.current = ws.projects[0].id; wsWrite(); resetUi(); state = null; load(); if (typeof cloudOnSwitch === 'function') cloudOnSwitch(); }
   else wsWrite();
   render(true); toast(t('ws.deleted'));
 }
@@ -53,6 +55,7 @@ function importProjectData(d){
   const data = d.version === 2 ? d : migrateV1(d);
   const uid = data.project && data.project.uid, hit = uid && ws.projects.find(p => p.uid === uid);
   if (hit) {
+    if (hit.cloud && !confirm(t('cloud.importWarn'))) return 'cancelled'; // 共有中のプロジェクトに古いデータを読み込むと、チーム全員の内容が置き換わる
     if (hit.id === ws.current) { state = data; normalize(); ui.me = ''; save(); render(true); }
     else { try { localStorage.setItem(hit.key, JSON.stringify(data)); } catch(e) {} save(); ws.current = hit.id; wsWrite(); resetUi(); state = null; load(); render(true); }
     toast(t('ws.updated', data.project.name)); return 'updated';

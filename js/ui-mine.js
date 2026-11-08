@@ -88,7 +88,7 @@ function inviteText(p, code){
   const next = state.meetings.filter(m => m.status === 'planned' && d2n(m.date) >= b && (m.organizer === nm || m.agenda.some(a => a.owner === nm) || String(m.attendees || '').includes(nm))).sort((x, y) => x.date < y.date ? -1 : 1)[0];
   const phases = r === 'lead' ? state.phases.filter(ph => ph.owner === nm).map(ph => ph.name) : [];
   const L = [t('inv.title', state.project.name, nm), '', `${t('inv.role')}：${t('role.' + r)}${phases.length ? `（${t('inv.phases')}：${phases.join('、')}）` : ''}`, `${t('inv.can')}：${t('roleDesc.' + r)}`, '', t('inv.first')];
-  L.push(`1. ${t('inv.step1')}`);
+  L.push(`1. ${cloudMeta() ? t('inv.step1cloud', shareLink(cloudMeta())) : t('inv.step1')}`);
   L.push(`2. ${code ? t('inv.step2code', nm, code) : t('inv.step2pin', nm)}`);
   if (r === 'viewer') L.push(`3. ${t('inv.stepView')}`);
   else L.push(`3. ${t('inv.step3', tasks, acts)}`);

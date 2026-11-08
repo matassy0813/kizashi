@@ -155,7 +155,7 @@ function renderSettings(v){
     ${sf('lagWarn')}${sf('lagHigh')}${sf('extendDays')}${sf('staleDays')}${sf('lookahead')}${sf('overloadCount')}${sf('issueAgeDays')}${sf('meetingLead')}${sf('crStallDays')}${sf('spiAmber', 0.01)}${sf('spiRed', 0.01)}
   </div></div>
   <div class="card" style="margin-top:14px"><h2>${t('set.data')}</h2>
-    <p class="muted" style="margin-top:0">${t('set.dataHint')}</p>
+    <p class="muted" style="margin-top:0">${t(cloudMeta() ? 'set.dataHintCloud' : 'set.dataHint')}</p>
     <p class="muted small">${t('set.boot', ui.bootMs || '—')}</p>
     <div class="bar">
       <button class="btn primary" id="expJson">${t('set.backup')}</button>
@@ -167,13 +167,15 @@ function renderSettings(v){
       <button class="btn danger" id="clearAll">${t('set.blank')}</button>
       <button class="btn danger" id="delProject">${t('ws.deleteThis')}</button>
     </div>
-  </div>`;
+  </div>
+  ${cloudCard()}`;
+  bindCloudCard(v);
   $('#expJson').onclick = () => download(`PMO_${safeName(P.code || P.name)}_${todayStr()}.json`, JSON.stringify(state, null, 2), 'application/json');
   $('#impJson').onclick = () => $('#jsonFile').click();
-  $('#jsonFile').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const d = JSON.parse(r.result); if (!d.tasks) throw 0; if (!confirm(t('set.restoreConfirm'))) return; state = d.version === 2 ? d : migrateV1(d); normalize(); save(); render(); toast(t('set.restored')); } catch(err) { alert(t('set.restoreFail')); } }; r.readAsText(f); e.target.value = ''; };
+  $('#jsonFile').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const d = JSON.parse(r.result); if (!d.tasks) throw 0; if (!confirm(t('set.restoreConfirm') + (cloudMeta() ? '\n\n' + t('cloud.importWarn') : ''))) return; state = d.version === 2 ? d : migrateV1(d); normalize(); save(); render(); toast(t('set.restored')); } catch(err) { alert(t('set.restoreFail')); } }; r.readAsText(f); e.target.value = ''; };
   $('#impAsProject').onclick = () => $('#jsonFile2').click();
   $('#jsonFile2').onchange = e => { const f = e.target.files[0]; if (f) readJsonFile(f, importProjectData); e.target.value = ''; };
   $('#delProject').onclick = () => deleteProject(ws.current);
-  $('#resetSample').onclick = () => { if (confirm(t('set.sampleConfirm'))) { state = sample(LANG()); ui.scope = ''; ui.meetingId = ''; normalize(); save(); render(); } };
+  $('#resetSample').onclick = () => { if (confirm(t('set.sampleConfirm') + (cloudMeta() ? '\n\n' + t('cloud.importWarn') : ''))) { state = sample(LANG()); ui.scope = ''; ui.meetingId = ''; normalize(); save(); render(); } };
   $('#clearAll').onclick = () => openWizard();
 }

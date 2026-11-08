@@ -1,0 +1,16 @@
+# Kizashi クラウド同期サーバーの設定（Cloudflare Workers）
+# 公開：npx wrangler deploy --config cloud/wrangler.toml（Cloudflare の無料アカウントで動く）
+name = "kizashi-cloud"
+main = "worker.js"
+compatibility_date = "2025-06-01"
+
+[vars]
+LOCATION_HINT = "apac" # データを置く地域の希望（アジア太平洋）
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]

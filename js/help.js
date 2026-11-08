@@ -7,7 +7,8 @@
 const HELP_FOR_TAB = {mine: 'mine', dash: 'dash', alerts: 'alerts', phases: 'phases', tasks: 'tasks', approvals: 'approvals', raid: 'raid', meetings: 'meetings', org: 'org', governance: 'governance', report: 'report', settings: 'data'};
 const HELP = {
   ja: [
-    ['intro', 'このツールでできること', `**Kizashi（兆し）** は、PMO（プロジェクト管理）の「見える化」「早期警戒」「報告の自動化」を、1つのファイルで行うツールです。遅れの「兆し」を先に見つけるのが名前の由来です。\n- インストール不要。Kizashi.html を開くだけで動きます\n- データはこのPCのブラウザの中だけに保存され、外部には送信されません\n- 日本語と英語を画面右上で切り替えられます（週次報告は画面とは別に言語を選べます）`],
+    ['intro', 'このツールでできること', `**Kizashi（兆し）** は、PMO（プロジェクト管理）の「見える化」「早期警戒」「報告の自動化」を、1つのファイルで行うツールです。遅れの「兆し」を先に見つけるのが名前の由来です。\n- インストール不要。Kizashi.html を開くだけで動きます\n- データはこのPCのブラウザの中だけに保存され、外部には送信されません\n- 日本語と英語を画面右上で切り替えられます（週次報告は画面とは別に言語を選べます）
+- ソースコード：https://github.com/matassy0813/kizashi （AGPL-3.0。商用ライセンスは COMMERCIAL.md）`],
     ['start', 'はじめかた（3ステップ）', `1. 「新しいプロジェクト」→ 名前・期間・自分のパスコードを入力\n2. フェーズの型（システム開発／業務改革・コンサル／アジャイル）を選ぶ\n3. 確認して作成。フェーズ・マイルストーン・ガバナンスの雛形・週次定例・体制図が自動でできます\n\nExcelのWBSがあれば、作成と同時にCSVで取り込めます。`],
     ['codes', '会社・チーム・PJコード', `1つのブラウザで複数のプロジェクトを持てます。画面左上のプロジェクト名を押すと切り替えメニューが開き、**会社コード › チームコード** ごとにまとめて表示されます。\n- コードは「設定・データ」または「はじめかた」で設定します\n- ファイル命名規則で {CO}（会社）{TEAM}（チーム）{PJ}（PJ）を使えます\n- ログインはプロジェクトごとに別です`],
     ['login', 'ログインとロール', `自分の名前を選び、自分で決めたパスコードで入ります。PMも他の人の画面には入れません。\n- **PM**：すべての操作とロールの付与\n- **PMO**：ロール付与とデータ初期化以外の管理\n- **リード**：担当フェーズの管理、承認\n- **メンバー**：自分のタスク・宿題の更新、課題の起票\n- **閲覧者**：見るだけ\n\nPMが体制図で「案内文をコピー」すると、案内コード付きの文面ができます。本人は初回ログインで自分のパスコードを決めます。`],
@@ -22,6 +23,15 @@ const HELP = {
     ['alerts', '早期警戒', `期限超過・進捗遅延・期限延長の常態化・更新停滞・負荷集中・契約期間の超過・会議の結果未記録など、遅れの兆候を自動で判定します。判定ルールと しきい値は同じ画面に表示され、「設定・データ」で変えられます。`],
     ['phases', 'フェーズ', `フェーズごとに契約形態（準委任／請負）、契約終了日、成果物、完了基準、フェーズゲートを管理します。契約終了日を超える計画は警戒します。`],
     ['tasks', 'タスク（ステータス・カンバン・扱い）', `**種類**を選ぶとステータスの流れが決まります。\n- 一般：未着手 → 進行中 → クローズ\n- 検討：未着手 → 議論中 → 方針確定 → クローズ\n- 開発：未着手 → 実装中 → テスト中 → 承認待ち → クローズ\n- 成果物：未着手 → 作成中 → レビュー中 → 承認待ち → クローズ\n\n承認待ちは、承認者が「承認」すると自動でクローズします（自分のタスクは承認不可）。\n\n**担当者・承認者**はプロジェクトのメンバー（体制図）から選びます。担当者になった人の「自分の仕事」に入り、進捗はその人が更新します。承認者に指名された人には、承認待ちになった時点で「承認」画面に表示されます（メンバーや顧客の閲覧者でも指名できます）。承認者を空にすると、PM・PMO・担当リードが承認します。\n\n**扱い**：次のフェーズに回す／Backlog（時期未定）／保留／見送り。表示は「一覧」「カンバン」「Backlog」から選べます。`],
+    ['cloud', 'チームで共有（クラウド）', `「設定・データ」の「チームで共有を始める」を押すと、このプロジェクトがクラウドに置かれ、チーム全員が同じデータを見られるようになります（PMが操作）。
+1. 共有を始める
+2. 体制図でメンバーごとに「案内文をコピー」して送る（共有リンクが入ります）
+3. メンバーはリンクを開き、自分の名前とパスコードで入るだけ。インストールもアカウントも要りません
+
+- 誰かが保存すると、すぐ全員の画面に反映されます。同時に直しても、項目ごとに合わせるので消えません（同じ欄を同時に直したときは、あとから保存した方が残ります）
+- データはブラウザの中で暗号化してから送ります。鍵は共有リンクの中だけにあり、サーバーも中身を読めません。リンクを知っている人は開けるので、メンバー以外には渡さないでください
+- 表示言語と基準日は人ごとに選べます
+- 画面右上に「☁ 共有済み」「☁ 送信待ち」「☁ オフライン」と出ます。通信が切れても変更は手元に残り、つながったら送ります`],
     ['search', '全体検索', `画面右上の「検索」、またはどの画面でも「/」かCtrl+Kで開きます。タスク・課題（コメントも含む）・会議（議題・決定・宿題）・変更要求・ガバナンスのルールをまとめて探し、押すとその場所を開きます。自分のロールで見られない画面のものは出ません。`],
     ['approvals', '承認（まとめて承認）', `自分が承認できるものだけを1か所に集めた画面です（PM・PMO・リード）。
 - **タスク**：承認待ちのもの（自分のタスクは出ません）
@@ -38,7 +48,8 @@ const HELP = {
     ['faq', 'よくある質問', `**Q. 友だちや同僚に見せたい**\nA. Kizashi.html を渡すだけで動きます。サンプルデータの間は、パスコードなしで誰の立場でも試せます。\n\n**Q. 入力したのに表示が変わらない**\nA. 入力欄からフォーカスを外す（Enter または別の場所をクリック）と保存・反映されます。\n\n**Q. 動作が遅い**\nA. 開発用の index.html ではなく、1ファイル版の Kizashi.html を使ってください。起動時間は「設定・データ」に表示されます。`],
   ],
   en: [
-    ['intro', 'What this tool does', `**Kizashi** ("early sign") is a single-file PMO tool for visibility, early warning and automated status reporting — it spots the early signs of delay.\n- No installation: just open Kizashi.html\n- Data stays in this browser on this PC and is never sent anywhere\n- Switch Japanese / English at the top right (the status report language can be chosen separately)`],
+    ['intro', 'What this tool does', `**Kizashi** ("early sign") is a single-file PMO tool for visibility, early warning and automated status reporting — it spots the early signs of delay.\n- No installation: just open Kizashi.html\n- Data stays in this browser on this PC and is never sent anywhere\n- Switch Japanese / English at the top right (the status report language can be chosen separately)
+- Source code: https://github.com/matassy0813/kizashi (AGPL-3.0; commercial license: COMMERCIAL.md)`],
     ['start', 'Getting started (3 steps)', `1. "New project" → name, dates and your passcode\n2. Pick a phase template (System delivery / Transformation / Agile)\n3. Confirm. Phases, milestones, governance templates, weekly meetings and an org chart are created for you\n\nYou can import an Excel WBS (CSV) at the same time.`],
     ['codes', 'Company, team and project codes', `Keep several projects in one browser. Click the project name at the top left to open the switcher, grouped by **company › team**.\n- Set codes in Settings or in Get started\n- Naming conventions can use {CO}, {TEAM} and {PJ}\n- Sign-in is separate for each project`],
     ['login', 'Sign-in and roles', `Pick your name and enter your own passcode. Not even the PM can open someone else's screen.\n- **PM**: everything, including roles\n- **PMO**: all management except roles and data reset\n- **Lead**: manage own phases, approve\n- **Member**: update own tasks and actions, raise issues\n- **Viewer**: read-only\n\n"Copy invite" on the org chart creates a message with a one-time invitation code; the person chooses their passcode on first sign-in.`],
@@ -55,6 +66,15 @@ const HELP = {
     ['tasks', 'Tasks (status, kanban, disposition)', `The **type** sets the status flow:\n- General: Not started → In progress → Closed\n- Decision: Not started → Discussing → Decided → Closed\n- Build: Not started → Building → Testing → Awaiting approval → Closed\n- Deliverable: Not started → Drafting → In review → Awaiting approval → Closed\n\nThe approver closes approval items with "Approve" (not your own).
 
 **Owner and approver** are picked from the project members (org chart). The owner gets the task in My work and updates its progress. The named approver sees it in Approvals once it reaches the approval step (members and client viewers can be named). Leave the approver empty and a PM, PMO or phase lead approves.\n\n**Disposition**: move to next phase / backlog / on hold / drop. Views: List, Kanban, Backlog.`],
+    ['cloud', 'Share with your team (cloud)', `In "Settings & data", the PM presses "Start sharing" to put the project in the cloud so the whole team sees the same data.
+1. Start sharing
+2. Copy each member's invitation from the org chart and send it (the share link is included)
+3. Members open the link and sign in with their name and passcode. No install, no account
+
+- When anyone saves, everyone's screen updates right away. Simultaneous edits are merged item by item, so nothing is lost (if two people change the same field, the later save wins)
+- Data is encrypted in the browser before it is sent. The key lives only in the share link, so the server cannot read it. Anyone with the link can open the project: share it with members only
+- Display language and base date stay per person
+- The top right shows "☁ Synced", "☁ Waiting" or "☁ Offline". Offline changes stay on your PC and are sent when you reconnect`],
     ['search', 'Search', `Use "Search" at the top right, or press / or Ctrl+K anywhere. Finds tasks, issues (including comments), meetings (agenda, decisions, actions), change requests and governance rules, and opens the one you pick. Items on screens your role cannot see are not shown.`],
     ['approvals', 'Approvals (bulk)', `Everything you can approve, in one place (PM, PMO, lead).
 - **Tasks** awaiting approval (never your own)

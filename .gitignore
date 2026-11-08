@@ -7,3 +7,6 @@ Thumbs.db
 # 実データのバックアップを誤って公開しないように
 PMO_*.json
 *.backup.json
+# Cloudflare の開発用の一時ファイル
+.wrangler/
+node_modules/

@@ -201,4 +201,5 @@ $('#scopeSel').addEventListener('change', e => { ui.meetingId = ''; go({scope: e
 $('#baseDate').addEventListener('change', e => { state.project.baseDate = e.target.value; save(); render(true); });
 
 load(); render(true);
+cloudBoot(); // 共有リンクで開かれたら参加し、共有中のプロジェクトならクラウドとつなぐ
 ui.bootMs = Math.round(performance.now()); // ページを開いてから最初の画面が出るまで

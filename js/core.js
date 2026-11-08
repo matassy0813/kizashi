@@ -89,6 +89,7 @@ function save(){
   if (typeof onSaved === 'function') onSaved();
   try { localStorage.setItem(uiKeyOf(cur), JSON.stringify({tab:ui.tab, scope:ui.scope, mtgFilter:ui.mtgFilter, me:ui.me})); } catch(e) {}
   wsSync();
+  if (typeof cloudAfterSave === 'function') cloudAfterSave(); // チームで共有中なら、クラウドにも送る
 }
 // v1（日本語の値・フェーズ名文字列）→ v2
 function migrateV1(old){
