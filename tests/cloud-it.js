@@ -22,7 +22,9 @@ async function runCloudIT(server){
     change(doc); return api2(server, meta.id, 'PUT', 'doc', {ver: g.data.ver, blob: await seal(doc, key)}, mem.token);
   };
   const serverDoc = async () => unseal((await api2(server, meta.id, 'GET', 'doc', null, meta.token)).data.blob, await dataKey(meta));
+  let accts = []; // テストで作ったアカウント（最後に消す）
   try {
+    acct = null; localStorage.setItem('kizashi-mode', 'local'); // IT-01〜18 はアカウントを使わない以前の方式（プロジェクトごとのパスワード）を確かめる
     wsBeginNewProject(); state = sample('ja'); normalize(); state.isSample = false; ui.me = 'O03'; save(); render();
     await tc('IT-01', 'PMが自分のログインIDとパスワードを決めて共有を始めると、クラウドに置かれ、PMとしてログインした状態になる', async () => {
       meta = await cloudShare(server, 'Yamamoto', PW); await wait(300);
@@ -117,13 +119,78 @@ async function runCloudIT(server){
       try { await apiMe(up, 'DELETE', 'project'); } catch (e) {}
       return ok || {before, v: up.v, old: old.status};
     });
+    // ---- アカウント（最初の画面のログイン／新規登録） ----
+    const sfx = Math.random().toString(36).slice(2, 7), PMID = 'it-pm-' + sfx, MID = 'it-mem-' + sfx;
+    const acctRaw = async (login, pw) => { // もう一人（メンバー）のアカウント：画面を使わずにサーバーとやり取りする
+      const pre = await api2Acct(server, 'POST', 'prelogin', {login}), d = await deriveLogin(pw, pre.data.salt), r = await api2Acct(server, 'POST', 'login', {login, authKey: d.authKey});
+      if (r.status !== 200) throw new Error(r.status === 401 ? 'invalid' : 'server_' + r.status);
+      const amk = await unwrapPdk(r.data.wrappedAmk, d.wrapKey); return {token: r.data.token, amk, kver: r.data.kver, ring: await unseal(r.data.keyring, await amkKey(amk))};
+    };
+    let pjId = null, mAcct = null;
+    await tc('IT-19', '新規登録でアカウントができ、同じIDは二重に作れない。サーバーにはパスワードも鍵の一覧の中身も届かない', async () => {
+      localStorage.removeItem('kizashi-mode'); wsBeginNewProject(); state = sample('ja'); normalize(); state.isSample = false; ui.me = 'O03'; save();
+      await acctSignup(PMID, PW, server); accts.push([PMID, acct.token]);
+      let dup = ''; const keep = acct; try { await acctSignup(PMID, 'another-pass-1', server); } catch (e) { dup = e.message; } acct = keep; acctWrite();
+      const raw = JSON.stringify((await api2Acct(server, 'GET', 'keyring', null, acct.token)).data);
+      return (acct.login === PMID && dup.includes(PMID) && !raw.includes(PW) && !raw.includes(acct.amk)) || {dup};
+    });
+    await tc('IT-20', 'ログイン：パスワードが違うと入れず、正しければ参加中のプロジェクト一覧（暗号化されたもの）を取り出せる', async () => {
+      let bad = ''; const keep = acct; try { await acctLogin(PMID, 'wrong-pass-0', server); } catch (e) { bad = e.message; }
+      acct = keep; const again = await acctLogin(PMID, PW, server);
+      return (bad === 'invalid' && again.login === PMID && Array.isArray(again.ring)) || {bad};
+    });
+    await tc('IT-21', 'アカウントで共有を始めると、参加中の一覧に入り、別のPCでもパスワードを聞き直さずに開ける', async () => {
+      const m = await acctShare(); pjId = m.id;
+      const inRing = !!ringEntry(pjId);
+      const p = wsCurrent(); delete p.cloud.token; delete p.cloud.pdk; wsWrite(); // 別のPCで、アカウントにだけログインした状態
+      await acctOpenProject(pjId);
+      return (inRing && cloudMeta().acct && !!cloudMeta().token && !!me() && me().login === PMID) || {inRing, me: !!me()};
+    });
+    await tc('IT-22', 'PMがアカウントIDで招待し、メンバーは新規登録して案内コードで参加すると、自分の一覧から中身を開ける', async () => {
+      const p = state.org.find(x => x.id === 'O10'); p.login = MID; const code = await cloudInvite(p);
+      const txt = inviteText(p, code);
+      // メンバー：新規登録 → 案内コードで入る → このアカウント用の合言葉に切り替え → 自分の一覧に加える
+      const keep = acct; await acctSignup(MID, MPW, server); accts.push([MID, acct.token]); acct = keep; acctWrite();
+      mAcct = await acctRaw(MID, MPW);
+      const lr = await loginRaw(server, pjId, MID, code), secret = b64u(rand(32));
+      await setPasswordRaw(server, pjId, lr.token, lr.pdk, secret, deriveFast);
+      const ring = [{id: pjId, server, secret, pdk: lr.pdk, name: 'x', since: todayStr()}];
+      await api2Acct(server, 'PUT', 'keyring', {kver: mAcct.kver, keyring: await seal(ring, await amkKey(mAcct.amk))}, mAcct.token);
+      // 別のPCでメンバーがログイン：一覧から開く
+      mAcct = await acctRaw(MID, MPW); const e = mAcct.ring.find(x => x.id === pjId);
+      const s2 = await loginRaw(server, pjId, MID, e.secret, deriveFast), g = await api2(server, pjId, 'GET', 'doc', null, s2.token);
+      const doc = await unseal(g.data.blob, await crypto.subtle.importKey('raw', unb64u(e.pdk), 'AES-GCM', false, ['encrypt', 'decrypt']));
+      return (txt.includes(MID) && txt.includes(code) && doc.org.some(x => x.login === MID) && s2.role === 'member') || {txt: txt.includes(code)};
+    });
+    await tc('IT-23', 'ログインを止められたメンバーは、自分の一覧からも開けない', async () => {
+      await cloudRemoveMember(MID); const e = mAcct.ring.find(x => x.id === pjId); let err = '';
+      try { await loginRaw(server, pjId, MID, e.secret, deriveFast); } catch (x) { err = x.message; }
+      return err === 'invalid' || err;
+    });
+    await tc('IT-24', 'アカウントのログアウトで、この PC から鍵・一覧・控えが消え、最初の画面に戻る。ログインし直すと一覧から開ける', async () => {
+      await acctLogout();
+      const gone = !acct && !localStorage.getItem('kizashi-account') && !ws.projects.some(p => p.cloud && p.cloud.id === pjId) && !!document.querySelector('#stForm');
+      await acctLogin(PMID, PW, server); const listed = !!ws.projects.find(p => p.cloud && p.cloud.id === pjId); renderProjectPicker();
+      const shown = !!document.querySelector(`[data-pk="${pjId}"]`);
+      await acctOpenProject(pjId);
+      return (gone && listed && shown && !!me()) || {gone, listed, shown};
+    });
+    await tc('IT-25', '招待のリンクをログイン前に開くと、最初の画面に招待の案内が出て、ログイン後に案内コードの欄が出る', async () => {
+      const keep = acct; acct = null; ui.me = '';
+      await cloudJoin({v: 2, id: 'QWERTYUIOPASDFGHJKLZXC', server});
+      const note = !!document.querySelector('#stForm') && document.querySelector('.login').textContent.includes(t('acct.inviteNote').slice(0, 10));
+      acct = keep; renderProjectPicker(); const code = !!document.querySelector('#pkCode'); setPendingJoin(null);
+      return (note && code) || {note, code};
+    });
+    try { if (pjId && cloudMeta() && cloudMeta().id === pjId) await apiMe(cloudMeta(), 'DELETE', 'project'); } catch (e) {}
   } finally {
+    for (const [, tok] of accts) { try { await api2Acct(server, 'DELETE', 'me', null, tok); } catch (e) {} }
     cloudDisconnect();
     if (meta && meta.token) { try { await apiMe(meta, 'DELETE', 'project'); } catch (e) {} }
     if (v1meta) { try { await api(v1meta, 'DELETE'); } catch (e) {} }
     window.prompt = keepPrompt; window.confirm = keepConfirm; window.alert = keepAlert; delete window.__code;
     localStorage.clear(); Object.entries(snap).forEach(([k, v]) => localStorage.setItem(k, v));
-    Object.keys(ui).forEach(k => delete ui[k]); Object.assign(ui, keepUi); ws = null; state = null; load(); render(true); cloudOnSwitch();
+    Object.keys(ui).forEach(k => delete ui[k]); Object.assign(ui, keepUi); acctLoad(); ws = null; state = null; load(); render(true); cloudOnSwitch();
   }
   console.table(out);
   return {total: out.length, ok: out.filter(r => r.ok).length, ng: out.filter(r => !r.ok)};

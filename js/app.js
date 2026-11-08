@@ -26,7 +26,11 @@ function render(animate){
   const ae = document.activeElement, fk = ae && ae.dataset ? ae.dataset.fk : null, sel = fk && ae.selectionStart != null ? [ae.selectionStart, ae.selectionEnd] : null;
   const scrollY = window.scrollY;
   const lang = LANG(); document.documentElement.lang = lang;
-  if (!me()) { renderLoginScreen(); return; }
+  if (!me()) { // まだ誰としても入っていない：最初の画面（ログイン／新規登録）か、プロジェクトの選択か、プロジェクトのログイン
+    if (startNeeded()) { renderStart(); return; }
+    if (acct && !ui.pickedLocal && !(cloudMeta() && cloudMeta().token)) { renderProjectPicker(); return; }
+    renderLoginScreen(); return;
+  }
   document.body.classList.remove('locked');
   const role = myRole(), tabs = tabsFor();
   if (!tabs.includes(ui.tab)) ui.tab = ROLE_HOME[role];

@@ -90,4 +90,4 @@ async function doLogin(p){
   save(); go({tab: ROLE_HOME[p.access || 'member']});
   toast(t('login.welcome', p.name));
 }
-function logout(){ ui.login = {id: '', err: ''}; if (typeof cloudV2 === 'function' && cloudV2()) { cloudLogout(); return; } ui.me = ''; save(); render(); }
+function logout(){ ui.login = {id: '', err: ''}; ui.pickedLocal = false; if (acct) { acctLogout(); return; } if (typeof cloudV2 === 'function' && cloudV2()) { cloudLogout(); return; } ui.me = ''; save(); render(); }

@@ -90,7 +90,7 @@ function inviteText(p, code){
   const L = [t('inv.title', state.project.name, nm), '', `${t('inv.role')}：${t('role.' + r)}${phases.length ? `（${t('inv.phases')}：${phases.join('、')}）` : ''}`, `${t('inv.can')}：${t('roleDesc.' + r)}`, '', t('inv.first')];
   const cm = cloudMeta();
   L.push(`1. ${cm ? t('inv.step1cloud', shareLink(cm)) : t('inv.step1')}`);
-  L.push(`2. ${cm && cm.v === 2 ? (code ? t('inv.step2cloud', p.login || '—', code) : t('inv.step2cloudPw', p.login || '—')) : code ? t('inv.step2code', nm, code) : t('inv.step2pin', nm)}`);
+  L.push(`2. ${cm && cm.acct && code ? t('inv.step2acct', p.login || '—', code) : cm && cm.v === 2 ? (code ? t('inv.step2cloud', p.login || '—', code) : t('inv.step2cloudPw', p.login || '—')) : code ? t('inv.step2code', nm, code) : t('inv.step2pin', nm)}`);
   if (r === 'viewer') L.push(`3. ${t('inv.stepView')}`);
   else L.push(`3. ${t('inv.step3', tasks, acts)}`);
   if (next) L.push(`4. ${t('inv.step4', ymd(next.date), next.time || '', next.title)}`);

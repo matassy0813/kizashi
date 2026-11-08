@@ -82,11 +82,12 @@ function openProjectSwitcher(anchor){
       <div class="ws-list">${Object.keys(groups).sort().map(g => `<div class="ws-co">🏢 ${esc(g)}</div>${Object.keys(groups[g]).sort().map(tm => `<div class="ws-team">👥 ${esc(tm)}</div>${groups[g][tm].map(p => `
         <div class="ws-item ${p.id === ws.current ? 'on' : ''}" data-ws="${p.id}"><div class="ws-main"><b>${esc(p.name || '—')}</b>${p.sample ? `<span class="tag common">${t('ws.sample')}</span>` : ''}<small>${esc(codeChain(p) || t('ws.noCode'))}</small></div>
           ${p.id === ws.current ? '<span class="ws-check">✓</span>' : `<button class="btn ghost" data-ws-del="${p.id}" title="${t('btn.delete')}">✕</button>`}</div>`).join('')}`).join('')}`).join('') || `<div class="empty">${t('ws.none')}</div>`}</div>
-      <div class="ws-foot"><button class="btn primary" data-ws-new>＋ ${t('ws.new')}</button><button class="btn" data-ws-import>${t('ws.import')}</button><input type="file" accept=".json,application/json" hidden></div>`;
+      <div class="ws-foot"><button class="btn" data-ws-acct>${acct ? '☁ ' + esc(acct.login) : t('acct.loginOrSignup')}</button><button class="btn primary" data-ws-new>＋ ${t('ws.new')}</button><button class="btn" data-ws-import>${t('ws.import')}</button><input type="file" accept=".json,application/json" hidden></div>`;
     const s = m.querySelector('.ws-search'); s.oninput = () => { const pos = s.selectionStart; draw(s.value); const n = m.querySelector('.ws-search'); n.focus(); n.setSelectionRange(pos, pos); };
     m.querySelectorAll('[data-ws]').forEach(el => el.onclick = e => { if (e.target.closest('[data-ws-del]')) return; close(); switchProject(el.dataset.ws); });
     m.querySelectorAll('[data-ws-del]').forEach(el => el.onclick = () => { close(); deleteProject(el.dataset.wsDel); });
     m.querySelector('[data-ws-new]').onclick = () => { close(); openWizard(); };
+    m.querySelector('[data-ws-acct]').onclick = () => { close(); if (acct) renderProjectPicker(); else { try { localStorage.removeItem(MODE_KEY); } catch (e) {} save(); ui.me = ''; ui.start = {mode: 'login', err: ''}; render(true); } };
     const fi = m.querySelector('input[type=file]');
     m.querySelector('[data-ws-import]').onclick = () => fi.click();
     fi.onchange = e => { const f = e.target.files[0]; if (f) { close(); readJsonFile(f, importProjectData); } };

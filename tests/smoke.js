@@ -22,7 +22,22 @@ function runSmoke(){
       check(`F02-${lang}`, `週次レポートが作れる（${lang}）`, () => buildReport(lang).length > 500);
     }
     state = sample('ja'); normalize();
-    check('F03', 'ログインしていないとログイン画面になる', () => { ui.me = ''; render(); const ok = document.body.classList.contains('locked') && q('[data-login]').length > 0; login('O03'); render(); return ok; });
+    check('F03', 'ログインしていないとログイン画面になる（アカウントなしでこのPCだけで使う場合）', () => { const keepMode = localStorage.getItem('kizashi-mode'), keepAcct = acct; acct = null; localStorage.setItem('kizashi-mode', 'local'); ui.me = ''; render(); const ok = document.body.classList.contains('locked') && q('[data-login]').length > 0; if (keepMode == null) localStorage.removeItem('kizashi-mode'); else localStorage.setItem('kizashi-mode', keepMode); acct = keepAcct; login('O03'); render(); return ok; });
+    check('F49', '最初の画面：ログインと新規登録を切り替えられ、サンプル体験とアカウントなしの利用も選べる', () => {
+      const keepMode = localStorage.getItem('kizashi-mode'), keepAcct = acct; acct = null; localStorage.removeItem('kizashi-mode'); ui.me = ''; ui.start = {mode: 'login', err: ''}; render();
+      const start = !!document.querySelector('#stForm') && q('[data-smode]').length === 2 && !document.querySelector('#stPw2') && !!document.querySelector('#stSample') && !!document.querySelector('#stLocal');
+      document.querySelector('[data-smode="signup"]').click(); const signup = !!document.querySelector('#stPw2');
+      if (keepMode == null) localStorage.removeItem('kizashi-mode'); else localStorage.setItem('kizashi-mode', keepMode); acct = keepAcct; ui.start = {mode: 'login', err: ''}; login('O03'); render();
+      return (start && signup) || {start, signup};
+    });
+    check('F50', 'ログイン後：参加しているプロジェクトの一覧から選べ、招待があれば案内コードで参加できる', () => {
+      const keepAcct = acct, keepJoin = localStorage.getItem('kizashi-pending-join');
+      acct = {server: 'http://example.invalid', login: 'tester', token: 'x', amk: 'x', kver: 1, ring: [{id: 'ABCDEFGHIJKLMNOPQRSTUV', server: 'http://example.invalid', secret: 'x', pdk: 'x', name: '共有プロジェクトA', since: todayStr()}]};
+      localStorage.setItem('kizashi-pending-join', JSON.stringify({v: 2, id: 'ZYXWVUTSRQPONMLKJIHGFE', server: 'http://example.invalid'}));
+      renderProjectPicker(); const list = q('[data-pk]').length === 1 && document.querySelector('.pk-list').textContent.includes('共有プロジェクトA'), join = !!document.querySelector('#pkCode'), newBtn = !!document.querySelector('#pkNew');
+      acct = keepAcct; if (keepJoin == null) localStorage.removeItem('kizashi-pending-join'); else localStorage.setItem('kizashi-pending-join', keepJoin); login('O03'); render();
+      return (list && join && newBtn) || {list, join, newBtn};
+    });
     login('O03');
     check('F04', 'ダッシュボード：KPI・ガント・SPI推移・警戒', () => { ui.tab = 'dash'; render(); return q('.kpi').length >= 8 && !!document.querySelector('[aria-label="Gantt"]') && !!document.querySelector('[aria-label="SPI"]') && q('.alert-list li').length > 0; });
     check('F05', '早期警戒：ルール一覧に全種類がある', () => { ui.tab = 'alerts'; render(); const n = document.querySelectorAll('#view table')[1].querySelectorAll('tr').length; return n >= 24 || {rows: n}; });

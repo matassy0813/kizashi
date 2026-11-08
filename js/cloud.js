@@ -41,6 +41,12 @@ async function deriveLogin(password, salt){
   const bits = new Uint8Array(await crypto.subtle.deriveBits({name: 'PBKDF2', hash: 'SHA-256', salt: unb64u(salt), iterations: PBKDF2_ITER}, base, 512));
   return {authKey: b64u(bits.slice(0, 32)), wrapKey: await crypto.subtle.importKey('raw', bits.slice(32), 'AES-GCM', false, ['encrypt', 'decrypt'])};
 }
+// アカウントで入るときの、プロジェクトごとのランダムな合言葉（推測できない長さなので、時間のかかる計算は要らない）
+async function deriveFast(secret, salt){
+  const base = await crypto.subtle.importKey('raw', unb64u(secret), 'HKDF', false, ['deriveBits']);
+  const bits = new Uint8Array(await crypto.subtle.deriveBits({name: 'HKDF', hash: 'SHA-256', salt: unb64u(salt), info: new TextEncoder().encode('kizashi-member')}, base, 512));
+  return {authKey: b64u(bits.slice(0, 32)), wrapKey: await crypto.subtle.importKey('raw', bits.slice(32), 'AES-GCM', false, ['encrypt', 'decrypt'])};
+}
 async function wrapPdk(pdk, wrapKey){ const iv = rand(12), ct = await crypto.subtle.encrypt({name: 'AES-GCM', iv}, wrapKey, unb64u(pdk)); return `w1.${toB64(iv)}.${toB64(ct)}`; }
 async function unwrapPdk(wrapped, wrapKey){ const [v, iv, ct] = String(wrapped).split('.'); if (v !== 'w1') throw new Error('format'); return b64u(await crypto.subtle.decrypt({name: 'AES-GCM', iv: fromB64(iv)}, wrapKey, fromB64(ct))); }
 async function dataKey(meta){ return meta.v === 2 ? crypto.subtle.importKey('raw', unb64u(meta.pdk), 'AES-GCM', false, ['encrypt', 'decrypt']) : (await cloudKeys(meta.secret)).key; }
@@ -117,7 +123,7 @@ function checkNewLogin(login, password, password2){
   if (password2 != null && password !== password2) return t('login.errMatch');
   return '';
 }
-async function cloudShare(server, login, password){
+async function cloudShare(server, login, password, derive = deriveLogin){
   const p = wsCurrent(), old = p.cloud && p.cloud.v !== 2 ? p.cloud : null;
   if (p.cloud && !old) return p.cloud;
   login = normLogin(login); const err = checkNewLogin(login, password); if (err) throw new Error(err);
@@ -125,7 +131,7 @@ async function cloudShare(server, login, password){
   const mine = me(); if (mine) mine.login = login; // 体制図の自分にログインIDを結びつける
   if (state.org.some(x => x !== mine && normLogin(x.login) === login)) throw new Error(t('cloud.errLoginDup', login));
   const meta = {v: 2, id: b64u(rand(16)), server, login, role: 'pm', pdk: b64u(rand(32)), ver: 0, since: todayStr(), by: myName()};
-  const salt = b64u(rand(16)), {authKey, wrapKey} = await deriveLogin(password, salt);
+  const salt = b64u(rand(16)), {authKey, wrapKey} = await derive(password, salt);
   const shared = sharedOf(state);
   const res = await api2(server, meta.id, 'POST', 'create', {login, salt, authKey, wrapped: await wrapPdk(meta.pdk, wrapKey), blob: await seal(shared, await dataKey(meta))});
   if (res.status !== 201) throw new Error('server_' + res.status);
@@ -149,12 +155,12 @@ function resetSaveInd(){ const el = document.querySelector('#saveInd'); if (!el)
 // ---- ログイン（v2） ----
 const looksLikeCode = s => /^[A-Za-z0-9]{4}-?[A-Za-z0-9]{4}$/.test(String(s || '').trim());
 const canonCode = s => { const c = String(s || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, ''); return c.slice(0, 4) + '-' + c.slice(4); };
-async function loginRaw(server, id, login, password){
+async function loginRaw(server, id, login, password, derive = deriveLogin){
   login = normLogin(login);
   const pre = await api2(server, id, 'POST', 'prelogin', {login});
   if (pre.status === 404) throw new Error('gone'); if (pre.status !== 200) throw new Error('server_' + pre.status);
   const tryOne = async pw => {
-    const {authKey, wrapKey} = await deriveLogin(pw, pre.data.salt);
+    const {authKey, wrapKey} = await derive(pw, pre.data.salt);
     const res = await api2(server, id, 'POST', 'login', {login, authKey});
     if (res.status === 200) return {...res.data, login, pdk: await unwrapPdk(res.data.wrapped, wrapKey)};
     if (res.status === 429) throw new Error('locked');
@@ -166,8 +172,8 @@ async function loginRaw(server, id, login, password){
   if (!r) throw new Error('invalid');
   return r;
 }
-async function setPasswordRaw(server, id, token, pdk, password){
-  const salt = b64u(rand(16)), {authKey, wrapKey} = await deriveLogin(password, salt);
+async function setPasswordRaw(server, id, token, pdk, password, derive = deriveLogin){
+  const salt = b64u(rand(16)), {authKey, wrapKey} = await derive(password, salt);
   const res = await api2(server, id, 'POST', 'password', {salt, authKey, wrapped: await wrapPdk(pdk, wrapKey)}, token);
   if (res.status !== 200) throw new Error('server_' + res.status);
 }
@@ -255,7 +261,12 @@ async function cloudJoin(j){
   const hit = ws.projects.find(p => p.cloud && p.cloud.id === j.id);
   if (hit) { if (hit.id !== ws.current) switchProject(hit.id); if (cloudSignedIn()) await cloudPull(); else render(true); return 'opened'; }
   if (!j.server) throw new Error('no_server');
-  if (j.v === 2) { // ログインしてから中身を受け取る
+  if (j.v === 2 && (acct || !localMode())) { // アカウントで入る：参加済みなら開き、まだなら案内コードを聞く
+    if (acct && ringEntry(j.id)) { await acctOpenProject(j.id); return 'opened'; }
+    setPendingJoin({v: 2, id: j.id, server: j.server}); if (acct) renderProjectPicker(); else { ui.start = {mode: 'login', err: ''}; render(true); }
+    return 'pending';
+  }
+  if (j.v === 2) { // 以前の方式（プロジェクトごとのパスワード）：ログインしてから中身を受け取る
     cloudOpenSlot(); state = cloudBlank('', state && state.project.lang); normalize();
     wsCurrent().cloud = {v: 2, id: j.id, server: j.server, ver: 0, since: todayStr()}; ui.me = '';
     cloud.applying = true; save(); cloud.applying = false; wsWrite(); render(true);
@@ -368,6 +379,12 @@ function cloudOnSwitch(){ cloudDisconnect(); cloud.members = null; resetSaveInd(
 // ---- ログイン画面（共有中のプロジェクト） ----
 function renderCloudLogin(){
   const meta = cloudMeta(), L = ui.login || (ui.login = {id: '', err: ''});
+  if (acct && !meta.token) {
+    if (!ringEntry(meta.id)) { setPendingJoin({v: 2, id: meta.id, server: meta.server}); renderProjectPicker(); return; }
+    $('#view').innerHTML = `<div class="login-wrap"><div class="card login"><div class="login-logo">${brandLogo()}</div><p class="lead" style="text-align:center">☁ ${t('acct.opening')}</p></div></div>`;
+    acctOpenProject(meta.id).catch(e => { alert(String(e.message) === 'invalid' ? t('acct.errRemoved') : t('cloud.errNet')); renderProjectPicker(); });
+    return;
+  }
   const step = meta.token && meta.pdk && meta.mustChange ? 'setpw' : meta.token && meta.pdk ? 'notInOrg' : 'login';
   const body = step === 'setpw' ? `<p class="muted small">${t('cloud.setPwHelp', MIN_PW)}</p><form id="clForm" class="lg-form" autocomplete="off">
       <label class="lbl-block">${t('cloud.newPw', MIN_PW)}<input type="password" id="clPw1" autocomplete="new-password" autofocus></label>
@@ -424,12 +441,13 @@ function cloudCard(){
     <div class="bar" style="margin-top:6px"><span class="muted small">${t('cloud.inviteWhere')}</span><span class="sp"></span><button class="btn" id="cloudLeave">${t('cloud.leave')}</button></div></div>`;
   if (meta) return `<div class="card cloud-card" style="margin-top:14px"><h2>☁ ${t('cloud.title')}<span class="hint">${t('cloud.v1Hint')}</span></h2>
     <p class="muted small">${t('cloud.v1Why')}</p>
-    ${pm ? `${accountFields('cu')}<div class="bar" style="margin-top:10px"><span class="sp"></span><button class="btn primary" id="cloudUpgrade">${t('cloud.upgrade')}</button></div>` : `<p class="muted small">${t('cloud.pmOnly')}</p>`}</div>`;
+    ${pm && acct ? `<div class="bar" style="margin-top:10px"><span class="muted small">${t('acct.shareAs', esc(acct.login))}</span><span class="sp"></span><button class="btn primary" id="cloudUpgradeAcct">${t('cloud.upgrade')}</button></div>` : pm ? `${accountFields('cu')}<div class="bar" style="margin-top:10px"><span class="sp"></span><button class="btn primary" id="cloudUpgrade">${t('cloud.upgrade')}</button></div>` : `<p class="muted small">${t('cloud.pmOnly')}</p>`}</div>`;
   return `<div class="card cloud-card" style="margin-top:14px"><h2>☁ ${t('cloud.title')}<span class="hint">${t('cloud.offHint')}</span></h2>
     <ol class="cloud-steps"><li>${t('cloud.step1b')}</li><li>${t('cloud.step2b')}</li><li>${t('cloud.step3b')}</li></ol>
     <p class="muted small">${t('cloud.privacy2')}</p>
-    ${pm ? `${accountFields('cs')}<details class="cloud-adv"><summary>${t('cloud.server')}</summary><input id="cloudSrv" placeholder="https://kizashi-cloud.example.workers.dev" value="${esc(cloudServer())}"><small class="muted">${t('cloud.serverHint')}</small></details>
-    <div class="bar" style="margin-top:10px"><span class="sp"></span><button class="btn primary" id="cloudStart">☁ ${t('cloud.start')}</button></div>` : `<p class="muted small">${t('cloud.pmOnly')}</p>`}</div>`;
+    ${pm && acct ? `<div class="bar" style="margin-top:10px"><span class="muted small">${t('acct.shareAs', esc(acct.login))}</span><span class="sp"></span><button class="btn primary" id="cloudStartAcct">☁ ${t('cloud.start')}</button></div>`
+      : pm ? `<p class="muted small">${t('acct.needAccount')}</p><div class="bar"><span class="sp"></span><button class="btn primary" id="cloudToStart">${t('acct.toStart')}</button></div><details class="cloud-adv"><summary>${t('acct.legacyShare')}</summary>${accountFields('cs')}<details class="cloud-adv"><summary>${t('cloud.server')}</summary><input id="cloudSrv" placeholder="https://kizashi-cloud.example.workers.dev" value="${esc(cloudServer())}"><small class="muted">${t('cloud.serverHint')}</small></details>
+    <div class="bar" style="margin-top:10px"><span class="sp"></span><button class="btn" id="cloudStart">☁ ${t('cloud.start')}</button></div></details>` : `<p class="muted small">${t('cloud.pmOnly')}</p>`}</div>`;
 }
 function bindCloudCard(root){
   const cp = root.querySelector('#cloudCopy'); if (cp) cp.onclick = () => copyText(shareLink(cloudMeta()));
@@ -443,5 +461,10 @@ function bindCloudCard(root){
     catch (e) { btn.disabled = false; btn.textContent = label; alert(t('cloud.errStart', String(e.message))); }
   };
   const st = root.querySelector('#cloudStart'); if (st) start(st, 'cs', '☁ ' + t('cloud.start'));
+  const ts = root.querySelector('#cloudToStart'); if (ts) ts.onclick = () => { try { localStorage.removeItem(MODE_KEY); } catch (e) {} save(); ui.me = ''; ui.start = {mode: 'signup', err: ''}; render(true); };
+  root.querySelectorAll('#cloudStartAcct, #cloudUpgradeAcct').forEach(b => b.onclick = async () => {
+    const label = b.textContent; b.disabled = true; b.textContent = t('cloud.starting');
+    try { await acctShare(); render(); toast(t('cloud.started2')); } catch (e) { b.disabled = false; b.textContent = label; alert(t('cloud.errStart', String(e.message))); }
+  });
   const up = root.querySelector('#cloudUpgrade'); if (up) start(up, 'cu', t('cloud.upgrade'));
 }

@@ -189,13 +189,81 @@ export class Room extends DurableObject {
   webSocketClose(ws, code){ try { ws.close(code, 'bye'); } catch (e) {} }
 }
 
+// ============ アカウント（最初の画面の「ログイン」「新規登録」） ============
+// 1 人 1 つのアカウントで、参加しているプロジェクトをまとめて開けるようにする。
+//  - アカウントのパスワードもサーバーには届かない（届くのは確認用の値だけ。保存はそのハッシュ）
+//  - 参加しているプロジェクトの鍵の一覧（キーリング）は、本人のパスワードから作った鍵で暗号化して預かる。サーバーは読めない
+//  - どのプロジェクトに入れるかは、各プロジェクト（Room）がメンバーとして確かめる。ここは鍵の預け先と本人確認だけ
+export class Directory extends DurableObject {
+  ensure(){
+    const sql = this.ctx.storage.sql;
+    sql.exec('CREATE TABLE IF NOT EXISTS accounts (login TEXT PRIMARY KEY, salt TEXT NOT NULL, auth_hash TEXT NOT NULL, wrapped_amk TEXT NOT NULL, keyring TEXT NOT NULL, kver INTEGER NOT NULL, fails INTEGER NOT NULL DEFAULT 0, locked_until INTEGER NOT NULL DEFAULT 0, created INTEGER NOT NULL, last_login INTEGER NOT NULL DEFAULT 0)');
+    sql.exec('CREATE TABLE IF NOT EXISTS sessions (token_hash TEXT PRIMARY KEY, login TEXT NOT NULL, expires INTEGER NOT NULL)');
+  }
+  account(login){ return this.ctx.storage.sql.exec('SELECT * FROM accounts WHERE login = ?', login).toArray()[0]; }
+  async fetch(req){
+    this.ensure();
+    const sql = this.ctx.storage.sql, url = new URL(req.url), action = url.pathname.split('/').pop(), now = Date.now();
+    let body = {};
+    if (req.method === 'POST' || req.method === 'PUT') { try { body = await req.json(); } catch (e) { return json({error: 'bad_request'}, 400); } }
+    const newSession = async login => { const token = randTok(); sql.exec('DELETE FROM sessions WHERE expires < ?', now); sql.exec('INSERT INTO sessions (token_hash, login, expires) VALUES (?, ?, ?)', await sha256(token), login, now + SESSION_DAYS * 864e5); return token; };
+    if (req.method === 'POST' && action === 'signup') {
+      const login = String(body.login || '').toLowerCase(), {salt, authKey, wrappedAmk, keyring} = body;
+      if (!LOGIN_RE.test(login) || !str(salt, 64) || !str(authKey, 128) || !str(wrappedAmk, 512) || !str(keyring, 200000)) return json({error: 'bad_request'}, 400);
+      if (this.account(login)) return json({error: 'taken'}, 409);
+      sql.exec('INSERT INTO accounts (login, salt, auth_hash, wrapped_amk, keyring, kver, created, last_login) VALUES (?, ?, ?, ?, ?, 1, ?, ?)', login, salt, await sha256(salt + ':' + authKey), wrappedAmk, keyring, now, now);
+      return json({token: await newSession(login), kver: 1}, 201);
+    }
+    if (req.method === 'GET' && action === 'exists') return json({exists: !!this.account(String(url.searchParams.get('login') || '').toLowerCase())});
+    if (req.method === 'POST' && action === 'prelogin') { const a = this.account(String(body.login || '').toLowerCase()); return json({salt: a ? a.salt : (await sha256('kizashi-fake-acct:' + body.login)).slice(0, 24)}); }
+    if (req.method === 'POST' && action === 'login') {
+      const login = String(body.login || '').toLowerCase(), a = this.account(login);
+      if (!a) return json({error: 'invalid'}, 401);
+      if (a.locked_until > now) return json({error: 'locked', retryAfter: Math.ceil((a.locked_until - now) / 1000)}, 429);
+      if (!str(body.authKey, 128) || await sha256(a.salt + ':' + body.authKey) !== a.auth_hash) {
+        const fails = a.fails + 1;
+        sql.exec('UPDATE accounts SET fails = ?, locked_until = ? WHERE login = ?', fails >= MAX_FAILS ? 0 : fails, fails >= MAX_FAILS ? now + LOCK_MS : 0, login);
+        return json({error: fails >= MAX_FAILS ? 'locked' : 'invalid'}, fails >= MAX_FAILS ? 429 : 401);
+      }
+      sql.exec('UPDATE accounts SET fails = 0, locked_until = 0, last_login = ? WHERE login = ?', now, login);
+      return json({token: await newSession(login), wrappedAmk: a.wrapped_amk, keyring: a.keyring, kver: a.kver});
+    }
+    // ここから先はログインが必要
+    const tok = (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '');
+    const s = tok.length >= 32 ? sql.exec('SELECT login FROM sessions WHERE token_hash = ? AND expires > ?', await sha256(tok), now).toArray()[0] : null;
+    if (!s) return json({error: 'unauthorized'}, 401);
+    const a = this.account(s.login); if (!a) return json({error: 'unauthorized'}, 401);
+    if (req.method === 'GET' && action === 'keyring') return json({keyring: a.keyring, kver: a.kver});
+    if (req.method === 'PUT' && action === 'keyring') { // 参加したプロジェクトの鍵の一覧を更新する（版番号が合わなければ 409）
+      if (!str(body.keyring, 200000) || !Number.isInteger(body.kver)) return json({error: 'bad_request'}, 400);
+      if (body.kver !== a.kver) return json({error: 'conflict', kver: a.kver}, 409);
+      sql.exec('UPDATE accounts SET keyring = ?, kver = ? WHERE login = ?', body.keyring, a.kver + 1, s.login);
+      return json({kver: a.kver + 1});
+    }
+    if (req.method === 'POST' && action === 'password') { // パスワードを変える（同じアカウント鍵を、新しいパスワードで包み直す）
+      const {salt, authKey, wrappedAmk} = body;
+      if (!str(salt, 64) || !str(authKey, 128) || !str(wrappedAmk, 512)) return json({error: 'bad_request'}, 400);
+      sql.exec('UPDATE accounts SET salt = ?, auth_hash = ?, wrapped_amk = ? WHERE login = ?', salt, await sha256(salt + ':' + authKey), wrappedAmk, s.login);
+      sql.exec('DELETE FROM sessions WHERE login = ? AND token_hash != ?', s.login, await sha256(tok));
+      return json({ok: true});
+    }
+    if (req.method === 'POST' && action === 'logout') { sql.exec('DELETE FROM sessions WHERE token_hash = ?', await sha256(tok)); return json({ok: true}); }
+    if (req.method === 'DELETE' && action === 'me') { // アカウントを消す（参加しているプロジェクトの中身は、各プロジェクトに残る）
+      sql.exec('DELETE FROM accounts WHERE login = ?', s.login); sql.exec('DELETE FROM sessions WHERE login = ?', s.login);
+      return json({ok: true});
+    }
+    return json({error: 'not_found'}, 404);
+  }
+}
+
 export default {
   async fetch(req, env){
     if (req.method === 'OPTIONS') return new Response(null, {status: 204, headers: CORS});
     const url = new URL(req.url);
-    if (url.pathname === '/api/health') return json({ok: true, service: 'kizashi-cloud', api: [1, 2]});
+    if (url.pathname === '/api/health') return json({ok: true, service: 'kizashi-cloud', api: [1, 2], accounts: true});
     // 人がこの URL を直接開いたときは、アプリ本体へ案内する（ここはアプリが裏で使う同期サーバー）
     if (url.pathname === '/' || url.pathname === '/index.html') return Response.redirect(env.APP_URL || 'https://matassy0813.github.io/kizashi/Kizashi.html', 302);
+    if (/^\/api\/v2\/account\/[a-z]+$/.test(url.pathname)) return env.DIRECTORY.get(env.DIRECTORY.idFromName('directory'), {locationHint: env.LOCATION_HINT || 'apac'}).fetch(req);
     const room = id => env.ROOMS.get(env.ROOMS.idFromName(id), {locationHint: env.LOCATION_HINT || 'apac'});
     const v2 = url.pathname.match(/^\/api\/v2\/p\/([^/]+)\/[a-z]+$/);
     if (v2) return ID_RE.test(v2[1]) ? room(v2[1]).fetch(req) : json({error: 'not_found'}, 404);

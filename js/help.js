@@ -23,17 +23,17 @@ const HELP = {
     ['alerts', '早期警戒', `期限超過・進捗遅延・期限延長の常態化・更新停滞・負荷集中・契約期間の超過・会議の結果未記録など、遅れの兆候を自動で判定します。判定ルールと しきい値は同じ画面に表示され、「設定・データ」で変えられます。`],
     ['phases', 'フェーズ', `フェーズごとに契約形態（準委任／請負）、契約終了日、成果物、完了基準、フェーズゲートを管理します。契約終了日を超える計画は警戒します。`],
     ['tasks', 'タスク（ステータス・カンバン・扱い）', `**種類**を選ぶとステータスの流れが決まります。\n- 一般：未着手 → 進行中 → クローズ\n- 検討：未着手 → 議論中 → 方針確定 → クローズ\n- 開発：未着手 → 実装中 → テスト中 → 承認待ち → クローズ\n- 成果物：未着手 → 作成中 → レビュー中 → 承認待ち → クローズ\n\n承認待ちは、承認者が「承認」すると自動でクローズします（自分のタスクは承認不可）。\n\n**担当者・承認者**はプロジェクトのメンバー（体制図）から選びます。担当者になった人の「自分の仕事」に入り、進捗はその人が更新します。承認者に指名された人には、承認待ちになった時点で「承認」画面に表示されます（メンバーや顧客の閲覧者でも指名できます）。承認者を空にすると、PM・PMO・担当リードが承認します。\n\n**扱い**：次のフェーズに回す／Backlog（時期未定）／保留／見送り。表示は「一覧」「カンバン」「Backlog」から選べます。`],
-    ['cloud', 'チームで共有（クラウド）', `チーム全員が同じデータを見られるようにします。メンバーはそれぞれ自分のログインIDとパスワードで入ります。
-1. PM：「設定・データ」で自分のログインIDとパスワードを決め、「チームで共有を始める」を押す
+    ['cloud', 'アカウントとチームで共有（クラウド）', `最初の画面で「ログイン」か「新規登録」を選びます。アカウントは、自分で決めるログインIDとパスワードだけで作れます（インストールや外部サービスの登録は不要）。ログインすると、参加しているプロジェクトの一覧から選んで開けます。
+1. PM：新規登録 →「新しいプロジェクト」で作ると、そのままチームで共有されます（今あるプロジェクトは「設定・データ」の「チームで共有を始める」）
 2. PM：体制図で、メンバーごとにログインIDを決めて「招待を発行」を押し、案内文（リンク・ログインID・案内コード）を送る
-3. メンバー：リンクを開き、ログインIDと案内コードで入って、自分のパスワードを決める。インストールは要りません
+3. メンバー：リンクを開き、ログイン（初めてなら、そのIDで新規登録）して、案内コードを入れて参加する
 
-- 誰かが保存すると、すぐ全員の画面に反映されます。同時に直しても、項目ごとに合わせるので消えません（同じ欄を同時に直したときは、あとから保存した方が残ります）
-- データはブラウザの中で暗号化してから送ります。暗号の鍵は、メンバーそれぞれのパスワードで包んで預けるので、サーバーにも運営者（開発者）にも中身は読めません。パスワードはサーバーに届かず、PMも知りません
-- パスワードを忘れたら、PMが体制図で「招待をやり直す」と、新しい案内コードで入り直せます
+- 誰かが保存すると、すぐ全員の画面に反映されます。同時に直しても、項目ごとに合わせるので消えません
+- データはブラウザの中で暗号化してから送ります。プロジェクトの鍵は、本人のパスワードから作った鍵で包んで預けるので、サーバーにも運営者（開発者）にも中身は読めません。パスワードはサーバーに届かず、PMも知りません
+- パスワードを忘れたら、新しいアカウントを作り、PMに招待し直してもらいます
 - 抜けた人は、PMが「ログインを止める」と、もう入れなくなります。10回続けて間違えると15分ロックされます
 - ログアウトすると、そのPCから鍵とデータの控えが消えます（共用PCでも安心）
-- 表示言語と基準日は人ごとに選べます。画面右上に「☁ 共有済み」「☁ 送信待ち」「☁ オフライン」と出ます`],
+- 「サンプルで体験する」「アカウントなしで、このPCだけで使う」も選べます`],
     ['search', '全体検索', `画面右上の「検索」、またはどの画面でも「/」かCtrl+Kで開きます。タスク・課題（コメントも含む）・会議（議題・決定・宿題）・変更要求・ガバナンスのルールをまとめて探し、押すとその場所を開きます。自分のロールで見られない画面のものは出ません。`],
     ['approvals', '承認（まとめて承認）', `自分が承認できるものだけを1か所に集めた画面です（PM・PMO・リード）。
 - **タスク**：承認待ちのもの（自分のタスクは出ません）
@@ -68,17 +68,17 @@ const HELP = {
     ['tasks', 'Tasks (status, kanban, disposition)', `The **type** sets the status flow:\n- General: Not started → In progress → Closed\n- Decision: Not started → Discussing → Decided → Closed\n- Build: Not started → Building → Testing → Awaiting approval → Closed\n- Deliverable: Not started → Drafting → In review → Awaiting approval → Closed\n\nThe approver closes approval items with "Approve" (not your own).
 
 **Owner and approver** are picked from the project members (org chart). The owner gets the task in My work and updates its progress. The named approver sees it in Approvals once it reaches the approval step (members and client viewers can be named). Leave the approver empty and a PM, PMO or phase lead approves.\n\n**Disposition**: move to next phase / backlog / on hold / drop. Views: List, Kanban, Backlog.`],
-    ['cloud', 'Share with your team (cloud)', `Everyone sees the same data, and each member signs in with their own ID and password.
-1. PM: in "Settings & data", choose your sign-in ID and password and press "Start sharing"
-2. PM: in the org chart, give each member a sign-in ID, press "Invite" and send the message (link, ID and invitation code)
-3. Members: open the link, sign in with the ID and code, then choose their own password. Nothing to install
+    ['cloud', 'Accounts and team sharing (cloud)', `On the first screen, choose "Log in" or "Sign up". An account needs only an ID and password you choose (nothing to install, no third-party sign-up). After logging in, pick one of your projects from the list.
+1. PM: sign up, then create a "New project"; it is shared with your team right away (for an existing project, use "Start sharing" in Settings & data)
+2. PM: in the org chart, give each member a sign-in ID, press "Invite" and send the message (link, ID, invitation code)
+3. Members: open the link, log in (or sign up with that ID) and enter the code to join
 
-- When anyone saves, everyone's screen updates right away. Simultaneous edits are merged item by item (if two people change the same field, the later save wins)
-- Data is encrypted in the browser. The key is wrapped with each member's password, so neither the server nor its operator (the developer) can read it. Passwords never reach the server and the PM does not know them
-- Forgot your password? The PM presses "Re-invite" and you sign in again with a new code
+- When anyone saves, everyone's screen updates right away; simultaneous edits are merged item by item
+- Data is encrypted in the browser. The project key is wrapped with a key made from your password, so neither the server nor its operator (the developer) can read it. Passwords never reach the server and the PM does not know them
+- Forgot your password? Create a new account and ask your PMs to re-invite you
 - When someone leaves, the PM presses "Stop access". Ten wrong attempts lock the ID for 15 minutes
-- Signing out removes the key and the local copy from that PC (safe on shared PCs)
-- Display language and base date are per person. The top right shows "☁ Synced", "☁ Waiting" or "☁ Offline"`],
+- Logging out removes the keys and the local copy from that PC
+- You can also "Try the sample" or "Use on this PC only (no account)"`],
     ['search', 'Search', `Use "Search" at the top right, or press / or Ctrl+K anywhere. Finds tasks, issues (including comments), meetings (agenda, decisions, actions), change requests and governance rules, and opens the one you pick. Items on screens your role cannot see are not shown.`],
     ['approvals', 'Approvals (bulk)', `Everything you can approve, in one place (PM, PMO, lead).
 - **Tasks** awaiting approval (never your own)

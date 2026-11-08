@@ -12,6 +12,14 @@ APP_URL = "https://matassy0813.github.io/kizashi/Kizashi.html" # このサーバ
 name = "ROOMS"
 class_name = "Room"
 
+[[durable_objects.bindings]]
+name = "DIRECTORY"
+class_name = "Directory"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["Room"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["Directory"]

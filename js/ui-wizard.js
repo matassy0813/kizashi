@@ -87,4 +87,5 @@ async function finishWizard(){
   }
   ui.scope = ''; ui.meetingId = ''; ui.orgSel = ''; ui.tab = 'dash';
   normalize(); save(); render(true); toast(t('wz.done'));
+  if (acct) acctShare().then(() => { render(); toast(t('acct.sharedNew')); }).catch(e => toast(t('cloud.errStart', String(e.message))));
 }
