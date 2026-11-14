@@ -295,16 +295,20 @@ function cloudAfterSave(){
 // 送受信は 1 本ずつ順番に行う（途中で次の依頼が来たら、終わってからもう一度回す）
 const cloudPush = () => cloudRun(false);
 const cloudPull = () => cloudRun(true);
+// 待っている依頼は、順番の分まで終わってから「終わった」と返す（先に返すと、呼んだ側が古い状態を見てしまう）
+const cloudWaiters = [];
+const cloudIdle = () => cloud.busy ? new Promise(r => cloudWaiters.push(r)) : Promise.resolve();
 async function cloudRun(pull){
   if (!cloudMeta() || !cloudSignedIn() || state.cloudPending) return;
-  if (cloud.busy) { cloud.again = cloud.again || (pull ? 'pull' : 'push'); return; }
+  if (cloud.busy) { cloud.again = cloud.again === 'push' || !pull ? 'push' : 'pull'; return cloudIdle(); }
   cloud.busy = true;
   try { await (pull ? syncPull() : syncPush()); cloud.retry = 0; }
   catch (e) { cloudOffline(); }
   finally {
     cloud.busy = false;
     const next = cloud.again; cloud.again = false;
-    if (next && cloudSignedIn()) cloudRun(next === 'pull');
+    if (next && cloudSignedIn()) cloudRun(next === 'pull'); // 次の分が終わるまで、待っている人はそのまま待つ
+    else cloudWaiters.splice(0).forEach(r => r());
   }
 }
 async function syncPush(){
